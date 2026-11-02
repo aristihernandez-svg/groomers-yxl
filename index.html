@@ -7,8 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Groomies YAV">
-<title>Groomies YAV</title>
+<meta name="apple-mobile-web-app-title" content="Groomies YXL">
+<title>Groomies YXL</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="32x32" href="cars/groomers-icon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="cars/groomers-icon-192.png">
@@ -25,6 +25,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Figtree:wght@400;600;800&family=Sora:wght@400;600;700&family=Bricolage+Grotesque:wght@400;700;800&family=Manrope:wght@400;600;800&family=Audiowide&family=Exo+2:wght@400;600;700&family=Kalam:wght@400;700&family=Bangers&family=Mountains+of+Christmas:wght@700&family=Creepster&family=Pirata+One&family=Cinzel:wght@600;800&family=Comic+Neue:ital,wght@0,700;1,700&family=Barlow+Condensed:ital,wght@0,500;0,700;1,800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Pirata+One&display=swap');
@@ -36,25 +37,25 @@
    BASE TOKENS — Premium Dark Night (default)
 ══════════════════════════════════════════════ */
 :root{
-  --bg:         #171310;
-  --bg2:        #1F1911;
-  --bg3:        #2A2116;
-  --bg4:        #35291A;
-  --gold:       #E8A33D;
-  --gold2:      #F0C070;
-  --gold-dim:   rgba(232,163,61,0.18);
-  --gold-glow:  rgba(232,163,61,0.08);
+  --bg:         #0B1120;
+  --bg2:        #0F1830;
+  --bg3:        #141F3A;
+  --bg4:        #1A2848;
+  --gold:       #4A9EFF;
+  --gold2:      #76B8FF;
+  --gold-dim:   rgba(74,158,255,0.18);
+  --gold-glow:  rgba(74,158,255,0.08);
   --glass:      rgba(255,255,255,0.05);
   --glass2:     rgba(255,255,255,0.08);
   --glass3:     rgba(255,255,255,0.12);
-  --border:     rgba(255,230,200,0.07);
-  --border2:    rgba(255,230,200,0.12);
-  --border-gold:rgba(232,163,61,0.30);
+  --border:     rgba(255,255,255,0.07);
+  --border2:    rgba(255,255,255,0.12);
+  --border-gold:rgba(74,158,255,0.30);
   /* Text — clear contrast ladder */
-  --t1:         #F5EFE6;   /* primary — headings, task names */
-  --t2:         #C4B39C;   /* secondary — metadata, frequencies */
-  --t3:         #8A7860;   /* tertiary — hints, timestamps */
-  --t4:         #4A3F2E;   /* disabled / done */
+  --t1:         #F0F4FF;   /* primary — headings, task names */
+  --t2:         #A8B8CC;   /* secondary — metadata, frequencies */
+  --t3:         #607080;   /* tertiary — hints, timestamps */
+  --t4:         #3A4A5A;   /* disabled / done */
   /* Status */
   --green:      #2ECC8A;
   --green-dim:  rgba(46,204,138,0.12);
@@ -62,7 +63,7 @@
   --red-dim:    rgba(232,64,64,0.12);
   /* Done state */
   --done-bg:    rgba(255,255,255,0.02);
-  --done-text:  #4A3F2E;
+  --done-text:  #3A4A5A;
   /* Misc */
   --safe-b:     env(safe-area-inset-bottom,0px);
   --safe-t:     env(safe-area-inset-top,0px);
@@ -78,30 +79,30 @@
    THEME: Premium Dark — Day
 ══════════════════════════════════════════════ */
 [data-theme="premium-day"]{
-  --bg:         #F5EEE0;
-  --bg2:        #FAF5EA;
+  --bg:         #E8EDF8;
+  --bg2:        #F2F5FC;
   --bg3:        #FFFFFF;
-  --bg4:        #EDE0C8;
-  --gold:       #B4791E;
-  --gold2:      #D4941E;
-  --gold-dim:   rgba(180,121,30,0.12);
-  --gold-glow:  rgba(180,121,30,0.06);
+  --bg4:        #DDE3F0;
+  --gold:       #185FA5;
+  --gold2:      #1E78CC;
+  --gold-dim:   rgba(24,95,165,0.12);
+  --gold-glow:  rgba(24,95,165,0.06);
   --glass:      rgba(255,255,255,0.60);
   --glass2:     rgba(255,255,255,0.80);
   --glass3:     rgba(255,255,255,0.95);
-  --border:     rgba(60,40,0,0.08);
-  --border2:    rgba(60,40,0,0.14);
-  --border-gold:rgba(180,121,30,0.30);
-  --t1:         #241C0C;
-  --t2:         #6B4E20;
-  --t3:         #A8926C;
-  --t4:         #C8B896;
+  --border:     rgba(0,20,60,0.08);
+  --border2:    rgba(0,20,60,0.14);
+  --border-gold:rgba(24,95,165,0.30);
+  --t1:         #0A1428;
+  --t2:         #3A5070;
+  --t3:         #7A90A8;
+  --t4:         #AAB8C8;
   --green:      #1A7A50;
   --green-dim:  rgba(26,122,80,0.10);
   --red:        #C03030;
   --red-dim:    rgba(192,48,48,0.10);
-  --done-bg:    rgba(60,40,0,0.04);
-  --done-text:  #C8B896;
+  --done-bg:    rgba(0,20,60,0.04);
+  --done-text:  #AAB8C8;
   --accent:     var(--gold);
   --accent2:    var(--gold2);
   --accent-dim: var(--gold-dim);
@@ -194,13 +195,13 @@ body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
     radial-gradient(ellipse 60% 40% at 20% 0%,rgba(200,168,75,0.05) 0%,transparent 70%),
-    radial-gradient(ellipse 50% 50% at 80% 100%,rgba(53,41,26,0.6) 0%,transparent 70%);
+    radial-gradient(ellipse 50% 50% at 80% 100%,rgba(26,40,72,0.6) 0%,transparent 70%);
   transition:opacity 0.4s;
 }
 [data-theme="premium-day"] body::before{
   background:
     radial-gradient(ellipse 60% 40% at 20% 0%,rgba(154,122,40,0.06) 0%,transparent 70%),
-    radial-gradient(ellipse 50% 50% at 80% 100%,rgba(220,196,160,0.4) 0%,transparent 70%);
+    radial-gradient(ellipse 50% 50% at 80% 100%,rgba(180,196,220,0.4) 0%,transparent 70%);
 }
 [data-theme="standard-night"] body::before,
 [data-theme="standard-day"] body::before{background:none}
@@ -209,9 +210,11 @@ body::before{
 #splash{
   position:fixed;inset:0;z-index:999;transition:opacity 0.6s;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:radial-gradient(ellipse at 30% 20%,#35291A 0%,#171310 60%,#0D0A07 100%);
+  background:radial-gradient(ellipse at 30% 20%,#1A2848 0%,#0B1120 60%,#060C18 100%);
 }
 #splash.out{opacity:0;pointer-events:none}
+#ldRoot{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 0 90px;overflow:hidden;color:#F0F4FF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.ld-logo{height:46px;filter:brightness(0) invert(1);opacity:.95;margin-bottom:46px}
 /* Opening screen — Stardust: the eagle on a dark showroom stage, 390 × 844, scaled to the phone */
 #splash.hx{background:radial-gradient(120% 70% at 50% 108%,#15161B 0%,#08080A 45%,#020203 75%);overflow:hidden;display:block}
 .hx-beam{position:absolute;left:50%;top:-60px;width:480px;height:76%;margin-left:-240px;background:radial-gradient(50% 100% at 50% 0%,rgba(225,232,255,.18),rgba(225,232,255,.05) 55%,transparent 75%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);filter:blur(10px);opacity:0}
@@ -226,11 +229,24 @@ body::before{
 .hx-shade,.hx-glint{position:absolute;inset:0;-webkit-mask:url(cars/groomies-emblem.svg) center/100% 100% no-repeat;mask:url(cars/groomies-emblem.svg) center/100% 100% no-repeat}
 .hx-shade{background:linear-gradient(180deg,rgba(255,255,255,.4) 0%,rgba(255,255,255,0) 38%,rgba(0,0,0,0) 55%,rgba(0,0,0,.34) 100%)}
 .hx-glint{background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.18) 46%,rgba(255,255,255,.95) 50%,rgba(255,255,255,.18) 54%,transparent 60%);background-size:320% 100%;background-repeat:no-repeat;background-position:-30% 0}
+.hx canvas{position:absolute;left:0;top:0;width:390px;height:844px}
 .hx-box canvas{position:absolute;left:0;top:0;width:390px;height:844px}
 .hx-name{position:absolute;left:0;right:0;top:640px;text-align:center;font:800 28px/1 Groomies,'Arial Black',sans-serif;color:#E9ECF3;opacity:0;padding-left:.2em}
 .hx-tag{position:absolute;left:0;right:0;top:682px;text-align:center;font-size:10.5px;font-weight:300;letter-spacing:.5em;padding-left:.5em;color:#9DA6C0;opacity:0}
 .hx-line{position:absolute;left:125px;width:140px;top:712px;height:1px;background:rgba(255,255,255,.12);opacity:0}
 .hx-line i{display:block;height:100%;width:0;background:linear-gradient(90deg,rgba(255,255,255,.2),#fff)}
+.ld-brand.sm{gap:6px}
+.ld-brand.sm img{width:60px;height:48px}
+.ld-brand.sm span{font-size:21px}
+.ld-sky{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom, 0px) + 26px);transform:translateX(-50%);height:38px;filter:brightness(0) invert(1) drop-shadow(0 2px 6px rgba(0,0,0,.5));opacity:.85}
+@media (max-height:740px){#ldRoot{padding-bottom:60px}.ld-brand{margin-bottom:16px;gap:6px}.ld-brand img{width:58px;height:46px}.ld-brand span{font-size:20px}.ld-sky{height:30px;bottom:calc(env(safe-area-inset-bottom, 0px) + 14px)}}
+.ld-stage{display:flex;flex-direction:column;align-items:center}
+.ld-title{margin-top:36px;font-size:17px;font-weight:800;text-align:center;padding:0 16px}
+.ld-sub{margin-top:6px;font-size:12px;color:#A8B8CC;text-align:center;padding:0 16px}
+.ld-steps{margin-top:16px;display:flex;gap:14px;font-size:12px;font-weight:700}
+.ld-cond{font-family:'Barlow Condensed','Arial Narrow','Roboto Condensed',sans-serif}
+.ld-cloud{position:absolute;width:124px;height:66px;transform-origin:62px 33px;filter:drop-shadow(0 6px 7px rgba(25,45,85,.28))}
+.ld-puff{position:absolute;border-radius:50%;background:radial-gradient(circle at 42% 34%,#FFFFFF 0%,#F6F9FC 50%,#DCE6F1 85%,#C9D6E6 100%)}
 .splash-ring{
   width:120px;height:120px;border-radius:50%;
   border:1px solid rgba(200,168,75,0.35);
@@ -271,6 +287,10 @@ body::before{
 @keyframes prog{to{width:100%}}
 /* Opening screen: Groomies (eagle + name) on top, Skycare logo alone at the very bottom. Font subset to the letters G R O M I E S */
 @font-face{font-family:'Groomies';font-weight:800;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAT0ABAAAAAACOAAAASaAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGhwbgWwcKAZgP1NUQVQqAGQRCAqFGIQvCxQAATYCJAMkBCAFhDgHIAwHG1EHyAQCwrmaTVIhxaWolafgxeXE1PrmhRfRvkmOxlyddvEoWvJqepn8bj+1LmKQLGQSCSINkpjlpUAl9MACO4O1FrR+dyIAVxQmiWmBLKd1GGTcfrlKDBakiqqGLriPGThlHBtBGej+YbSMHjppHMaU+AYFCWO6BpWFUFi7lRgkZAT8ugozSWIJS1xfcoe0JSsIRN5lYAS96EIXmsggqv9wAyAjoUeHnoloP+z2G5oTSXMia04UzYlOc6LXnBi0T8FR7ecQnBihCUwlXOc/nFMdR5zUGwvus5LcTuojm9FNSKukHkB9vBfRD4uIxVknSu8aNmngcB5gpl3+6v9/Qf5KKP168bVkz5pxORcYW8A3HAlFmj58xBSRcwmYd5HNjwqfH4O4DE4rtMhZTzzbTjZTSTW1NNJM+95X1ARtf6B9pd3Rbmu3tOvaNe3KXonTLhCahgcndmHeHPNS2TMqDwNwJeTKI/NLe+GKs4Q4xdPX21dRkk06D2WQm+zatb1rS+/WLm0mnUlRhRvD1NTAVR2sTCzs/JZptaO0y70OddWbb7LA4TCt7uwUXQcJNxa8+SYC2b8fqg43Kaoc20XtFi+hIg7HkMib3UYUFna8PsPxrzl6C9Pq+2LhPVUVHBYi6pCZLu/VvefAVR1t3e86TKtfEAvvPc/AyyJirynqcqpDXXWDBTefczheG/Gvtdkj7SenZXVmBRze9eyzu2SX22+8cQab/bI9dvuC7fMjNvfZ3Ntt+6ztbFVbV1iHDc5d0tScv2TkoDXWlv47y/6ePj2/a1Jefi9Ldu/iYkvfHln5+S3JSe35MxrLDJvmhczvff5QL2z2y3Zs9oUeu4rcdy20X9x7/dCvUw7+en0v213bVuYMG5y3rKkpd8nQwSutbW0rrUMH5y5taspdOnTICmvb/sLuWel9bWnB9dbqsNTC7pb0vsUZwQ3W6lBeDF+wPOWb2JjvUpYvPVAzJruor81W3G/8U/Vx4fbL9pdeSj8Q9083QtWei7J7TphY1Z6QneoeEpRxosq/ynw+ujq7oqT/5KzGxoVZeydO0Eoj4mN3BgYWHasKqIw4GF1vHbVl8jNzNYigXWt87f37exT+ZpTlr5gS7737+f/xcR/lByRp8/8f7FEml0H/FBMEfS8O7DFVm//f3x5lT+MyXKT92KTJ2OQAQkUmNnkQNjmFEGk7NqkLJm6u3O7CFdxp/K6scOhbklGZl/qU5zl/QnibFoEZp0XCnc8sMlbOrVX6LTrymWLRY6aL2R0r4VUhcGXuqHB5c35WyQymMImBlDGeMQyhO0MZyXBGMMUfnsIEJpNPunTVZAYziZFMYAqTSWOfMpIxpDGeSQwnnWaqaJAdpzKFYYzcLHV2YTeYhBsezzjMZJLGswypWMBwhnEwHjQ8md5kkEYev9NCDn1ZGDbf1oZTsJawbf/hTGUMA5kEdGZuL2c8E5h5RkrAuBkLGVjIJHS3EQzFPMNJLUxiPKMYyuAylPbACErYZG7jBBJhOOrkEUxlEGkMZjxjqVuYEROzSi2bShVZmHZ/4t8LydvtwYLTekNoSy8oawE=) format('woff2')}
+.ld-brand{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:30px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.45))}
+.ld-brand img{width:84px;height:67px}
+.ld-brand span{font:800 27px/1 Groomies,'Arial Black',sans-serif;letter-spacing:.16em;padding-left:.16em;color:#fff}
+.hx{position:absolute;inset:0;overflow:hidden;background:radial-gradient(120% 70% at 50% 108%,#15161B 0%,#08080A 45%,#020203 75%)}
 .sp-gm{display:flex;flex-direction:column;align-items:center;gap:8px;margin:-80px 0 30px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.45))}
 .sp-gm img{width:84px;height:67px}
 .sp-gm span{font:800 27px/1 Groomies,'Arial Black',sans-serif;letter-spacing:.16em;padding-left:.16em;color:#fff}
@@ -290,7 +310,7 @@ body::before{
 }
 .hp-nameplate{
   background:linear-gradient(90deg,#4A3508,#C8A84B,#C8A84B,#4A3508);
-  color:#241A0C;font-size:11px;font-weight:800;letter-spacing:2.5px;
+  color:#0B1120;font-size:11px;font-weight:800;letter-spacing:2.5px;
   text-transform:uppercase;text-align:center;
   padding:5px 28px 4px;border-radius:0 0 4px 4px;
   box-shadow:0 2px 8px rgba(0,0,0,0.5);
@@ -339,14 +359,14 @@ body::before{
 
 /* TOPBAR */
 .bar{
-  background:rgba(23,19,16,0.92);
+  background:rgba(11,17,32,0.92);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:10px;
   padding:calc(var(--safe-t) + 12px) 16px 12px;
   flex-shrink:0;position:relative;z-index:20;
 }
-[data-theme="premium-day"] .bar{background:rgba(245,238,224,0.92)}
+[data-theme="premium-day"] .bar{background:rgba(232,237,248,0.92)}
 [data-theme="standard-night"] .bar{background:#111111}
 [data-theme="standard-day"] .bar{background:#FFFFFF;border-bottom:1px solid rgba(0,0,0,0.10)}
 .bar-title{font-size:17px;font-weight:600;color:var(--t1);flex:1;letter-spacing:0.3px;cursor:pointer}
@@ -534,7 +554,7 @@ body::before{
 .ap-t svg{width:22px;height:22px;color:#0B3B8C;margin:0 auto 6px;display:block}
 /* 7 · Corkboard */
 .hd-cork{background:#8a6a45;background-image:radial-gradient(rgba(0,0,0,.14) 1px,transparent 1px);background-size:6px 6px;color:#3a2a18;font-family:Kalam,cursive}
-.hd-cork .hd-top small{font-size:11px;letter-spacing:1px;font-weight:700;opacity:.8;text-transform:uppercase;font-family:Inter,sans-serif}
+.hd-cork .hd-top small{font-size:11px;letter-spacing:1px;font-weight:700;opacity:.8;text-transform:uppercase;font-family:"Inter Tight",Inter,sans-serif}
 .hd-cork .hd-top h2{font-size:24px;font-weight:700;margin-top:3px}
 .ck-polaroid{background:#fdfaf2;padding:10px 10px 12px;box-shadow:0 8px 16px rgba(0,0,0,.35);transform:rotate(-2deg);position:relative;margin-bottom:20px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .ck-img{height:110px;background:#1b2233;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -565,6 +585,201 @@ body::before{
 .hp-pc.on small{color:var(--accent2)}
 .hp-mini{width:64px;height:44px;flex-shrink:0;border-radius:8px;position:relative;overflow:hidden}
 .hp-mini u{position:absolute;border-radius:3px;text-decoration:none}
+.hd-comic{background:radial-gradient(#E3C98C 1px,transparent 1.3px) 0 0/6px 6px,#F8EDD0;color:#111;font-family:'Comic Neue','Trebuchet MS',sans-serif}
+.hd-comic .hd-notes{display:none}
+.cm-fx{font-family:Bangers,Impact,'Arial Black',sans-serif;font-weight:400;letter-spacing:.8px}
+.cm-let{font-weight:700;font-style:italic;text-transform:uppercase}
+.cm-mast{display:flex;border:3px solid #111;background:#FFD43B;box-shadow:4px 4px 0 #111}
+.cm-mast h3{flex:1;font-family:Bangers,Impact,sans-serif;font-weight:400;font-size:50px;line-height:.9;letter-spacing:1px;color:#E5322D;-webkit-text-stroke:2px #111;text-shadow:3px 3px 0 #111;padding:8px 10px 4px;transform:skew(-6deg)}
+.cm-mast h3 small{display:block;font-family:'Comic Neue',sans-serif;font-weight:700;font-style:italic;font-size:12px;-webkit-text-stroke:0;color:#111;text-shadow:none;letter-spacing:1.5px;margin-top:4px;text-transform:uppercase}
+.cm-mast .iss{width:76px;border-left:3px solid #111;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;font-weight:700;text-align:center;line-height:1.2;text-transform:uppercase}
+.cm-mast .iss b{font-family:Bangers,Impact,sans-serif;font-weight:400;font-size:24px;letter-spacing:1px}
+.cm-hero{position:relative;height:200px;margin-top:14px;border:3px solid #111;box-shadow:4px 4px 0 #111;overflow:hidden;transform:rotate(-1deg);cursor:pointer;
+  background:repeating-conic-gradient(from 0deg at 72% 55%,rgba(255,255,255,.22) 0 4deg,transparent 4deg 12deg),radial-gradient(circle at 72% 55%,#4B8BFF,#173D9A 70%)}
+.cm-hero::after{content:'';position:absolute;inset:0;background:radial-gradient(rgba(0,0,0,.25) 1px,transparent 1.4px) 0 0/5px 5px;mix-blend-mode:multiply;pointer-events:none}
+.cm-hero img{position:absolute;width:62%;max-width:250px;right:-6px;top:58px;transform:rotate(-8deg);filter:drop-shadow(3px 3px 0 #111);z-index:2}
+.cm-cap{position:absolute;left:8px;top:8px;z-index:3;background:#FFD43B;border:2.5px solid #111;padding:4px 8px;font-size:11px;max-width:62%;line-height:1.25;font-weight:700;font-style:italic;text-transform:uppercase}
+.cm-boom{position:absolute;left:10px;bottom:10px;z-index:3;width:128px;height:90px;background:#E5322D;display:grid;place-items:center;
+  clip-path:polygon(50% 0,60% 22%,84% 6%,78% 32%,100% 34%,82% 52%,98% 74%,72% 70%,70% 100%,52% 78%,32% 98%,30% 72%,4% 82%,18% 56%,0 38%,24% 34%,14% 8%,40% 22%)}
+.cm-boom span{font-family:Bangers,Impact,sans-serif;font-size:23px;letter-spacing:1px;color:#FFD43B;-webkit-text-stroke:1.2px #111;transform:rotate(-8deg);margin-top:4px}
+.cm-panel{margin-top:16px;border:3px solid #111;background:#fff;box-shadow:4px 4px 0 #111;position:relative;padding-bottom:14px}
+.cm-narr{background:#FFD43B;border-bottom:3px solid #111;padding:5px 9px;font-size:11.5px;font-weight:700;font-style:italic;text-transform:uppercase}
+.cm-panel p{padding:9px 11px 0;font-size:14px;line-height:1.4;font-weight:700}
+.cm-panel audio{width:calc(100% - 22px);margin:8px 11px 0;height:32px}
+.cm-ok{position:absolute;right:-6px;bottom:-14px;background:#3BB273;color:#fff;border:2.5px solid #111;padding:4px 12px;font-family:Bangers,Impact,sans-serif;font-size:15px;letter-spacing:1px;transform:rotate(4deg);box-shadow:2px 2px 0 #111;cursor:pointer}
+.cm-bub{margin:22px 4px 0 18px;background:#fff;border:3px solid #111;border-radius:50% / 42%;padding:14px 20px;text-align:center;font-size:12.5px;line-height:1.3;position:relative;font-weight:700;font-style:italic;text-transform:uppercase}
+.cm-bub small{display:block;font-size:10px;margin-top:3px;text-transform:none}
+.cm-bub::before{content:'';position:absolute;left:18px;bottom:-17px;border:10px solid transparent;border-top:16px solid #111;transform:skew(28deg)}
+.cm-bub::after{content:'';position:absolute;left:21px;bottom:-11px;border:7px solid transparent;border-top:12px solid #fff;transform:skew(28deg)}
+.cm-pow{margin:24px 0 0;display:flex;align-items:center;gap:8px;border:3px solid #111;background:#1D3E8F;color:#fff;padding:8px 10px;box-shadow:4px 4px 0 #111;cursor:pointer}
+.cm-pow>span{font-size:10.5px;line-height:1.1;font-weight:700;font-style:italic;text-transform:uppercase}
+.cm-pow .cm-bar{flex:1;height:18px;border:2px solid #111;background:#fff;display:flex}
+.cm-pow .cm-bar i{flex:1;border-right:1.5px solid #111}
+.cm-pow .cm-bar i:last-child{border-right:none}
+.cm-pow .cm-bar i.f{background:#E5322D}
+.cm-pow .cm-bar em{color:#111;font-size:11px;font-weight:700;padding:0 6px;line-height:14px}
+.cm-pow b{font-family:Bangers,Impact,sans-serif;font-weight:400;font-size:27px;letter-spacing:1px;color:#FFD43B;-webkit-text-stroke:1px #111}
+.cm-tg{display:grid;grid-template-columns:repeat(3,1fr);gap:26px 10px;margin-top:20px;padding:0 2px 8px}
+.cm-t{position:relative;background:#fff;border:3px solid #111;border-radius:50% / 46%;height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;filter:drop-shadow(3px 3px 0 #111);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.cm-t::before{content:'';position:absolute;left:16px;bottom:-16px;border:8px solid transparent;border-top:15px solid #111;transform:skew(26deg)}
+.cm-t::after{content:'';position:absolute;left:19px;bottom:-9px;border:6px solid transparent;border-top:11px solid #fff;transform:skew(26deg)}
+.cm-t:nth-child(even)::before{left:auto;right:16px;transform:skew(-26deg)}
+.cm-t:nth-child(even)::after{left:auto;right:19px;transform:skew(-26deg)}
+.cm-t svg{width:28px;height:28px;stroke-width:1.8}
+.cm-t:nth-child(4n+1) svg{color:#E5322D}
+.cm-t:nth-child(4n+2) svg{color:#1D3E8F}
+.cm-t:nth-child(4n+3) svg{color:#2E9E4F}
+.cm-t:nth-child(4n+4) svg{color:#D97706}
+.cm-t b{font-size:11px;font-weight:700;font-style:italic;text-transform:uppercase}
+.cm-end{margin:16px 0 0;text-align:center;font-size:14px;font-weight:700;font-style:italic;text-transform:uppercase}
+.hd-comic .hd-foot{opacity:.75}
+.hd-comic .hd-share button{background:#fff;border:2.5px solid #111;border-radius:0;box-shadow:3px 3px 0 #111;color:#111;font-style:italic;text-transform:uppercase}
+.hd-lineup{background:linear-gradient(#060914,#0B1430 55%,#0A0F22);color:#fff;font-family:'Barlow Condensed','Arial Narrow',sans-serif}
+.sl-beam{position:absolute;top:-30px;width:150px;height:440px;background:linear-gradient(rgba(255,255,255,.2),transparent 85%);clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);pointer-events:none;z-index:-1}
+.sl-beam.l{left:-30px;transform:rotate(-14deg)}
+.sl-beam.r{right:-30px;transform:rotate(14deg)}
+.sl-h{text-align:center;margin-top:4px}
+.sl-h small{font-size:12px;letter-spacing:4px;color:#9FB2D6;font-weight:500}
+.sl-h h3{font-size:40px;font-weight:800;font-style:italic;letter-spacing:-.3px;line-height:.95;text-transform:uppercase}
+.sl-h h3 span{color:#E8304A}
+.sl-h .ln{height:4px;width:150px;margin:7px auto 0;background:linear-gradient(90deg,transparent,#E8304A,transparent)}
+.sl-h em{display:block;font-style:normal;font-size:12px;color:#9FB2D6;letter-spacing:2px;margin-top:6px;font-weight:500}
+.sl-star{position:relative;margin-top:16px;height:268px;border-radius:12px;overflow:hidden;background:linear-gradient(125deg,#E8304A 0 38%,#0D1B45 38% 100%);box-shadow:0 18px 40px rgba(0,0,0,.6),inset 0 0 0 2px rgba(255,255,255,.15);cursor:pointer}
+.sl-star .num{position:absolute;right:-6px;top:-20px;font-size:160px;font-weight:800;font-style:italic;color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.28);line-height:1}
+.sl-star img{position:absolute;width:80%;max-width:300px;left:10%;top:58px;filter:drop-shadow(0 14px 14px rgba(0,0,0,.6))}
+.sl-star .tag{position:absolute;left:12px;top:12px;font-size:12px;font-weight:700;letter-spacing:2px;background:#fff;color:#0D1B45;padding:3px 9px;border-radius:2px}
+.sl-star .tag i{font-style:normal;color:#9FB2D6}
+.sl-star .tag.in i{color:#16A34A}
+.sl-name{position:absolute;left:0;right:0;bottom:58px;padding:0 14px}
+.sl-name b{display:block;font-size:34px;font-weight:800;font-style:italic;letter-spacing:.5px;text-shadow:0 3px 10px rgba(0,0,0,.6);line-height:1}
+.sl-name small{font-size:12px;letter-spacing:2px;color:#C9D6F2;font-weight:500}
+.sl-star.empty .sl-name{bottom:16px}
+.sl-stats{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);background:rgba(0,0,0,.55);border-top:2px solid #E8304A}
+.sl-stats div{text-align:center;padding:6px 0}
+.sl-stats div+div{border-left:1px solid rgba(255,255,255,.15)}
+.sl-stats b{display:block;font-size:21px;font-weight:800}
+.sl-stats small{font-size:10px;letter-spacing:2px;color:#9FB2D6}
+.sl-bench{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
+.sl-bench>div{background:linear-gradient(#16224A,#0D1530);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 6px 7px;position:relative;overflow:hidden;min-width:0}
+.sl-bench img{width:100%;height:36px;object-fit:contain}
+.sl-bench b{display:block;font-size:15px;font-weight:800;font-style:italic;white-space:nowrap}
+.sl-bench small{font-size:9.5px;letter-spacing:.8px;color:#9FB2D6;white-space:nowrap;display:block;overflow:hidden;text-overflow:ellipsis}
+.sl-bench em{position:absolute;right:5px;top:5px;font-style:normal;font-size:9px;font-weight:700;padding:1px 4px;border-radius:2px;background:#16A34A}
+.sl-bench em.g{background:#B45309}
+.sl-team{margin-top:12px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 11px;cursor:pointer}
+.sl-team>b{font-size:26px;font-weight:800;font-style:italic}
+.sl-team .grow{flex:1}
+.sl-team small{font-size:11px;letter-spacing:1.5px;color:#9FB2D6;display:block;text-transform:uppercase}
+.sl-team .sl-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:3px}
+.sl-team .sl-bar i{display:block;height:100%;background:linear-gradient(90deg,#E8304A,#FF6B81)}
+.sl-coach{margin-top:12px;background:#F4F6FA;color:#1C2440;border-radius:8px;padding:10px 12px 11px;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.sl-coach>small{font-size:11px;font-weight:700;letter-spacing:2px;color:#E8304A;text-transform:uppercase}
+.sl-coach p{font-family:Kalam,'Bradley Hand',cursive;font-size:15px;line-height:1.35;margin-top:3px;color:#1D3E8F}
+.sl-coach audio{width:100%;height:32px;margin-top:6px}
+.sl-coach .ok{display:inline-block;margin-top:6px;font-family:inherit;font-size:12px;font-weight:700;background:#16A34A;color:#fff;padding:4px 11px;border-radius:12px;border:none;cursor:pointer}
+.sl-coach .note{margin-top:9px;padding-top:8px;border-top:1px dashed #C4CBDA;font-size:14px;color:#1C2440}
+.sl-coach .note:first-child{margin-top:0;padding-top:0;border-top:none}
+.sl-coach .note b{color:#E8304A}
+.sl-tg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.sl-r{background:#0F1A3C;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 4px 9px;text-align:center;position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sl-r .no{position:absolute;left:7px;top:4px;font-size:12px;font-weight:800;font-style:italic;color:#E8304A}
+.sl-r svg{width:26px;height:26px;margin:4px auto 3px;display:block}
+.sl-r b{font-size:12.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700}
+.hd-chart{background:#FBFBF8;color:#111;font-family:'Barlow Condensed','Arial Narrow',sans-serif}
+.hd-chart .hd-notes{display:none}
+.sc-map{position:relative;height:250px;margin:-18px -14px 0;overflow:hidden;background:#fff;border-bottom:2px solid #111;cursor:pointer}
+.sc-img{position:absolute;max-width:none;pointer-events:none}
+.sc-chip{position:absolute;right:8px;top:8px;z-index:3;background:#111;color:#fff;font-size:10px;font-weight:700;letter-spacing:1.5px;padding:3px 8px;border-radius:2px}
+.sc-chip::before{content:'● ';color:#4ADE80}
+.sc-chip.off::before{color:#999}
+.sc-pulse{position:absolute;left:50%;top:125px;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;border:2px solid #C2185B;animation:scPulse 2s ease-out infinite}
+@keyframes scPulse{0%{transform:scale(.5);opacity:1}100%{transform:scale(2.2);opacity:0}}
+.sc-crs{position:absolute;border-top:2.5px dashed #C2185B;transform-origin:0 0;z-index:1}
+.sc-pl{position:absolute;width:30px;height:30px;color:#C2185B;z-index:2;filter:drop-shadow(0 0 3px #fff)}
+.sc-pl.out{opacity:.5}
+.sc-pl svg{width:100%;height:100%;stroke-width:2}
+.sc-lbl{position:absolute;z-index:3;background:#fff;border:1.5px solid #C2185B;padding:3px 7px;font-size:12px;color:#C2185B;font-weight:700;line-height:1.15;white-space:nowrap}
+.sc-lbl small{display:block;font-weight:500;color:#6B1446;font-size:11px}
+.sc-edge{position:absolute;left:8px;bottom:6px;z-index:3;font-size:10px;color:#555;background:rgba(255,255,255,.88);padding:1px 5px}
+.sc-state{position:absolute;left:8px;top:8px;z-index:3;background:#fff;border:1.5px solid #111;padding:4px 8px;font-size:13px;font-weight:700}
+.sc-state small{display:block;font-weight:500;font-size:11px;color:#555}
+.sc-body{padding-top:12px}
+.sc-notam{background:#fff;border:1.5px solid #111;padding:8px 10px;font-family:'Courier New',monospace;font-size:12px;line-height:1.4;color:#111;margin-bottom:9px;text-transform:uppercase}
+.sc-notam b{color:#1E7A2E}
+.sc-notam audio{width:100%;height:32px;margin-top:6px}
+.sc-notam .ok{display:inline-block;margin-top:6px;border:1.5px solid #111;color:#111;background:none;padding:2px 9px;font-family:inherit;font-weight:700;font-size:11px;cursor:pointer}
+.sc-notam[onclick]{cursor:pointer}
+.sc-prog{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-top:4px;cursor:pointer}
+.sc-prog .alt{flex:1;height:11px;border:1.5px solid #111;background:repeating-linear-gradient(90deg,transparent 0 9px,rgba(0,0,0,.25) 9px 10px)}
+.sc-prog .alt i{display:block;height:100%;background:#2E9E3E}
+.sc-tg{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+.sc-w{background:#fff;border:1.5px solid #111;border-radius:6px;padding:9px 2px 7px;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sc-w .hex{width:34px;height:34px;margin:0 auto 4px;display:grid;place-items:center;clip-path:polygon(25% 4%,75% 4%,100% 50%,75% 96%,25% 96%,0 50%);background:#111;color:#fff}
+.sc-w:nth-child(3n+2) .hex{background:#2E9E3E}
+.sc-w .hex svg{width:19px;height:19px}
+.sc-w b{font-size:12.5px;letter-spacing:1px;text-transform:uppercase;display:block}
+.sc-w small{display:block;font-size:11px;color:#555;min-height:13px}
+.hd-chart .hd-share button{border:1.5px solid #111;color:#111;background:#fff}
+.hd-pass{background:#1B2A4A;color:#222;font-family:Georgia,'Times New Roman',serif;padding-left:0;padding-right:0}
+.hd-pass .hd-notes{display:none}
+.pp-cov{margin-top:-18px;padding:18px 14px 20px;text-align:center;color:#D8B45A;background:radial-gradient(circle at 50% 0,#26386A,#1B2A4A 70%);border-bottom:3px solid #0F1A33}
+.pp-crest{width:62px;height:62px;margin:0 auto;border:2px solid #D8B45A;border-radius:50%;display:grid;place-items:center}
+.pp-crest img{width:52px;filter:sepia(1) saturate(3) hue-rotate(-12deg) brightness(.95)}
+.pp-cov h3{font-size:13px;letter-spacing:5px;margin-top:9px;font-weight:400;text-transform:uppercase}
+.pp-cov b{display:block;font-size:22px;letter-spacing:3px;font-weight:400;margin-top:2px}
+.pp-cov small{display:block;font-size:10px;letter-spacing:3px;margin-top:4px;color:#B89848;text-transform:uppercase}
+.pp-pg{margin:12px 12px 0;background:radial-gradient(circle at 20% 30%,rgba(120,170,200,.18),transparent 40%),repeating-radial-gradient(circle at 70% 120%,rgba(90,140,170,.12) 0 2px,transparent 2px 9px),#F3EEDF;border-radius:4px;padding:12px 12px 12px;position:relative;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.pp-pg .pn{position:absolute;right:10px;top:8px;font-size:10px;color:#8B7F62;letter-spacing:2px}
+.pp-pg .hdr{font-size:10px;letter-spacing:3px;color:#8B7F62;text-transform:uppercase}
+.pp-row{display:flex;justify-content:center;align-items:center;margin-top:6px}
+.pp-date{width:112px;height:112px;color:#B3261E;transform:rotate(-10deg);opacity:.9;mix-blend-mode:multiply;flex-shrink:0;margin-right:-22px;position:relative;z-index:2;cursor:pointer}
+.pp-date svg{width:100%;height:100%;overflow:visible}
+.pp-date text{fill:currentColor;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.pp-radar{position:relative;width:174px;height:174px;flex-shrink:0;color:#1E4E9E;cursor:pointer}
+.pp-radar svg.frame{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.pp-radar svg.frame text{fill:currentColor;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+.pp-radar .sweep{position:absolute;left:24.4px;top:24.4px;width:125.3px;height:125.3px;border-radius:50%;background:conic-gradient(from 0deg,rgba(30,78,158,.42),rgba(30,78,158,0) 80deg,transparent);animation:ppSpin 4s linear infinite;mix-blend-mode:multiply}
+@keyframes ppSpin{to{transform:rotate(360deg)}}
+.pp-radar .apt{position:absolute;left:80px;top:80px;width:14px;height:14px;border:2px solid currentColor;border-radius:50%}
+.pp-radar .blip{position:absolute;width:16px;height:16px;color:#B3261E}
+.pp-radar .blip>span{display:block;width:100%;height:100%}
+.pp-radar .blip svg{width:100%;height:100%;stroke-width:2.2}
+.pp-radar .blip.out{opacity:.45}
+.pp-radar .blip:not(.out)::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1.5px solid #B3261E;animation:ppPing 2s ease-out infinite;opacity:0}
+@keyframes ppPing{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.4);opacity:0}}
+.pp-radar .trail{position:absolute;width:3px;height:3px;border-radius:50%;background:#B3261E;opacity:.5}
+.pp-radar .lbl{position:absolute;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:10px;line-height:1.15;color:#B3261E;white-space:nowrap;background:rgba(243,238,223,.92);padding:1px 3px;border-radius:2px;z-index:2}
+.pp-radar .none{position:absolute;left:0;right:0;top:100px;text-align:center;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:10px;letter-spacing:1px;color:#1E4E9E;line-height:1.2}
+.pp-radar .live{position:absolute;right:-2px;top:2px;font-family:Arial,sans-serif;font-size:9px;font-weight:700;color:#fff;background:#B3261E;border-radius:2px;padding:1px 5px;letter-spacing:.5px}
+.pp-radar .live::before{content:'● ';animation:ppBlink 1.2s steps(1) infinite}
+.pp-radar .live.off{background:#6B7280}
+.pp-radar .live.off::before{animation:none}
+@keyframes ppBlink{50%{opacity:0}}
+.pp-cap{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:12.5px;color:#5B5340;text-align:center;margin-top:4px;letter-spacing:.3px}
+.pp-cap b{color:#B3261E}
+.pp-note{margin-top:12px;background:#FFFDF6;padding:9px 11px;font-family:Kalam,'Bradley Hand',cursive;font-size:15px;line-height:1.4;color:#1D3E8F;transform:rotate(-1deg);box-shadow:0 3px 8px rgba(0,0,0,.18);position:relative}
+.pp-note.ev{color:#6B2FA0;transform:rotate(.8deg)}
+.pp-note::before{content:'';position:absolute;right:16px;top:-8px;width:12px;height:26px;border:2px solid #9CA3AF;border-radius:6px}
+.pp-note small{font-family:Georgia,serif;font-size:10px;letter-spacing:2px;color:#8B7F62;display:block;text-transform:uppercase}
+.pp-note audio{width:100%;height:32px;margin-top:6px}
+.pp-note .ok{display:inline-block;margin-top:5px;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;font-size:12px;color:#1E7B34;background:none;border:2px solid #1E7B34;padding:1px 8px;transform:rotate(-3deg);letter-spacing:1px;cursor:pointer}
+.pp-tg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 6px;margin-top:8px}
+.pp-s{height:92px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pp-s .st{width:90px;height:78px;border:2.5px solid currentColor;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:12px;opacity:.86;mix-blend-mode:multiply}
+.pp-s .st svg{width:24px;height:24px}
+.pp-s .st small{font-size:9.5px}
+.pp-s:nth-child(9n+1) .st{color:#B3261E;transform:rotate(-8deg);border-radius:50%}
+.pp-s:nth-child(9n+2) .st{color:#1E4E9E;transform:rotate(6deg)}
+.pp-s:nth-child(9n+3) .st{color:#1E7B34;transform:rotate(-4deg);border-style:double;border-width:4px}
+.pp-s:nth-child(9n+4) .st{color:#6B2FA0;transform:rotate(9deg);border-radius:50%}
+.pp-s:nth-child(9n+5) .st{color:#B45309;transform:rotate(-6deg);border-radius:18px}
+.pp-s:nth-child(9n+6) .st{color:#0F766E;transform:rotate(3deg)}
+.pp-s:nth-child(9n+7) .st{color:#B3261E;transform:rotate(-10deg);border-style:dashed}
+.pp-s:nth-child(9n+8) .st{color:#1E4E9E;transform:rotate(7deg);border-radius:50%}
+.pp-s:nth-child(9n+9) .st{color:#4B5563;transform:rotate(-3deg);border-style:double;border-width:4px}
+.pp-mrz{margin-top:12px;font-family:'Courier New',monospace;font-size:10.5px;letter-spacing:1.5px;color:#3B3B3B;line-height:1.4;word-break:break-all}
+.hd-pass .hd-foot{color:#9BA7C2;opacity:1}
+.hd-pass .hd-share button{border:1px solid #D8B45A;color:#D8B45A;background:none}
 /* Today's cargo in the Home Cargo card: DEST · client · pcs (overdue first, in red) */
 .hct{display:flex;flex-direction:column;gap:4px;margin-top:8px;text-align:left;width:100%}
 .hct-r{display:flex;align-items:baseline;gap:7px;font-size:12px;line-height:1.25;min-width:0}
@@ -633,7 +848,7 @@ body::before{
 .hh-crypt .pl::before{left:8px}.hh-crypt .pl::after{right:8px}
 .hh-crypt small.k{display:block;font:800 10px Cinzel,Georgia,serif;letter-spacing:2px;text-transform:uppercase;color:#3A1A04}
 .hh-crypt p{font-family:Georgia,serif;font-size:15.5px;font-weight:700;line-height:1.5;margin-top:6px;color:#1E1206}
-/* YAV: the gate sign cut in two — Fleet and Cargo hang side by side */
+/* YXL: the gate sign cut in two — Fleet and Cargo hang side by side */
 .hh-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:30px 0 0}
 .hh-pair .hh-gate{margin:0}
 .hh-pair .hh-gate::before{left:24%}.hh-pair .hh-gate::after{right:24%}
@@ -689,13 +904,13 @@ body::before{
 
 /* NAV */
 .nav{
-  background:rgba(23,19,16,0.95);
+  background:rgba(11,17,32,0.95);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-top:1px solid var(--border);
   display:flex;overflow-x:auto;scrollbar-width:none;
   flex-shrink:0;padding-bottom:max(var(--safe-b),6px);
 }
-[data-theme="premium-day"] .nav{background:rgba(245,238,224,0.95)}
+[data-theme="premium-day"] .nav{background:rgba(232,237,248,0.95)}
 [data-theme="standard-night"] .nav{background:#111111;border-top:1px solid rgba(255,255,255,0.08)}
 [data-theme="standard-day"] .nav{background:#FFFFFF;border-top:1px solid rgba(0,0,0,0.08)}
 .nav::-webkit-scrollbar{display:none}
@@ -903,6 +1118,32 @@ body::before{
 .sh-f-pg{color:var(--accent2);border-color:var(--accent-border)}
 .sh-sub{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--t2);margin-top:3px;line-height:1.3}
 .sh-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.atf-lbl{display:flex;align-items:center;gap:6px;margin:14px 0 7px;font-size:10.5px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--t3)}
+.atf-st{margin-left:auto;font-size:10.5px;letter-spacing:.2px;text-transform:none;font-weight:700}
+.atf-st.req{color:#FF7A7A}
+.atf-st.ok{color:var(--green)}
+.atf-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;border-radius:12px;transition:box-shadow .2s}
+.atf-tile{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:12px;border:1.5px solid var(--border2);background:var(--glass);color:var(--t2);font-family:inherit;font-size:11.5px;font-weight:700;text-align:left;cursor:pointer;min-width:0;-webkit-tap-highlight-color:transparent}
+.atf-tile i{font-style:normal;font-size:15px;width:28px;height:28px;border-radius:8px;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.atf-tile span{line-height:1.15;overflow-wrap:anywhere}
+.atf-tile{position:relative}
+.atf-tile.on{background:var(--ac);border:2px solid rgba(255,255,255,.85);color:#fff;box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 55%,transparent)}
+.atf-tile.on::after{content:"✓";position:absolute;top:4px;right:6px;font-size:11px;font-weight:900;color:#fff}
+.atf-seg{display:flex;padding:3px;border-radius:11px;background:var(--glass2);border:1px solid var(--border);transition:box-shadow .2s}
+.atf-seg-b{flex:1;border:0;background:none;color:var(--t2);font-family:inherit;font-size:12.5px;font-weight:600;padding:9px 2px;border-radius:9px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.atf-seg-b.on{background:var(--bg4);color:var(--t1);box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.atf-days{gap:5px;justify-content:space-between;margin-top:9px;border-radius:12px;transition:box-shadow .2s}
+.atf-d{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;color:var(--t2);font-family:inherit;font-size:10.5px;font-weight:700;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent}
+.atf-d.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.atf-hint{text-align:center;font-size:11.5px;color:var(--t3);margin-top:8px;min-height:15px}
+.atf-pv{border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.atf-pv-h{display:flex;align-items:center;gap:8px;padding:8px 11px;color:#fff}
+.atf-pv-h b{font-size:11px;letter-spacing:.8px}
+.atf-pv-r{display:flex;align-items:center;gap:10px;padding:10px 11px;background:var(--glass)}
+.atf-pv-c{width:20px;height:20px;border-radius:50%;border:2px solid var(--t4);flex-shrink:0}
+.atf-pv-t{font-size:13.5px;font-weight:600;color:var(--t1)}
+.atf-pv-s{font-size:11px;color:var(--t3);margin-top:1px}
+#mSave.atf-off{background:var(--glass2);color:var(--t3);box-shadow:none;border:1px dashed var(--border2)}
 /* SPINNER */
 .spin-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;gap:12px}
 .spinner{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite}
@@ -910,11 +1151,11 @@ body::before{
 
 /* PROGRESS */
 .prog-wrap{
-  background:rgba(23,19,16,0.85);backdrop-filter:blur(10px);
+  background:rgba(11,17,32,0.85);backdrop-filter:blur(10px);
   border-bottom:1px solid var(--border);padding:12px 16px;
   position:sticky;top:0;z-index:10;
 }
-[data-theme="premium-day"] .prog-wrap{background:rgba(245,238,224,0.90)}
+[data-theme="premium-day"] .prog-wrap{background:rgba(232,237,248,0.90)}
 [data-theme="standard-night"] .prog-wrap{background:#1A1A1A}
 [data-theme="standard-day"] .prog-wrap{background:#FFFFFF;border-bottom:1px solid rgba(0,0,0,0.08)}
 .prog-row{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-bottom:7px;font-weight:500}
@@ -1024,8 +1265,8 @@ body::before{
 .reset-day-btn{width:100%;padding:11px;border-radius:var(--radius-sm);background:var(--glass);border:1px solid var(--border);color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 
 /* SHOPPING */
-.shop-filters{background:rgba(23,19,16,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
-[data-theme="premium-day"] .shop-filters{background:rgba(245,238,224,0.92)}
+.shop-filters{background:rgba(11,17,32,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+[data-theme="premium-day"] .shop-filters{background:rgba(232,237,248,0.92)}
 [data-theme="standard-night"] .shop-filters{background:#111111}
 [data-theme="standard-day"] .shop-filters{background:#FFFFFF}
 .shop-bar{padding:10px 12px 0;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
@@ -1067,8 +1308,8 @@ body::before{
 .empty p{font-size:13px;color:var(--t3);text-align:center}
 .empty button{margin-top:8px;padding:8px 20px;border-radius:20px;border:1px solid var(--border2);background:var(--glass);font-size:13px;cursor:pointer;color:var(--t2)}
 
-.reset-bar{padding:12px 14px;background:rgba(23,19,16,0.8);border-top:1px solid var(--border)}
-[data-theme="premium-day"] .reset-bar{background:rgba(245,238,224,0.9)}
+.reset-bar{padding:12px 14px;background:rgba(11,17,32,0.8);border-top:1px solid var(--border)}
+[data-theme="premium-day"] .reset-bar{background:rgba(232,237,248,0.9)}
 [data-theme="standard-night"] .reset-bar{background:#111111}
 [data-theme="standard-day"] .reset-bar{background:#FFFFFF}
 .reset-btn{width:100%;padding:13px;border-radius:var(--radius-sm);background:var(--green-dim);color:var(--green);border:1px solid rgba(46,204,138,0.2);font-size:14px;font-weight:600;cursor:pointer}
@@ -1100,9 +1341,9 @@ body::before{
 .green-step .stxt{color:var(--green);font-weight:500}
 .proc-actions{display:flex;gap:8px;margin-top:12px}
 .proc-act-btn{flex:1;padding:10px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--glass2);color:var(--t2)}
-.video-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(232,163,61,0.06);border:1px solid rgba(232,163,61,0.15);border-radius:var(--radius-sm);margin:10px 0;cursor:pointer;text-decoration:none}
-.video-btn span{font-size:13px;color:#F0C070;font-weight:500}
-.proc-video{display:block;width:100%;max-height:70vh;border-radius:var(--radius-sm);background:#000;border:1px solid rgba(240,192,112,0.2)}
+.video-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(64,144,255,0.06);border:1px solid rgba(64,144,255,0.15);border-radius:var(--radius-sm);margin:10px 0;cursor:pointer;text-decoration:none}
+.video-btn span{font-size:13px;color:#6EB0FF;font-weight:500}
+.proc-video{display:block;width:100%;max-height:70vh;border-radius:var(--radius-sm);background:#000;border:1px solid rgba(64,144,255,0.15)}
 .vicon{font-size:20px}
 .dmg-section{margin-top:12px;background:var(--red-dim);border-radius:var(--radius-sm);border:1px solid rgba(232,64,64,0.15);overflow:hidden}
 .dmg-hdr{background:rgba(232,64,64,0.08);color:var(--red);padding:8px 14px;font-size:11px;font-weight:600;letter-spacing:0.5px}
@@ -1122,9 +1363,9 @@ body::before{
 .crow{padding:14px 16px}
 .cname{font-size:14px;font-weight:700;color:var(--t1)}
 .caddr{font-size:12px;color:var(--t2);margin-top:5px;line-height:1.5;cursor:pointer;display:flex;align-items:flex-start;gap:6px}
-.caddr-text{flex:1;color:#F0C070;text-decoration:underline;font-weight:500}
+.caddr-text{flex:1;color:#6EB0FF;text-decoration:underline;font-weight:500}
 .cnote{font-size:12px;color:var(--t2);margin-top:5px;line-height:1.5}
-.maps-btn{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 14px;border-radius:20px;background:rgba(232,163,61,0.10);color:#F0C070;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(232,163,61,0.20);text-decoration:none}
+.maps-btn{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 14px;border-radius:20px;background:rgba(64,144,255,0.10);color:#6EB0FF;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(64,144,255,0.20);text-decoration:none}
 
 /* BORED */
 .bored-list{padding:0;display:flex;flex-direction:column;gap:0}
@@ -1398,6 +1639,78 @@ body::before{
 .bd-flap.bd-go{animation:bdFlip .11s ease-in-out}
 @keyframes bdFlip{0%{transform:rotateX(0)}49%{transform:rotateX(88deg)}51%{transform:rotateX(-88deg)}100%{transform:rotateX(0)}}
 @media (prefers-reduced-motion:reduce){.bd-flap.bd-go{animation:none}}
+.content.xm-bg{background:linear-gradient(rgba(6,10,24,.1),rgba(6,10,24,.28) 40%,rgba(6,10,24,.7) 72%,rgba(6,10,24,.88)),url('Emerson/christmas-village-bg.jpg') 30% 0/cover #060A18}
+.hd-xmas{background:transparent;color:#F7F2E8;font-family:Inter,system-ui,sans-serif}
+.xm-cz{font-family:Cinzel,Georgia,serif;letter-spacing:2px;text-transform:uppercase}
+@keyframes xmTw{0%,100%{opacity:1}50%{opacity:.5}}
+.xm-snow{position:fixed;left:0;right:0;top:0;height:100vh;overflow:hidden;pointer-events:none;z-index:3;visibility:hidden}
+.xm-snow i{position:absolute;top:-14px;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;background:#fff;opacity:var(--o);filter:blur(var(--b));animation:xmFall var(--d) linear infinite;animation-delay:var(--dl)}
+@keyframes xmFall{0%{transform:translate(0,0)}25%{transform:translate(12px,26vh)}50%{transform:translate(-8px,52vh)}75%{transform:translate(10px,78vh)}100%{transform:translate(0,106vh)}}
+.xm-title{text-align:center;margin-top:4px}
+.xm-title small{display:block;font-size:11px;color:#F3E7CF;text-shadow:0 1px 6px rgba(0,0,0,.9)}
+.xm-title h2{font-family:'Mountains of Christmas',Georgia,serif;font-weight:700;font-size:58px;line-height:1;letter-spacing:2px;color:#FFF6E5;text-shadow:0 0 18px rgba(255,205,120,.75),0 3px 0 #8E1020,0 5px 10px rgba(0,0,0,.6);margin-top:2px}
+.xm-trk{margin-top:12px;border-radius:16px;overflow:hidden;background:rgba(10,16,34,.74);border:1px solid rgba(242,193,78,.45);box-shadow:0 10px 24px rgba(0,0,0,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);cursor:pointer}
+.xm-trk .hdr{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:linear-gradient(90deg,#8E1020,#B3192D);color:#FFE7A8;font:800 10px Cinzel,Georgia,serif;letter-spacing:2px}
+.xm-trk .live{display:flex;align-items:center;gap:5px;font:800 9.5px Inter,sans-serif;letter-spacing:1px;color:#fff}
+.xm-trk .live i{width:7px;height:7px;border-radius:50%;background:#3DFF8B;box-shadow:0 0 8px #3DFF8B;animation:xmTw 1.6s infinite}
+.xm-trk .live.off i{background:#9AA3B5;box-shadow:none;animation:none}
+.xm-trk .bd{display:flex;align-items:center;gap:14px;padding:12px 14px 4px}
+.xm-trk .eta{min-width:84px;text-align:center}
+.xm-trk .eta b{display:block;font-family:'Mountains of Christmas',Georgia,serif;font-weight:700;font-size:40px;line-height:.95;color:#FFF6E5;text-shadow:0 0 12px rgba(255,205,120,.6)}
+.xm-trk .eta small{font-size:9px;letter-spacing:1.5px;color:#F2C14E}
+.xm-trk .who{flex:1;min-width:0}
+.xm-trk .who b{display:block;font-size:20px;font-weight:800;color:#F2C14E}
+.xm-trk .who span{display:block;font-size:12.5px;color:#E8EAF2;line-height:1.4}
+.xm-trk .rt{position:relative;margin:12px 16px 4px;height:16px}
+.xm-trk .rt::before{content:'';position:absolute;left:0;right:0;top:8px;border-top:2px dashed rgba(242,193,78,.55)}
+.xm-trk .rt::after{content:'★';position:absolute;right:-6px;top:-3px;font-size:16px;color:#F2C14E;text-shadow:0 0 8px #F2C14E}
+.xm-trk .rt .sl{position:absolute;top:-8px;margin-left:-13px;font-size:22px;filter:drop-shadow(0 0 6px rgba(255,220,150,.8))}
+.xm-trk .rl{display:flex;justify-content:space-between;margin:2px 16px 0;font-size:10px;color:#C9CFDD}
+.xm-trk .ft{display:flex;gap:8px;flex-wrap:wrap;padding:10px 14px 12px}
+.xm-trk .ft span{padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);font-size:10.5px;color:#E8EAF2}
+.xm-scene{height:150px}
+.xm-adv{display:flex;gap:14px;align-items:flex-start;margin-top:14px;padding:14px;border-radius:10px;background:linear-gradient(#B3192D,#8E1020);border:2px solid #E8C26A;box-shadow:0 10px 20px rgba(0,0,0,.45)}
+.xm-adv .day{flex-shrink:0;width:52px;height:60px;border:2px dashed rgba(255,230,170,.8);border-radius:6px;display:grid;place-items:center;font-family:'Mountains of Christmas',Georgia,serif;font-weight:700;font-size:34px;color:#FFE7A8}
+.xm-adv .tx{flex:1;min-width:0}
+.xm-adv small.k{display:block;font-size:9.5px;color:#FFE7A8}
+.xm-adv p{font-size:13.5px;line-height:1.45;margin-top:6px}
+.xm-adv b{display:block;font-size:16px;margin:2px 0}
+.xm-adv span{font-size:12.5px}
+.xm-adv audio{width:100%;height:32px;margin-top:8px}
+.xm-ok{margin-top:10px;padding:6px 14px;border-radius:999px;border:1.5px solid #FFE7A8;background:none;color:#FFE7A8;font:800 11px Cinzel,Georgia,serif;letter-spacing:1.5px;cursor:pointer}
+.xm-prog{margin-top:16px;padding:12px 14px;border-radius:16px;background:rgba(14,20,40,.78);border:1px solid rgba(255,255,255,.1);cursor:pointer}
+.xm-prog .row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px}
+.xm-prog .row span{font-size:10px}
+.xm-lights{position:relative;display:flex;justify-content:space-between;padding:14px 4px 2px;margin-top:4px}
+.xm-lights::before{content:'';position:absolute;left:0;right:0;top:8px;height:12px;border-top:2px solid #1E3B22;border-radius:50%}
+.xm-lights i{position:relative;width:13px;height:19px;border-radius:50% 50% 50% 50%/40% 40% 60% 60%;background:#3A4150}
+.xm-lights i::before{content:'';position:absolute;left:3px;top:-5px;width:7px;height:6px;border-radius:2px;background:#2F4A33}
+.xm-lights i.on{background:var(--c);box-shadow:0 0 10px var(--c),0 0 18px var(--c);animation:xmTw 2.4s infinite}
+.xm-lights i:nth-child(5n+1){--c:#FF3B3B}
+.xm-lights i:nth-child(5n+2){--c:#FFD34E}
+.xm-lights i:nth-child(5n+3){--c:#2ECC71}
+.xm-lights i:nth-child(5n+4){--c:#4AA3FF}
+.xm-lights i:nth-child(5n){--c:#FF7AD9}
+.xm-lights i:nth-child(2n).on{animation-delay:-1.1s}
+.xm-tg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px;margin-top:18px}
+.xm-t{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:20px;cursor:pointer;-webkit-tap-highlight-color:transparent;--c1:#E0344A;--c2:#7A0E1B}
+.xm-t:nth-child(3n+2){--c1:#3E7BFA;--c2:#123A8A}
+.xm-t:nth-child(3n){--c1:#F0BE4E;--c2:#8A5A12}
+.xm-t::before{content:'';position:absolute;left:-8px;right:-8px;top:0;height:14px;border-bottom:2px solid #1E3B22;border-radius:0 0 50% 50%}
+.xm-t .bulb{position:absolute;left:-8px;top:10px;width:12px;height:17px;border-radius:50% 50% 50% 50%/40% 40% 60% 60%;background:var(--bc);box-shadow:0 0 10px var(--bc),0 0 18px var(--bc);animation:xmTw 2.6s infinite}
+.xm-t .bulb::before{content:'';position:absolute;left:3px;top:-4px;width:6px;height:5px;border-radius:2px;background:#2F4A33}
+.xm-t:nth-child(3n+1) .bulb{display:none}
+.xm-t:nth-child(4n+1) .bulb{--bc:#FF3B3B}
+.xm-t:nth-child(4n+2) .bulb{--bc:#FFD34E}
+.xm-t:nth-child(4n+3) .bulb{--bc:#2ECC71;animation-delay:-1.2s}
+.xm-t:nth-child(4n) .bulb{--bc:#4AA3FF;animation-delay:-.6s}
+.xm-t .tree{position:relative;width:94px;height:120px;background:url('cars/xmas-tree.svg') center/contain no-repeat;filter:drop-shadow(0 6px 8px rgba(0,0,0,.5))}
+.xm-t .orn{position:absolute;left:50%;top:64%;width:32px;height:32px;margin:-16px 0 0 -16px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.65),rgba(255,255,255,0) 30%),radial-gradient(circle at 50% 58%,var(--c1),var(--c2) 80%);box-shadow:0 3px 6px rgba(0,0,0,.5)}
+.xm-t .orn::before{content:'';position:absolute;left:50%;top:-5px;width:10px;height:6px;margin-left:-5px;border-radius:2px;background:linear-gradient(90deg,#8A6A22,#F3D27A,#8A6A22)}
+.xm-t .orn svg{width:17px;height:17px;stroke-width:2.2;color:#fff}
+.xm-t b{font-family:Cinzel,Georgia,serif;font-weight:800;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:#F7F2E8;text-shadow:0 1px 6px rgba(0,0,0,.9)}
+.hd-xmas .hd-foot{color:#D9DEEA;opacity:1}
+.hd-xmas .hd-share button{border:1px solid rgba(242,193,78,.7);color:#F2C14E;background:rgba(0,0,0,.35)}
 .bd-item.done .bd-row{opacity:.4}
 .bd-item.done .bd-who b{text-decoration:line-through}
 .bd-item.open{background:#120E09}
@@ -1531,7 +1844,7 @@ body::before{
 /* Fleet roster pulse */
 @keyframes grnpulse{0%,100%{opacity:1;box-shadow:0 0 5px #2ECC8A}50%{opacity:.6;box-shadow:0 0 2px #2ECC8A}}
 /* Fleet map tooltip */
-.fleet-tip{background:#241A0C!important;border:1px solid rgba(200,168,75,0.35)!important;color:#F0E8D8!important;font-size:11px!important;font-weight:500!important;box-shadow:0 2px 8px rgba(0,0,0,0.6)!important;border-radius:6px!important;padding:4px 8px!important}
+.fleet-tip{background:#0d1520!important;border:1px solid rgba(200,168,75,0.35)!important;color:#e2e8f0!important;font-size:11px!important;font-weight:500!important;box-shadow:0 2px 8px rgba(0,0,0,0.6)!important;border-radius:6px!important;padding:4px 8px!important}
 .fleet-tip::before{display:none!important}
 </style>
 </head>
@@ -1547,7 +1860,7 @@ body::before{
     </div>
     <canvas id="sdCv"></canvas>
     <div class="hx-name" id="hxName">GROOMIES</div>
-    <div class="hx-tag" id="hxTag">YAV</div>
+    <div class="hx-tag" id="hxTag">YXL</div>
     <div class="hx-line" id="hxLine"><i id="hxFill"></i></div>
   </div>
   <img class="sp-sky" src="cars/Skycare_logo-removebg-preview.png" alt="Skycare">
@@ -1725,32 +2038,16 @@ body::before{
 <input type="file" id="photoInput" accept="image/*" style="display:none">
 
 <script>
-// ── STORAGE: YAV keeps its own keys ────────────────
-// YKF and YAV are both served from aristihernandez-svg.github.io, so they share
-// browser storage. YAV used to read/write YKF-named keys (gykf_*), which let YKF data
-// (e.g. day notes) flow into YAV's database on a phone that has both apps. Every key
-// here is now gyav_*. Once per phone, carry over only harmless preferences -- never
-// data caches, which reload from YAV's own database.
-(function migrateYavStorage(){
-  try {
-    // v2: drop the task list cached from YKF's spreadsheet (YAV no longer downloads it)
-    if (!localStorage.getItem('gyav_storage_v2')) { localStorage.removeItem('gyav_tasks'); localStorage.setItem('gyav_storage_v2', '1'); }
-    if (localStorage.getItem('gyav_storage_v1')) return;
-    ['theme','dark','nav_order','tileOrder','auditTiles','cargo_design','cargo_sound','custom_aircraft',
-     'custom_cargo_locations','agroomer','pdfVersions','dmg_draft'].forEach(k => {
-      const v = localStorage.getItem('gykf_' + k);
-      if (v !== null && localStorage.getItem('gyav_' + k) === null) localStorage.setItem('gyav_' + k, v);
-    });
-    if (localStorage.getItem('app_pin_ok') === '1' && localStorage.getItem('gyav_app_pin_ok') === null) localStorage.setItem('gyav_app_pin_ok', '1');
-    localStorage.setItem('gyav_storage_v1', '1');
-  } catch (e) {}
-})();
+// ── STORAGE: YXL keeps its own keys ────────────────
+// YKF, YXL and YXL are all served from aristihernandez-svg.github.io, so they share browser
+// storage. Every key here is gyxl_*, so nothing flows between the bases on a phone that has
+// more than one of the apps.
 // ── CONFIG ────────────────────────────────────────────────────────
-// No Google Sheet for YAV: the ID that was here is YKF's spreadsheet, which YAV was quietly
+// No Google Sheet for YXL: the ID that was here is YKF's spreadsheet, which YXL was quietly
 // downloading at every start. Blank = every sheet reader below stops before touching it.
 const SHEET_ID    = '';
-// No Apps Script backend for YAV: the URL that was here is YKF's, so every task / Side Quest
-// tick in YAV was also being written into YKF's Google Sheet. 'BACKEND_URL_HERE' = off.
+// No Apps Script backend for YXL: the URL that was here is YKF's, so every task / Side Quest
+// tick in YXL was also being written into YKF's Google Sheet. 'BACKEND_URL_HERE' = off.
 const BACKEND_URL = 'BACKEND_URL_HERE';
 
 const DAYS      = ['☀ Sunday','1️⃣ Monday','2️⃣ Tuesday','3️⃣ Wednesday','4️⃣ Thursday','5️⃣ Friday','🗓 Saturday'];
@@ -1765,8 +2062,8 @@ const TODAY = getToday(); // kept for init-time use (S.dayView, boot fetch)
 const APP_VERSION = 'v2.0';
 
 const FLEET_TAILS = ['IOA','IOB','IOC','IOE','IOH','IOJ','DAX','XAW','XDP'];
-// CYAV coords (Winnipeg / St. Andrews) -- every fleet distance, ETA and alert in this app is measured from here
-const CYAV_LAT = 50.0564, CYAV_LON = -97.0325;
+// CYXL coords (Sioux Lookout) -- every fleet distance, ETA and alert in this app is measured from here
+const CYXL_LAT = 50.1139, CYXL_LON = -91.9053;
 function haversineNm(lat1,lon1,lat2,lon2){
   const R=3440.065,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
   const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
@@ -1872,7 +2169,7 @@ function saveCustomStores() {
 }
 function loadCustomStores() {
   // Seed from localStorage immediately; setupLiveSync wires the Firestore listener
-  try { S.customStores = JSON.parse(localStorage.getItem('gyav_custom_stores') || '[]'); } catch(e) { S.customStores = []; }
+  try { S.customStores = JSON.parse(localStorage.getItem('gyxl_custom_stores') || '[]'); } catch(e) { S.customStores = []; }
 }
 function storeSelectHtml(selectedStore='') {
   const stores = getAllStores();
@@ -1920,7 +2217,7 @@ function carByKey(key) { return CREW_CARS.find(c => c.key === key) || RETIRED_CA
 function carImgSrc(car) { return /^(data:|https?:)/.test(car.img || '') ? car.img : location.origin + location.pathname.replace('index.html', '') + car.img; }
 // every car to show for a given month: today's list, plus removed cars that have an audit that month
 function carsForMonth(month) { return [...CREW_CARS, ...RETIRED_CARS.filter(c => S.monthlyCarAudits[month + '-' + c.key])]; }
-try { const c = JSON.parse(localStorage.getItem('gyav_customCars') || 'null'); if (c) { _carImgs = c.imgs || {}; applyCustomCars(c.cars); } } catch (e) {}
+try { const c = JSON.parse(localStorage.getItem('gyxl_customCars') || 'null'); if (c) { _carImgs = c.imgs || {}; applyCustomCars(c.cars); } } catch (e) {}
 
 function loadCustomCars() {
   if (!db || loadCustomCars.on) return;
@@ -1932,7 +2229,7 @@ function loadCustomCars() {
       db.collection('appConfig').doc('crewCarImg_' + c.key).get()
         .then(d => { if (d.exists && d.data().img) _carImgs[c.key] = {img: d.data().img, at: d.data().at || null}; }).catch(() => {})));
     applyCustomCars(list);
-    try { localStorage.setItem('gyav_customCars', JSON.stringify({cars: list, imgs: _carImgs})); } catch (e) {}
+    try { localStorage.setItem('gyxl_customCars', JSON.stringify({cars: list, imgs: _carImgs})); } catch (e) {}
     CREW_CARS.forEach(listenCarAudit);
     render();
   }, e => console.log('customCrewCars listener error:', e));
@@ -2401,7 +2698,7 @@ const CAR_OIL_INFO = {
 // ── STATE ──────────────────────────────────────────────────────────
 const S = {
   tab:'home', dayView:TODAY, inDay:false,
-  theme: localStorage.getItem('gyav_theme') || 'premium',
+  theme: localStorage.getItem('gyxl_theme') || 'premium',
   renderV: 0,
   pendingDmgPhoto: null, dmgKeyCtx: null,
   contactSearch: '', // stores damage photo from camera
@@ -2410,8 +2707,8 @@ const S = {
   shopSearch:'', shopView:'list', // 'list' or 'cart'
   mCtx:null, photoCtx:null,
   dmgReports:{}, // {procKey:[{text,photo,date}]}
-  dark: localStorage.getItem('gyav_dark')==='1',
-  homeDesign: (()=>{ try { return localStorage.getItem('gyav_home_design') || 'classic'; } catch(e) { return 'classic'; } })(), // per-device home layout
+  dark: localStorage.getItem('gyxl_dark')==='1',
+  homeDesign: (()=>{ try { return localStorage.getItem('gyxl_home_design') || 'classic'; } catch(e) { return 'classic'; } })(), // per-device home layout
   handoffNotes: [], // unresolved shift-handoff notes, shown as sticky notes
   calendarEvents: [], // {id,date,title,notes,repeat?,until?,skip?,type?} — see REPEATING EVENTS
   calAnchor: null,     // Date — anchor day/month/year for the Calendar tab's current view
@@ -2445,9 +2742,9 @@ const S = {
   acEditLabelsMode: false, // true when pencil icon is active on checklist screen
   acCustomAircraft: {metro:[], westwind:[]}, // user-added registrations per type
   acDisabled: {}, // {month:[reg,...]} — loaded from Firestore via loadAcDisabled()
-  acHidden: JSON.parse(localStorage.getItem('gyav_acHidden')||'[]'), // [reg,...] permanently hidden built-in aircraft
+  acHidden: JSON.parse(localStorage.getItem('gyxl_acHidden')||'[]'), // [reg,...] permanently hidden built-in aircraft
   acVersionsView: false, // PDF version manager screen
-  customAcTypesList: JSON.parse(localStorage.getItem('gyav_customAcTypesList')||'[]'), // [{id,name,regs,checklist,pdfVersion}]
+  customAcTypesList: JSON.parse(localStorage.getItem('gyxl_customAcTypesList')||'[]'), // [{id,name,regs,checklist,pdfVersion}]
   acCustomTypeView: null,  // id of custom type folder open
   crewHouseView: false,  // true = crew house checklist open
   crewHouseAudit: {},    // {date, inspector, items:{key:{score,comment}}, comments}
@@ -2466,8 +2763,8 @@ const S = {
   tasksSource: 'sheets', // 'sheets' | 'firestore' — controlled by appConfig/tasksSource
   cargo: [],             // outbound cargo pieces -- Firestore-only, no localStorage
   cargoOpen: new Set(),  // ids of cargo cards currently expanded, survives live-sync re-renders
-  cargoDesign: localStorage.getItem('gyav_cargo_design') === 'board' ? 'board' : 'classic', // per-phone display choice
-  cargoSound: localStorage.getItem('gyav_cargo_sound') !== '0', // flap clack sound, on unless muted
+  cargoDesign: localStorage.getItem('gyxl_cargo_design') === 'board' ? 'board' : 'classic', // per-phone display choice
+  cargoSound: localStorage.getItem('gyxl_cargo_sound') !== '0', // flap clack sound, on unless muted
   customCargoLocations: [], // user-added cargo locations, same pattern as customStores
   customAircraft: [],       // user-added aircraft tail numbers for cargo (on top of CARGO_AIRCRAFT)
 };
@@ -2519,7 +2816,7 @@ function pinKey(k) {
   err.textContent = '';
   if (_pinEntry.length === 4) {
     if (_pinEntry === PIN_CORRECT) {
-      localStorage.setItem('gyav_app_pin_ok', '1');
+      localStorage.setItem('gyxl_app_pin_ok', '1');
       document.getElementById('pinGate').style.display = 'none';
       bootApp();
     } else {
@@ -2564,7 +2861,7 @@ function sopSecretTap(e) {
 }
 
 window.addEventListener('load', async () => {
-  if (localStorage.getItem('gyav_app_pin_ok') !== '1') {
+  if (localStorage.getItem('gyxl_app_pin_ok') !== '1') {
     showPinGate();
     return;
   }
@@ -2574,7 +2871,7 @@ window.addEventListener('load', async () => {
 async function bootApp() {
   try {
     // Load saved theme
-    const savedTheme = localStorage.getItem('gyav_theme') || 'premium';
+    const savedTheme = localStorage.getItem('gyxl_theme') || 'premium';
     S.theme = savedTheme;
     document.documentElement.setAttribute('data-theme', savedTheme==='premium'?'':savedTheme);
     // Default to premium dark if no saved theme
@@ -2699,7 +2996,7 @@ function buildNav() {
 }
 // the tab order saved on this phone (an older version let people drag tabs around), then any tab not in it
 function navOrdered() {
-  let saved = []; try { saved = JSON.parse(localStorage.getItem('gyav_nav_order') || '[]'); } catch(e) {}
+  let saved = []; try { saved = JSON.parse(localStorage.getItem('gyxl_nav_order') || '[]'); } catch(e) {}
   const by = Object.fromEntries(NAV_ITEMS.map(n => [n.id, n]));
   return [...saved.filter(id => by[id]).map(id => by[id]), ...NAV_ITEMS.filter(n => !saved.includes(n.id))];
 }
@@ -2738,7 +3035,7 @@ function goTab(id) {
 function setTheme(t) {
   S.theme=t;
   document.documentElement.setAttribute('data-theme', t==='premium'?'':t);
-  localStorage.setItem('gyav_theme',t);
+  localStorage.setItem('gyxl_theme',t);
   updateThemeToggleBtn();
   if(S.tab==='home') renderHome(document.getElementById('content'));
 }
@@ -2776,7 +3073,7 @@ function render() {
       else renderProcs(el);
       break;
     case 'audits':
-      if(!AUDITS_ENABLED) { renderAuditsLocked(el); break; } // audits disabled for YAV -- see renderAuditsLocked
+      if(!AUDITS_ENABLED) { renderAuditsLocked(el); break; } // audits disabled for YXL -- see renderAuditsLocked
       if(S.crewCarsView==='list') renderCrewCarsList(el);
       else if(S.crewCarsView==='past') renderPastAuditView(el,S.pastAuditView);
       else if(S.crewCarsView) renderCarAudit(el,S.crewCarsView);
@@ -2802,7 +3099,7 @@ function render() {
     case 'fleet':        renderFleet(el); if(!_fleetLastFetch) refreshFleet(); break;
   }
 }
-// Audits are locked for YAV for now. This one switch turns the tab AND the 8th–10th audit reminder
+// Audits are locked for YXL for now. This one switch turns the tab AND the 8th–10th audit reminder
 // back on together; while it is off, nothing about audits pops up.
 var AUDITS_ENABLED = false;
 function renderAuditsLocked(el) {
@@ -3124,10 +3421,10 @@ function cargoSinceLabel(c) {
 }
 
 // Standby group open/folded -- folded unless this phone left it open.
-function cargoSbFolded() { try { return localStorage.getItem('gyav_cargo_sb_open') !== '1'; } catch (e) { return true; } }
+function cargoSbFolded() { try { return localStorage.getItem('gyxl_cargo_sb_open') !== '1'; } catch (e) { return true; } }
 function toggleCargoStandby() {
   const folded = !cargoSbFolded();
-  try { localStorage.setItem('gyav_cargo_sb_open', folded ? '0' : '1'); } catch (e) {}
+  try { localStorage.setItem('gyxl_cargo_sb_open', folded ? '0' : '1'); } catch (e) {}
   haptic();
   document.querySelectorAll('.cg-grp.standby, .bd-grp.standby').forEach(g => g.classList.toggle('folded', folded));
 }
@@ -3299,13 +3596,13 @@ function closeCargoPicker() {
 function setCargoDesign(d) {
   S.cargoDesign = d;
   S.cargoPickerOpen = false;
-  try { localStorage.setItem('gyav_cargo_design', d); } catch (e) {}
+  try { localStorage.setItem('gyxl_cargo_design', d); } catch (e) {}
   cargoUnlockAudio();
   renderCargo(document.getElementById('content'));
 }
 function toggleCargoSound() {
   S.cargoSound = !S.cargoSound;
-  try { localStorage.setItem('gyav_cargo_sound', S.cargoSound ? '1' : '0'); } catch (e) {}
+  try { localStorage.setItem('gyxl_cargo_sound', S.cargoSound ? '1' : '0'); } catch (e) {}
   cargoUnlockAudio();
   renderCargoPicker(); // stays open, just flips the switch
   if (S.cargoSound) bdClack(true); // instant confirmation it's on
@@ -3320,7 +3617,7 @@ function bdTiles(dest) {
 
 function cargoBoardHtml(groups) {
   let html = `<div class="bd-board">
-    <div class="bd-head"><b>Departures</b><span>YAV · Cargo</span></div>`;
+    <div class="bd-head"><b>Departures</b><span>YXL · Cargo</span></div>`;
   groups.forEach(g => {
     const showDate = g.key !== 'delivered' && g.key !== 'later' && g.key !== 'standby';
     const n = g.items.length;
@@ -3690,7 +3987,7 @@ function saveCustomAircraft(tail) {
     .catch(e => console.log('saveCustomAircraft failed:', e));
 }
 function loadCustomAircraft() {
-  try { S.customAircraft = JSON.parse(localStorage.getItem('gyav_custom_aircraft') || '[]'); } catch (e) { S.customAircraft = []; }
+  try { S.customAircraft = JSON.parse(localStorage.getItem('gyxl_custom_aircraft') || '[]'); } catch (e) { S.customAircraft = []; }
 }
 function cargoAcSelectHtml(selected = '') {
   return `<option value="">— None / ground —</option>
@@ -3724,7 +4021,7 @@ function saveCustomCargoLocations() {
     .catch(e => console.log('saveCustomCargoLocations failed:', e));
 }
 function loadCustomCargoLocations() {
-  try { S.customCargoLocations = JSON.parse(localStorage.getItem('gyav_custom_cargo_locations') || '[]'); } catch (e) { S.customCargoLocations = []; }
+  try { S.customCargoLocations = JSON.parse(localStorage.getItem('gyxl_custom_cargo_locations') || '[]'); } catch (e) { S.customCargoLocations = []; }
 }
 function cargoLocSelectHtml(selected = '') {
   const locs = getAllCargoLocations();
@@ -3952,8 +4249,8 @@ function renderStandbyPass(cleared) {
   const pcs = [c.pieces ? `${c.pieces} pcs` : null, c.weight].filter(Boolean).join(' · ') || '—';
   box.innerHTML = `
     <div class="sb-pass">
-      <div class="sb-hd"><span>STANDBY PASS</span><span>YAV · CARGO</span></div>
-      <div class="sb-rt"><div><b>YAV</b><small>ST. ANDREWS</small></div><div class="sb-pl">✈</div>
+      <div class="sb-hd"><span>STANDBY PASS</span><span>YXL · CARGO</span></div>
+      <div class="sb-rt"><div><b>YXL</b><small>SIOUX LOOKOUT</small></div><div class="sb-pl">✈</div>
         <div><b>${e(String(c.destination || '—').toUpperCase().slice(0, 5))}</b><small>DESTINATION</small></div></div>
       <div class="sb-fl"><div><small>CLIENT</small><b>${e(String(c.client || '—').toUpperCase())}</b></div>
         <div><small>PIECES</small><b>${e(pcs)}</b></div>
@@ -4206,10 +4503,10 @@ async function fetchDay(tabName) {
 
 function _cacheTasksLocal(tabName) {
   try {
-    const cached = JSON.parse(localStorage.getItem('gyav_tasks')||'{}');
+    const cached = JSON.parse(localStorage.getItem('gyxl_tasks')||'{}');
     cached[tabName] = S.tasks[tabName];
     cached._date = new Date().toDateString();
-    localStorage.setItem('gyav_tasks', JSON.stringify(cached));
+    localStorage.setItem('gyxl_tasks', JSON.stringify(cached));
   } catch(e) {}
 }
 
@@ -4267,7 +4564,7 @@ async function fetchContacts() {
         );
         if (parsed.length > 2) {
           S.contacts = parsed;
-          localStorage.setItem('gyav_contacts', JSON.stringify(S.contacts));
+          localStorage.setItem('gyxl_contacts', JSON.stringify(S.contacts));
           console.log('Contacts from backend:', S.contacts.length);
           return;
         }
@@ -4277,7 +4574,7 @@ async function fetchContacts() {
 
   // Try localStorage cache
   try {
-    const saved = localStorage.getItem('gyav_contacts');
+    const saved = localStorage.getItem('gyxl_contacts');
     if (saved) {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 2) { S.contacts = parsed; return; }
@@ -4336,17 +4633,17 @@ async function fetchBored() {
     // Only use fallback if sheet returned nothing at all
     if(S.bored.length===0) {
       console.log('Sheet returned 0 bored tasks — checking localStorage then fallback');
-      const saved=localStorage.getItem('gyav_bored');
+      const saved=localStorage.getItem('gyxl_bored');
       if(saved) { try{ const parsed=JSON.parse(saved); if(parsed.length>0){S.bored=parsed;return;} }catch(e){} }
       loadBoredFallback();
     } else {
       // Sheet has data — save it to localStorage as cache
-      localStorage.setItem('gyav_bored',JSON.stringify(S.bored));
+      localStorage.setItem('gyxl_bored',JSON.stringify(S.bored));
     }
   } catch(e){
     console.error('Bored fetch error:',e);
     // On error: try localStorage first, then hardcoded fallback
-    const saved=localStorage.getItem('gyav_bored');
+    const saved=localStorage.getItem('gyxl_bored');
     if(saved) { try{ const parsed=JSON.parse(saved); if(parsed.length>0){S.bored=parsed;return;} }catch(err){} }
     loadBoredFallback();
   }
@@ -4354,7 +4651,7 @@ async function fetchBored() {
 
 function loadBoredFallback() {
   // Hardcoded from the sheet — same approach as contacts
-  const saved = localStorage.getItem('gyav_bored');
+  const saved = localStorage.getItem('gyxl_bored');
   if(saved) { try{ S.bored=JSON.parse(saved); return; }catch(e){} }
   S.bored = [
     {id:1,task:"Deep clean groomers' corner shelving",done:false},
@@ -4563,10 +4860,10 @@ async function renderHome(el) {
   // Design picker
   try { homeAfterRender(); } catch(e) { console.log('homeAfterRender error:', e); }
 
-  // Audit reminder popup — fires on 8th, 9th, 10th if audits are pending. Off while YAV's
-  // audits are locked (AUDITS_ENABLED): YAV has no audits of its own, so it listed every one as missing.
+  // Audit reminder popup — fires on 8th, 9th, 10th if audits are pending. Off while YXL's
+  // audits are locked (AUDITS_ENABLED): YXL has no audits of its own, so it listed every one as missing.
   const _popDay = new Date().getDate();
-  const _popKey = 'gyav_auditPopup_' + localDateISO();
+  const _popKey = 'gyxl_auditPopup_' + localDateISO();
   if(AUDITS_ENABLED && [8,9,10].includes(_popDay) && !localStorage.getItem(_popKey)) {
     const _mRegs = [...AIRCRAFT_METRO,...(S.acCustomAircraft.metro||[])].filter(r=>!isAcDisabled(r)&&!isAcHidden(r));
     const _wRegs = [...AIRCRAFT_WESTWIND,...(S.acCustomAircraft.westwind||[])].filter(r=>!isAcDisabled(r)&&!isAcHidden(r));
@@ -4691,7 +4988,7 @@ function homePlaneImgsHtml(pad) {
 // ── which window each big card shows (saved per device) ──
 let _hdSlots = null;
 function hdSlots() {
-  if(!_hdSlots) { try { _hdSlots = JSON.parse(localStorage.getItem('gyav_home_slots')||'{}') || {}; } catch(e) { _hdSlots = {}; } }
+  if(!_hdSlots) { try { _hdSlots = JSON.parse(localStorage.getItem('gyxl_home_slots')||'{}') || {}; } catch(e) { _hdSlots = {}; } }
   return _hdSlots;
 }
 function hdSlotWin(design, slotId) {
@@ -4707,7 +5004,7 @@ function hdSetSlotWin(design, slotId, win) {
   m[slotId] = win;
   if(other) m[other.id] = cur; // picking a window that another card shows swaps the two
   hdSlots()[design] = m;
-  try { localStorage.setItem('gyav_home_slots', JSON.stringify(hdSlots())); } catch(e) {}
+  try { localStorage.setItem('gyxl_home_slots', JSON.stringify(hdSlots())); } catch(e) {}
 }
 
 // One summary per window, used by whichever card shows it
@@ -4868,13 +5165,13 @@ function homeDesignHtml(d, dateStr) {
   const mt = hdModel('mastertask');
   const cards = design => HD_SLOTS[design].map(s=>hdSlotCard(design, s));
   if(d==='bento') return `<div class="hd hd-bento">
-    <div class="hd-top"><small>${dt}</small><h2>${homeGreeting()},<br>YAV crew</h2></div>
+    <div class="hd-top"><small>${dt}</small><h2>${homeGreeting()},<br>YXL crew</h2></div>
     ${homeNotesHtml()}
     <div class="hd-bg">${cards('bento').join('')}</div>
     <div id="homeTileWrap"></div>
     ${homeFooterHtml()}</div>`;
   if(d==='aurora') { const c = cards('aurora'); return `<div class="hd hd-aurora"><i class="hd-blob b1"></i><i class="hd-blob b2"></i><i class="hd-blob b3"></i>
-    <div class="hd-top"><small>${dt}</small><h2>Skycare YAV</h2></div>
+    <div class="hd-top"><small>${dt}</small><h2>Skycare YXL</h2></div>
     ${homeNotesHtml()}
     ${c[0]}
     <div class="hd-arow">${c[1]}${c[2]}</div>
@@ -4885,12 +5182,12 @@ function homeDesignHtml(d, dateStr) {
     if(cg.od) bits.push(`📦 ${cg.od} CARGO OVERDUE`);
     if(cg.td) bits.push(`📦 ${cg.td} CARGO SHIPPING TODAY`);
     if((S.handoffNotes||[]).length) bits.push('📌 HANDOFF FROM '+String(S.handoffNotes[0].day||'LAST SHIFT').toUpperCase());
-    if(!bits.length) bits.push('✈ SKYCARE YAV', 'HAVE A GREAT SHIFT');
+    if(!bits.length) bits.push('✈ SKYCARE YXL', 'HAVE A GREAT SHIFT');
     const mq = _hdEsc(bits.join(' • ') + ' • ');
     const c = cards('brutal');
     return `<div class="hd hd-brutal">
     <div class="hd-mq"><span>${mq}${mq}</span></div>
-    <h2>YAV<br><em>SHIFT</em></h2>
+    <h2>YXL<br><em>SHIFT</em></h2>
     <div class="sub">${dt}</div>
     ${c[0]}
     ${homeNotesHtml()}
@@ -4899,8 +5196,8 @@ function homeDesignHtml(d, dateStr) {
     ${homeFooterHtml()}</div>`;
   }
   if(d==='neon') { const c = cards('neon'); return `<div class="hd hd-neon"><div class="hd-sun"></div><div class="hd-gridf"></div>
-    <div class="hd-nhd"><span>${dt}</span><span>YAV · NIGHT OPS</span></div>
-    <h2>SKYCARE<span>GROOMERS YAV</span></h2>
+    <div class="hd-nhd"><span>${dt}</span><span>YXL · NIGHT OPS</span></div>
+    <h2>SKYCARE<span>GROOMERS YXL</span></h2>
     <div class="hd-npl" style="background-image:url('${HOME_PLANE_IMGS[1]}')"></div>
     ${homeNotesHtml()}
     ${c[0]}${c[1]}
@@ -4928,7 +5225,7 @@ function homeDesignHtml(d, dateStr) {
     ${c[1]}
     <div id="homeTileWrap"></div>
     ${homeFooterHtml()}</div>`; }
-  if(d==='haunt') return hhLayoutYav();
+  if(d==='haunt') return hhLayoutYxl();
   throw new Error('unknown home design '+d);
 }
 
@@ -4991,7 +5288,7 @@ function hhGateModel(p, info, counts) {
 }
 function hhCrypt(inner) { return `<div class="hh-crypt"><div class="pl">${inner}</div></div>`; }
 const HH_PUMPKIN = '<svg viewBox="0 0 44 42" aria-hidden="true"><path d="M21 4 C21 1 24 0 26 1 L25 6 Z" fill="#3E5B24"/><ellipse cx="13" cy="25" rx="11" ry="15" fill="#7A3A12"/><ellipse cx="31" cy="25" rx="11" ry="15" fill="#7A3A12"/><ellipse cx="22" cy="25" rx="11" ry="16" fill="#8C4516"/></svg>';
-// A witch's cauldron bubbling green (YKF Shopping) and an iron-bound chest leaking light (YAV Cargo)
+// A witch's cauldron bubbling green (YKF Shopping) and an iron-bound chest leaking light (YXL Cargo)
 const HH_CAULDRON = '<svg viewBox="0 0 60 50" aria-hidden="true"><ellipse cx="30" cy="14" rx="21" ry="5" fill="#3CFF6A" opacity=".35"/><path d="M14 46 L10 50 M46 46 L50 50" stroke="#1A1A1E" stroke-width="3" stroke-linecap="round"/><path d="M8 18 C6 34 14 47 30 47 C46 47 54 34 52 18 Z" fill="#17181C"/><path d="M12 22 C12 34 18 42 26 44" stroke="#4A4C56" stroke-width="2" fill="none" opacity=".7"/><ellipse cx="30" cy="18" rx="23" ry="5" fill="#26282E"/><ellipse cx="30" cy="18" rx="19" ry="3.6" fill="#2ED158"/><ellipse cx="27" cy="17.5" rx="9" ry="1.5" fill="#9CFFB0" opacity=".6"/><circle class="hh-bub" cx="22" cy="15" r="2.2" fill="#8CFFA0"/><circle class="hh-bub" cx="34" cy="14" r="1.8" fill="#8CFFA0" style="animation-delay:-.8s"/><circle class="hh-bub" cx="28" cy="13" r="2.6" fill="#B8FFC4" style="animation-delay:-1.5s"/></svg>';
 const HH_CHEST = '<svg viewBox="0 0 60 50" aria-hidden="true"><rect x="7" y="22" width="46" height="26" rx="3" fill="#5A3418"/><path d="M7 22 C7 8 53 8 53 22 Z" fill="#6A3E1E"/><rect class="hh-leak" x="8" y="19.5" width="44" height="4" fill="#FFD47A"/><path d="M7 22 H53" stroke="#2A2C32" stroke-width="2"/><path d="M15 12 V48 M45 12 V48" stroke="#2A2C32" stroke-width="4"/><path d="M7 40 H53" stroke="#2A2C32" stroke-width="3"/><circle cx="15" cy="30" r="1.4" fill="#8A8E98"/><circle cx="45" cy="30" r="1.4" fill="#8A8E98"/><ellipse class="hh-leak" cx="30" cy="22" rx="22" ry="2.6" fill="#FFB347" opacity=".55"/></svg>';
 const HH_FX = '<div class="hh-fx" aria-hidden="true"><i class="fog" style="bottom:20%"></i><i class="fog b" style="bottom:-6%"></i><i class="lamp" style="left:21%;top:25%"></i><i class="lamp" style="left:79%;top:25%;animation-delay:-1s"></i><i class="lamp s" style="left:8%;top:30%;animation-delay:-.5s"></i><i class="lamp s" style="left:92%;top:30%;animation-delay:-1.6s"></i><i class="lamp s" style="left:50%;top:72%;animation-delay:-.9s"></i><i class="lamp s" style="left:36%;top:95%;animation-delay:-.3s"></i><i class="lamp s" style="left:64%;top:95%;animation-delay:-1.2s"></i></div>';
@@ -5000,20 +5297,20 @@ function hhPlaceFx() {
   const r = c.getBoundingClientRect();
   fx.style.top = Math.round(r.top) + 'px'; fx.style.height = Math.round(r.height) + 'px'; fx.style.visibility = 'visible';
 }
-// YAV reads the live fleet the same way the Fleet tab does (fetchFleetPositions, measured from CYAV)
+// YXL reads the live fleet the same way the Fleet tab does (fetchFleetPositions, measured from CYXL)
 let _hhFleet = null, _hhFleetTimer = null;
-async function hhYavFleetRefresh() {
+async function hhYxlFleetRefresh() {
   if(BASE_CONFIG.features?.fleet === false) return;
   const pos = await fetchFleetPositions();
   const info = _fleetPaused ? 'Overnight' : (!_fleetFeedAt || Date.now() - _fleetFeedAt > 15*60000) ? 'No live feed' : '';
   const air = pos.filter(q => !q.onGround);
-  const inbound = air.filter(q => q.distNm != null && q.distNm <= 250 && !q.leaving && fleetHeadingToward(q.lat, q.lon, q.trackRaw, CYAV_LAT, CYAV_LON))
+  const inbound = air.filter(q => q.distNm != null && q.distNm <= 250 && !q.leaving && fleetHeadingToward(q.lat, q.lon, q.trackRaw, CYXL_LAT, CYXL_LON))
     .map(q => ({...q, eta: etaMinutes(q.distNm, q.speedKts)})).filter(q => q.eta != null).sort((a, b) => a.distNm - b.distNm)[0];
   const lead = inbound ? {...inbound, inbound: true} : (air.filter(q => q.distNm != null).sort((a, b) => a.distNm - b.distNm)[0] || null);
   _hhFleet = { info, lead, air: air.length, ground: pos.length - air.length };
-  const el = document.querySelector('[data-hhgate]'); if(el) el.innerHTML = hhYavFleetHalf();
+  const el = document.querySelector('[data-hhgate]'); if(el) el.innerHTML = hhYxlFleetHalf();
 }
-function hhYavFleetHalf() {
+function hhYxlFleetHalf() {
   const f = _hhFleet, hdr = off => `<div class="hdr"><span>✠ Arrivals</span><span class="live ${off?'off':''}"><i></i>${off?'OFF':'LIVE'}</span></div>`;
   if(!f) return hdr(false) + '<div class="reg">Checking…</div><div class="sub">Reading the live fleet</div>';
   if(f.info === 'Overnight') return hdr(true) + '<div class="mid"><div class="cd out"><i style="height:60px"></i></div><div class="big">6 AM<small>GATE OPENS</small></div></div><div class="reg">Locked</div><div class="sub">Tracking resumes at 6 AM</div>';
@@ -5021,21 +5318,21 @@ function hhYavFleetHalf() {
   const q = f.lead, air = f.air ? `<br>✈ ${f.air} in the air` : '';
   if(q && q.inbound) {
     const eta = q.eta >= 60 ? Math.floor(q.eta/60) + 'h' + String(q.eta%60).padStart(2,'0') : String(q.eta), type = (FLEET_AIRCRAFT.find(a => a.tail === q.tail) || {}).type;
-    return hdr(false) + `<div class="mid"><div class="cd"><i style="height:${Math.round(10 + Math.min(1, q.eta/60) * 48)}px"></i></div><div class="big">${eta}<small>${q.eta >= 60 ? 'ETA' : 'MIN TO YAV'}</small></div></div>
+    return hdr(false) + `<div class="mid"><div class="cd"><i style="height:${Math.round(10 + Math.min(1, q.eta/60) * 48)}px"></i></div><div class="big">${eta}<small>${q.eta >= 60 ? 'ETA' : 'MIN TO YXL'}</small></div></div>
       <div class="reg">${_hdEsc(q.reg)}</div><div class="sub">${type ? _hdEsc(type) + ' · ' : ''}${q.distNm} nm out${air}</div>`;
   }
-  if(q) return hdr(false) + `<div class="reg">${_hdEsc(q.reg)}</div><div class="sub">Airborne · ${q.distNm} nm from YAV · nothing inbound${air}</div>`;
+  if(q) return hdr(false) + `<div class="reg">${_hdEsc(q.reg)}</div><div class="sub">Airborne · ${q.distNm} nm from YXL · nothing inbound${air}</div>`;
   return hdr(false) + `<div class="reg">All quiet</div><div class="sub">No arrivals at the gate${air}</div>`;
 }
 // What ships today (overdue first), the same list the Cargo card on the other designs uses
-function hhYavCargoHalf() {
+function hhYxlCargoHalf() {
   const { list, next } = hdCargoToday(), pcs = list.reduce((n, c) => n + (+c.pieces || 0), 0);
   const top = `<div class="hdr"><span>✠ Cargo today</span><span class="pcs">${pcs ? pcs + ' PCS' : ''}</span></div>`;
   if(!list.length) return top + `<div class="mid"><div class="chest">${HH_CHEST}</div><div class="big">0<small>NOTHING SHIPS</small></div></div>${next ? `<div class="sub" style="margin-top:8px">Next: ${_hdEsc(cargoBucketFor(next.shipDate).label)} → ${_hdEsc(next.destination || '—')}</div>` : ''}`;
   const rows = list.slice(0, 3).map(c => `<div class="${c.od ? 'od' : ''}"><span>${_hdEsc(c.destination || '—')}</span><b>${c.od ? 'overdue' : c.pieces ? c.pieces + (+c.pieces === 1 ? ' pc' : ' pcs') : ''}</b></div>`).join('');
   return top + `<div class="mid"><div class="chest">${HH_CHEST}</div><div class="big">${list.length}<small>TO SHIP</small></div></div><div class="rows">${rows}${list.length > 3 ? `<div><span>+${list.length - 3} more</span><b></b></div>` : ''}</div>`;
 }
-function hhLayoutYav() {
+function hhLayoutYxl() {
   const d = new Date(), st = homeStats(), notes = S.handoffNotes || [], evs = calEventsOn(localDateISO());
   const nights = Math.round((new Date(d.getFullYear(), 9, 31) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 864e5);
   const isHw = nights === 0, soon = nights > 0 && nights <= 30;
@@ -5044,7 +5341,7 @@ function hhLayoutYav() {
   const fleetOn = BASE_CONFIG.features?.fleet !== false;
   return `<div class="hd hd-haunt">${HH_FX}
     <div class="hh-title"><small class="hh-cz">${isHw ? 'Happy Halloween · ' : ''}${dow} · ${mon} ${d.getDate()}${soon ? ` · ${nights} night${nights === 1 ? '' : 's'} to Halloween` : ''}</small><h2>Skycare</h2></div>
-    <div class="hh-pair" style="${fleetOn ? '' : 'grid-template-columns:1fr'}">${fleetOn ? `<div class="hh-gate hh-half" onclick="goTab('fleet')"><div class="fr" data-hhgate>${hhYavFleetHalf()}</div></div>` : ''}<div class="hh-gate hh-half" onclick="openCargoFromHome()"><div class="fr">${hhYavCargoHalf()}</div></div></div>
+    <div class="hh-pair" style="${fleetOn ? '' : 'grid-template-columns:1fr'}">${fleetOn ? `<div class="hh-gate hh-half" onclick="goTab('fleet')"><div class="fr" data-hhgate>${hhYxlFleetHalf()}</div></div>` : ''}<div class="hh-gate hh-half" onclick="openCargoFromHome()"><div class="fr">${hhYxlCargoHalf()}</div></div></div>
     <div class="hh-scene"></div>
     ${notes.map(n => hhCrypt(`<small class="k">Handoff from ${_hdEsc(n.day || 'last shift')}</small>${n.text ? `<p>${txt(n.text)}</p>` : ''}${n.audio ? `<audio controls src="${n.audio}"></audio>` : ''}<button class="hh-ok" onclick="markHandoffComplete('${n.id}')">✓ Complete</button>`)).join('')}
     <div style="margin-top:12px"><button class="hh-ok" style="width:100%;padding:11px;border-style:dashed" onclick="openHandoffNote()">📜 Leave a note for next shift</button></div>
@@ -5084,13 +5381,13 @@ function setHomeDesign(d) {
   if(!HOME_DESIGNS.some(x=>x.id===d)) return;
   S.homeDesign = d;
   S.homePickerOpen = false;
-  try { localStorage.setItem('gyav_home_design', d); } catch(e) {}
+  try { localStorage.setItem('gyxl_home_design', d); } catch(e) {}
   haptic('light');
   _tileEditMode = false;
   if(S.tab==='home') renderHome(document.getElementById('content'));
   try {
-    if(HD_SLOTS[d] && !localStorage.getItem('gyav_home_tip')) {
-      localStorage.setItem('gyav_home_tip','1');
+    if(HD_SLOTS[d] && !localStorage.getItem('gyxl_home_tip')) {
+      localStorage.setItem('gyxl_home_tip','1');
       setTimeout(()=>toast('Tip: hold a big card to choose what it shows'), 500);
     }
   } catch(e) {}
@@ -5101,8 +5398,8 @@ function homeAfterRender() {
   if(_hhFleetTimer) { clearInterval(_hhFleetTimer); _hhFleetTimer = null; }
   if(_homeActiveDesign === 'haunt') {
     requestAnimationFrame(hhPlaceFx);
-    hhYavFleetRefresh();
-    _hhFleetTimer = setInterval(() => { if(S.tab === 'home' && _homeActiveDesign === 'haunt') hhYavFleetRefresh(); else { clearInterval(_hhFleetTimer); _hhFleetTimer = null; } }, 60000);
+    hhYxlFleetRefresh();
+    _hhFleetTimer = setInterval(() => { if(S.tab === 'home' && _homeActiveDesign === 'haunt') hhYxlFleetRefresh(); else { clearInterval(_hhFleetTimer); _hhFleetTimer = null; } }, 60000);
   }
 }
 
@@ -5853,13 +6150,13 @@ function addCharterItem(id) {
 const CT_CABINET = 'Compass Trail Crew House';
 function shopKey(i) { return fsKey(i.item) + (i.cabinet === CT_CABINET ? '@CT' : ''); }
 function shopDocId(item, store, cabinet) { return fsDocId(item + '__' + store + (cabinet === CT_CABINET ? '__CT' : '')); }
-function cabLabel(c) { return c || 'Other'; }   // YAV: locations show as they are
+function cabLabel(c) { return c || 'Other'; }   // YXL: locations show as they are
 // who asked for an item (cart colours): the request page's colour, or the store's colour for our own picks
 const SHOP_SRC = {
   crewhouse: { label: '🏠 Crew House', col: '#E8A33D', ink: '#F0C070' },
 };
 const SHOP_PAGES_BASE = 'https://aristihernandez-svg.github.io/groomers-ykf/';
-const REQUEST_PAGES = [];   // YAV has no outside request pages (yet)
+const REQUEST_PAGES = [];   // YXL has no outside request pages (yet)
 const SHOP_LOC_ORDER = ['CR Office', "CR Groomers' Corner", 'MX Hangar', 'MX Office', 'Metro Cabinet', "Jet's Cabinet", 'Crew House', CT_CABINET];
 const SHOP_LOC_ICON = { 'CR Office': '🖥', "CR Groomers' Corner": '🧹', 'MX Hangar': '🔧', 'MX Office': '🗂', 'Metro Cabinet': '✈', "Jet's Cabinet": '✈', 'Crew House': '🏠', [CT_CABINET]: '🏡' };
 
@@ -6068,15 +6365,15 @@ function renderCart(el, items) {
 
 // ── PROCEDURES ─────────────────────────────────────────────────────
 function loadCrewCarStatus() {
-  try { S.crewCarStatus=JSON.parse(localStorage.getItem('gyav_ccs')||'{}'); } catch(e){ S.crewCarStatus={}; }
+  try { S.crewCarStatus=JSON.parse(localStorage.getItem('gyxl_ccs')||'{}'); } catch(e){ S.crewCarStatus={}; }
 }
 function saveCrewCarStatus() {
-  try { localStorage.setItem('gyav_ccs',JSON.stringify(S.crewCarStatus)); } catch(e){}
+  try { localStorage.setItem('gyxl_ccs',JSON.stringify(S.crewCarStatus)); } catch(e){}
 }
 
 // ── CREW CAR DATA ─────────────────────────────────────────────
 function loadCrewCarData() {
-  try { S.crewCarData=JSON.parse(localStorage.getItem('gyav_ccd')||'{}'); } catch(e){ S.crewCarData={}; }
+  try { S.crewCarData=JSON.parse(localStorage.getItem('gyxl_ccd')||'{}'); } catch(e){ S.crewCarData={}; }
 }
 // Who has the car (trip), who last used it (lastUse) and damage reports belong to the check-in page
 // (crew-access.html) and the narrow markCarReturned / markDamageHandled writes. The app never sends them back:
@@ -6084,7 +6381,7 @@ function loadCrewCarData() {
 const CAR_CHECKIN_FIELDS = new Set(['trip', 'lastUse', 'damage']);
 // Saves only the given car(s) — and only the given fields when listed — as narrow field writes.
 function saveCrewCarData(keys, fields) {
-  try { localStorage.setItem('gyav_ccd',JSON.stringify(S.crewCarData)); } catch(e){}
+  try { localStorage.setItem('gyxl_ccd',JSON.stringify(S.crewCarData)); } catch(e){}
   if(!db || !keys) return;
   const upd = {};
   (Array.isArray(keys) ? keys : [keys]).forEach(k => {
@@ -6164,8 +6461,8 @@ function facSetName(type, d, val) {
 function facKeepName(type, d) { return auditNameKeep('fac-' + type, d, facNameField(type)); }
 function facForSave(type, d) { return auditWithout(d, facNameField(type)); }
 function loadCarAudits() {
-  try { S.monthlyCarAudits=JSON.parse(localStorage.getItem('gyav_caudits')||'{}'); } catch(e){ S.monthlyCarAudits={}; }
-  try { S.auditGroomer=localStorage.getItem('gyav_agroomer')||''; } catch(e){}
+  try { S.monthlyCarAudits=JSON.parse(localStorage.getItem('gyxl_caudits')||'{}'); } catch(e){ S.monthlyCarAudits={}; }
+  try { S.auditGroomer=localStorage.getItem('gyxl_agroomer')||''; } catch(e){}
   if(!db) return;
   // Individual per-car document listeners — same pattern as facility audits (crewhouse/hangar)
   // fires instantly on any write to that specific doc, not a collection query
@@ -6191,20 +6488,20 @@ function listenCarAudit(car) {
       else if(f.startsWith('photo:')) { const i = +f.slice(6); if(cur.photos && cur.photos[i] && mine.photos && mine.photos[i]) cur.photos[i] = {...cur.photos[i], note: mine.photos[i].note}; }
       else if(f.startsWith('check:')) { const k = f.slice(6); if(mine.checks && mine.checks[k]) cur.checks = {...(cur.checks || {}), [k]: {...((cur.checks || {})[k] || {}), note: mine.checks[k].note}}; }
     }
-    try { localStorage.setItem('gyav_caudits',JSON.stringify(S.monthlyCarAudits)); } catch(e){}
+    try { localStorage.setItem('gyxl_caudits',JSON.stringify(S.monthlyCarAudits)); } catch(e){}
     updateAuditBadge();
     if(!(ae && ae.dataset && ae.dataset.acCar)) render();   // typing in any car audit field: redraw once they leave it
   }, e=>console.log('loadCarAudits onSnapshot failed:',car.key,e));
 }
 function carAuditSetName(carKey, val) {
   S.auditGroomer = val;
-  try { localStorage.setItem('gyav_agroomer', val); } catch(e){}
+  try { localStorage.setItem('gyxl_agroomer', val); } catch(e){}
   carAuditData(carKey).groomer = val;
   auditNameSave('car-' + carKey, val, v => db.collection('auditCars').doc(auditDocKey(carKey)).set({groomer: v, month: auditMonth(), carKey}, {merge:true}));
 }
 function saveCarAudit(carKey) {
-  try { localStorage.setItem('gyav_caudits',JSON.stringify(S.monthlyCarAudits)); } catch(e){}
-  try { localStorage.setItem('gyav_agroomer',S.auditGroomer); } catch(e){}
+  try { localStorage.setItem('gyxl_caudits',JSON.stringify(S.monthlyCarAudits)); } catch(e){}
+  try { localStorage.setItem('gyxl_agroomer',S.auditGroomer); } catch(e){}
   updateAuditBadge();
   if(!db) return;
   const month=auditMonth();
@@ -6781,7 +7078,7 @@ function renderCrewCarsList(el) {
       : `<div style="margin:36px 20px;text-align:center;color:#7A88A0;font-size:14px">No cars here right now 🎉</div>`;
     // add a car straight from here (the same form as Audits → Crew Cars → + Add a car)
     if (typeof openAddCarFlow === 'function') html += `<div style="padding:4px 14px 16px"><button onclick="openAddCarFlow()" style="width:100%;padding:13px;border-radius:14px;border:1.5px dashed #2A3A55;background:transparent;color:#9AB0D0;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-size:20px;line-height:1">+</span> Add a car</button></div>`;
-    // cars removed from the app can come back from here too (YAV has no audits page)
+    // cars removed from the app can come back from here too (YXL has no audits page)
     if (typeof RETIRED_CARS !== 'undefined' && RETIRED_CARS.length) html += `<div style="padding:0 14px 16px"><div style="font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#5E7090;margin-bottom:6px">Removed cars</div>${RETIRED_CARS.map(c => `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid #1E2A40;border-radius:10px;margin-bottom:6px;opacity:.75"><span style="font-size:13.5px;font-weight:700;color:#C8D4E8">${_carEsc(c.name)}</span><button onclick="setCustomCarRetired('${c.key}',false)" style="font-size:12px;font-weight:800;color:#8FB4FF;background:none;border:none;cursor:pointer">Bring back</button></div>`).join('')}</div>`;
 
   } else {
@@ -6943,7 +7240,7 @@ const FOB_KIND = {
     <path d="M60 27 C80 27 86 40 86 56 C86 72 78 86 60 86 C42 86 34 72 34 56 C34 40 40 27 60 27Z" fill="url(#fk${u})" stroke="#555A62" stroke-width="1.2"/>
     ${[0, 1, 2, 3, 4].map(i => `<path d="M${40 + i * 10} 70 v8" stroke="#24272C" stroke-width="2.4" stroke-linecap="round"/>`).join('')}
     <g transform="translate(60 52)">${FOB_EMBLEM.kubota}</g>`,
-  // Dodge Caravan Fobik (YAV)
+  // Dodge Caravan Fobik (YXL)
   caravan: u => `<rect x="54" y="20" width="12" height="13" rx="4" fill="none" stroke="#9AA1AB" stroke-width="2.2"/>${fobBody(34, 28, 52, 108, 13, u)}
     <rect x="50" y="134" width="20" height="16" rx="3" fill="#8E959F" stroke="#6B717A" stroke-width=".6"/>
     <g transform="translate(60 40)">${FOB_EMBLEM.dodge}</g>${fobButton(49, 56, 18, 12, 'lock')}${fobButton(71, 56, 18, 12, 'unlock')}
@@ -7542,7 +7839,7 @@ function removeAuditPhoto(key,i) {
 function setAuditRating(key,i,val) { carAuditData(key).photos[i].rating=val; saveCarAudit(key); }
 function setAuditPhotoNote(key,i,val) { carAuditData(key).photos[i].note=val; carAuditTypedLocal(); saveCarAuditDebounced(key); }
 function setAuditComments(key,val) { carAuditData(key).comments=val; carAuditTypedLocal(); saveCarAuditDebounced(key); }
-function carAuditTypedLocal() { try { localStorage.setItem('gyav_caudits',JSON.stringify(S.monthlyCarAudits)); } catch(e){} }
+function carAuditTypedLocal() { try { localStorage.setItem('gyxl_caudits',JSON.stringify(S.monthlyCarAudits)); } catch(e){} }
 // leaving a typed field: save now, and let the page catch up with anything that changed meanwhile
 function carAuditFieldDone(key) {
   clearTimeout(_carAuditSaveTimers[key]);
@@ -7820,7 +8117,7 @@ function deleteAuditMonth(month) {
     .then(()=>{
       S.pastAudits=S.pastAudits.filter(a=>a.month!==month);
       CREW_CARS.forEach(c=>{ delete S.monthlyCarAudits[month+'-'+c.key]; });
-      try { localStorage.setItem('gyav_caudits',JSON.stringify(S.monthlyCarAudits)); } catch(e){}
+      try { localStorage.setItem('gyxl_caudits',JSON.stringify(S.monthlyCarAudits)); } catch(e){}
       S.crewCarsView='list'; S.pastAuditView=null;
       render(); toast('🗑 Audit deleted');
     })
@@ -7835,7 +8132,7 @@ function deleteCarAudit(month, carKey) {
   db.collection('auditCars').doc(month+'-'+carKey).delete()
     .then(()=>{
       delete S.monthlyCarAudits[month+'-'+carKey];
-      try { localStorage.setItem('gyav_caudits',JSON.stringify(S.monthlyCarAudits)); } catch(e){}
+      try { localStorage.setItem('gyxl_caudits',JSON.stringify(S.monthlyCarAudits)); } catch(e){}
       render(); toast('🗑 '+car?.name+' audit deleted');
     })
     .catch(e=>{ console.log('deleteCarAudit failed:',e); toast('Delete failed'); });
@@ -8917,19 +9214,19 @@ function chData() {
 }
 
 function loadCrewHouseAudit() {
-  try { S.crewHouseAudit = JSON.parse(localStorage.getItem('gyav_crewhouse')||'{}'); } catch(e){}
+  try { S.crewHouseAudit = JSON.parse(localStorage.getItem('gyxl_crewhouse')||'{}'); } catch(e){}
   if(!S.crewHouseAudit.items) S.crewHouseAudit.items={};
   if(!db) return;
   db.collection('facilityAudits').doc(facilityDocKey('crewhouse')).onSnapshot(doc=>{
     if(doc.exists){ S.crewHouseAudit=doc.data(); if(!S.crewHouseAudit.items) S.crewHouseAudit.items={}; facKeepName('crewhouse', S.crewHouseAudit); }
     else { S.crewHouseAudit={items:{}}; }
-    try { localStorage.setItem('gyav_crewhouse', JSON.stringify(S.crewHouseAudit)); } catch(e){}
+    try { localStorage.setItem('gyxl_crewhouse', JSON.stringify(S.crewHouseAudit)); } catch(e){}
     render();
   }, e=>console.error('crewhouse onSnapshot error:', e));
 }
 
 function saveCrewHouseAudit() {
-  try { localStorage.setItem('gyav_crewhouse', JSON.stringify(S.crewHouseAudit)); } catch(e){}
+  try { localStorage.setItem('gyxl_crewhouse', JSON.stringify(S.crewHouseAudit)); } catch(e){}
   if(db) db.collection('facilityAudits').doc(facilityDocKey('crewhouse')).set(facForSave('crewhouse', S.crewHouseAudit),{merge:true}).catch(()=>{});
 }
 
@@ -9472,7 +9769,7 @@ function resetCrewHouseAudit() {
   if(!confirm('Reset this month\'s Crew House audit fields? This clears all scores, comments, and the inspector name on every device. Only affects this month — past months are untouched.')) return;
   S.crewHouseAudit = {items:{}};
   _chExpandedComments.clear();
-  try { localStorage.removeItem('gyav_crewhouse'); } catch(e){}
+  try { localStorage.removeItem('gyxl_crewhouse'); } catch(e){}
   if(db) db.collection('facilityAudits').doc(facilityDocKey('crewhouse')).delete().catch(()=>{});
   render();
   toast('Crew House audit reset ✓');
@@ -9564,19 +9861,19 @@ function hoData() {
 }
 
 function loadHangarAudit() {
-  try { S.hangarAudit = JSON.parse(localStorage.getItem('gyav_hangar')||'{}'); } catch(e){}
+  try { S.hangarAudit = JSON.parse(localStorage.getItem('gyxl_hangar')||'{}'); } catch(e){}
   if(!S.hangarAudit.items) S.hangarAudit.items={};
   if(!db) return;
   db.collection('facilityAudits').doc(facilityDocKey('hangar')).onSnapshot(doc=>{
     if(doc.exists){ S.hangarAudit=doc.data(); if(!S.hangarAudit.items) S.hangarAudit.items={}; facKeepName('hangar', S.hangarAudit); }
     else { S.hangarAudit={items:{}}; }
-    try { localStorage.setItem('gyav_hangar', JSON.stringify(S.hangarAudit)); } catch(e){}
+    try { localStorage.setItem('gyxl_hangar', JSON.stringify(S.hangarAudit)); } catch(e){}
     render();
   }, e=>console.error('hangar onSnapshot error:', e));
 }
 
 function saveHangarAudit() {
-  try { localStorage.setItem('gyav_hangar', JSON.stringify(S.hangarAudit)); } catch(e){}
+  try { localStorage.setItem('gyxl_hangar', JSON.stringify(S.hangarAudit)); } catch(e){}
   if(db) db.collection('facilityAudits').doc(facilityDocKey('hangar')).set(facForSave('hangar', S.hangarAudit),{merge:true}).catch(()=>{});
 }
 
@@ -9801,7 +10098,7 @@ function resetHangarAudit() {
   if(!confirm('Reset this month\'s Hangar & Office audit fields? This clears all scores, comments, and the inspector name on every device. Only affects this month — past months are untouched.')) return;
   S.hangarAudit = {items:{}};
   _hoExpandedComments.clear();
-  try { localStorage.removeItem('gyav_hangar'); } catch(e){}
+  try { localStorage.removeItem('gyxl_hangar'); } catch(e){}
   if(db) db.collection('facilityAudits').doc(facilityDocKey('hangar')).delete().catch(()=>{});
   render();
   toast('Hangar & Office audit reset ✓');
@@ -10034,19 +10331,19 @@ function plData() {
 }
 
 function loadParkingAudit() {
-  try { S.parkingAudit = JSON.parse(localStorage.getItem('gyav_parking')||'{}'); } catch(e){}
+  try { S.parkingAudit = JSON.parse(localStorage.getItem('gyxl_parking')||'{}'); } catch(e){}
   if(!S.parkingAudit.items) S.parkingAudit.items={};
   if(!db) return;
   db.collection('facilityAudits').doc(facilityDocKey('parking')).onSnapshot(doc=>{
     if(doc.exists){ S.parkingAudit=doc.data(); if(!S.parkingAudit.items) S.parkingAudit.items={}; facKeepName('parking', S.parkingAudit); }
     else { S.parkingAudit={items:{}}; }
-    try { localStorage.setItem('gyav_parking', JSON.stringify(S.parkingAudit)); } catch(e){}
+    try { localStorage.setItem('gyxl_parking', JSON.stringify(S.parkingAudit)); } catch(e){}
     render();
   }, e=>console.error('parking onSnapshot error:', e));
 }
 
 function saveParkingAudit() {
-  try { localStorage.setItem('gyav_parking', JSON.stringify(S.parkingAudit)); } catch(e){}
+  try { localStorage.setItem('gyxl_parking', JSON.stringify(S.parkingAudit)); } catch(e){}
   if(db) db.collection('facilityAudits').doc(facilityDocKey('parking')).set(facForSave('parking', S.parkingAudit),{merge:true}).catch(()=>{});
 }
 
@@ -10247,7 +10544,7 @@ function resetParkingAudit() {
   if(!confirm('Reset this month\'s Parking Lot audit fields? This clears all scores, comments, and the inspector name on every device. Only affects this month — past months are untouched.')) return;
   S.parkingAudit={items:{}};
   _plExpandedComments.clear();
-  try{localStorage.removeItem('gyav_parking');}catch(e){}
+  try{localStorage.removeItem('gyxl_parking');}catch(e){}
   if(db) db.collection('facilityAudits').doc(facilityDocKey('parking')).delete().catch(()=>{});
   render();
   toast('Parking Lot audit reset ✓');
@@ -10388,19 +10685,19 @@ function ykfData() {
 }
 
 function loadYkfBaseAudit() {
-  try { S.ykfBaseAudit = JSON.parse(localStorage.getItem('gyav_ykfbase')||'{}'); } catch(e){}
+  try { S.ykfBaseAudit = JSON.parse(localStorage.getItem('gyxl_ykfbase')||'{}'); } catch(e){}
   if(!S.ykfBaseAudit.items) S.ykfBaseAudit.items={};
   if(!db) return;
   db.collection('facilityAudits').doc(facilityDocKey('ykfbase')).onSnapshot(doc=>{
     if(doc.exists){ S.ykfBaseAudit=doc.data(); if(!S.ykfBaseAudit.items) S.ykfBaseAudit.items={}; facKeepName('ykfbase', S.ykfBaseAudit); }
     else { S.ykfBaseAudit={items:{}}; }
-    try { localStorage.setItem('gyav_ykfbase', JSON.stringify(S.ykfBaseAudit)); } catch(e){}
+    try { localStorage.setItem('gyxl_ykfbase', JSON.stringify(S.ykfBaseAudit)); } catch(e){}
     render();
   }, e=>console.error('ykfbase onSnapshot error:', e));
 }
 
 function saveYkfBaseAudit() {
-  try { localStorage.setItem('gyav_ykfbase', JSON.stringify(S.ykfBaseAudit)); } catch(e){}
+  try { localStorage.setItem('gyxl_ykfbase', JSON.stringify(S.ykfBaseAudit)); } catch(e){}
   if(db) db.collection('facilityAudits').doc(facilityDocKey('ykfbase')).set(facForSave('ykfbase', S.ykfBaseAudit),{merge:true}).catch(()=>{});
 }
 
@@ -10619,7 +10916,7 @@ function generateYkfBasePDF(silent) {
 function resetYkfBaseAudit() {
   if(!confirm('Reset this month\'s YKF Base audit fields? This clears everything on every device. Only affects this month — past months are untouched.')) return;
   S.ykfBaseAudit={items:{}};
-  try{localStorage.removeItem('gyav_ykfbase');}catch(e){}
+  try{localStorage.removeItem('gyxl_ykfbase');}catch(e){}
   if(db) db.collection('facilityAudits').doc(facilityDocKey('ykfbase')).delete().catch(()=>{});
   render();
   toast('YKF Base audit reset ✓');
@@ -10834,19 +11131,19 @@ function msData() {
 }
 
 function loadMsdsAudit() {
-  try { S.msdsAudit = JSON.parse(localStorage.getItem('gyav_msds')||'{}'); } catch(e){}
+  try { S.msdsAudit = JSON.parse(localStorage.getItem('gyxl_msds')||'{}'); } catch(e){}
   if(!S.msdsAudit.items) S.msdsAudit.items={};
   if(!db) return;
   db.collection('facilityAudits').doc(facilityDocKey('msds')).onSnapshot(doc=>{
     if(doc.exists){ S.msdsAudit=doc.data(); if(!S.msdsAudit.items) S.msdsAudit.items={}; facKeepName('msds', S.msdsAudit); }
     else { S.msdsAudit={items:{}}; }
-    try { localStorage.setItem('gyav_msds', JSON.stringify(S.msdsAudit)); } catch(e){}
+    try { localStorage.setItem('gyxl_msds', JSON.stringify(S.msdsAudit)); } catch(e){}
     render();
   }, e=>console.error('msds onSnapshot error:', e));
 }
 
 function saveMsdsAudit() {
-  try { localStorage.setItem('gyav_msds', JSON.stringify(S.msdsAudit)); } catch(e){}
+  try { localStorage.setItem('gyxl_msds', JSON.stringify(S.msdsAudit)); } catch(e){}
   if(db) db.collection('facilityAudits').doc(facilityDocKey('msds')).set(facForSave('msds', S.msdsAudit),{merge:true}).catch(()=>{});
 }
 
@@ -11055,7 +11352,7 @@ function generateMsdsPDF(silent) {
 function resetMsdsAudit() {
   if(!confirm('Reset this month\'s MSDS audit fields? This clears all checkmarks and the auditor name on every device. Only affects this month — past months are untouched.')) return;
   S.msdsAudit = {items:{}};
-  try { localStorage.removeItem('gyav_msds'); } catch(e){}
+  try { localStorage.removeItem('gyxl_msds'); } catch(e){}
   if(db) db.collection('facilityAudits').doc(facilityDocKey('msds')).delete().catch(()=>{});
   render();
   toast('MSDS audit reset ✓');
@@ -11087,12 +11384,12 @@ function resetAllAcAudits() {
     delete S.acAudits[key];
     if(db) db.collection('auditAircraft').doc(key).delete().catch(()=>{});
   });
-  try { localStorage.setItem('gyav_acaudits', JSON.stringify(S.acAudits)); } catch(e){}
+  try { localStorage.setItem('gyxl_acaudits', JSON.stringify(S.acAudits)); } catch(e){}
 
   // Monthly car photo audits (photos, done status per car) — NOT crew car vehicle data.
   // Only this month's docs (auditDocKey embeds the month) — past months are untouched.
   CREW_CARS.forEach(c => { delete S.monthlyCarAudits[auditDocKey(c.key)]; });
-  try { localStorage.setItem('gyav_caudits', JSON.stringify(S.monthlyCarAudits)); } catch(e){}
+  try { localStorage.setItem('gyxl_caudits', JSON.stringify(S.monthlyCarAudits)); } catch(e){}
   if(db) CREW_CARS.forEach(c => db.collection('auditCars').doc(auditDocKey(c.key)).delete().catch(()=>{}));
 
   // Facility audits — only this month's docs; past months are untouched
@@ -11101,11 +11398,11 @@ function resetAllAcAudits() {
   S.msdsAudit      = {items:{}};
   S.parkingAudit   = {items:{}};
   S.ykfBaseAudit   = {items:{}};
-  ['gyav_crewhouse','gyav_hangar','gyav_msds','gyav_parking','gyav_ykfbase'].forEach(k=>{ try{localStorage.removeItem(k);}catch(e){} });
+  ['gyxl_crewhouse','gyxl_hangar','gyxl_msds','gyxl_parking','gyxl_ykfbase'].forEach(k=>{ try{localStorage.removeItem(k);}catch(e){} });
   if(db) ['crewhouse','hangar','msds','parking','ykfbase'].forEach(doc=>db.collection('facilityAudits').doc(facilityDocKey(doc)).delete().catch(()=>{}));
 
   render();
-  localStorage.setItem('gyav_audit_reset_ts', Date.now().toString());
+  localStorage.setItem('gyxl_audit_reset_ts', Date.now().toString());
   toast('All audits reset ✓');
 }
 
@@ -11194,18 +11491,18 @@ function acIsComplete(reg, type) {
 }
 
 function saveCustomAcTypesList() {
-  try { localStorage.setItem('gyav_customAcTypesList', JSON.stringify(S.customAcTypesList)); } catch(e){}
+  try { localStorage.setItem('gyxl_customAcTypesList', JSON.stringify(S.customAcTypesList)); } catch(e){}
 }
 
 function loadAcCustomAircraft() {
-  try { S.acCustomAircraft = JSON.parse(localStorage.getItem('gyav_accustom')||'{"metro":[],"westwind":[]}'); } catch(e){ S.acCustomAircraft={metro:[],westwind:[]}; }
+  try { S.acCustomAircraft = JSON.parse(localStorage.getItem('gyxl_accustom')||'{"metro":[],"westwind":[]}'); } catch(e){ S.acCustomAircraft={metro:[],westwind:[]}; }
   if(!db) return;
   db.collection('appConfig').doc('acCustomAircraft').get()
-    .then(snap=>{ if(snap.exists){ S.acCustomAircraft={metro:[],westwind:[],...snap.data()}; try{localStorage.setItem('gyav_accustom',JSON.stringify(S.acCustomAircraft));}catch(e){} render(); }})
+    .then(snap=>{ if(snap.exists){ S.acCustomAircraft={metro:[],westwind:[],...snap.data()}; try{localStorage.setItem('gyxl_accustom',JSON.stringify(S.acCustomAircraft));}catch(e){} render(); }})
     .catch(()=>{});
 }
 function saveAcCustomAircraft() {
-  try { localStorage.setItem('gyav_accustom', JSON.stringify(S.acCustomAircraft)); } catch(e){}
+  try { localStorage.setItem('gyxl_accustom', JSON.stringify(S.acCustomAircraft)); } catch(e){}
   if(db) db.collection('appConfig').doc('acCustomAircraft').set(S.acCustomAircraft,{merge:true}).catch(()=>{});
 }
 function openAddAircraftModal(type) {
@@ -11306,11 +11603,11 @@ function carAuditCancelPress() {
 }
 
 function loadCarDisabled() {
-  try { S.carDisabled = JSON.parse(localStorage.getItem('gyav_carDisabled')||'{}'); } catch(e){}
+  try { S.carDisabled = JSON.parse(localStorage.getItem('gyxl_carDisabled')||'{}'); } catch(e){}
   if(!db) return;
   db.collection('carsState').doc('disabled').onSnapshot(doc=>{
     if(doc.exists) S.carDisabled = doc.data().data || {};
-    try{localStorage.setItem('gyav_carDisabled',JSON.stringify(S.carDisabled));}catch(e){}
+    try{localStorage.setItem('gyxl_carDisabled',JSON.stringify(S.carDisabled));}catch(e){}
     render();
   }, e=>console.error('carDisabled onSnapshot error:', e));
 }
@@ -11322,13 +11619,13 @@ function toggleCarDisabled(key) {
   if(!S.carDisabled[m]) S.carDisabled[m]=[];
   const i = S.carDisabled[m].indexOf(key);
   if(i>=0) S.carDisabled[m].splice(i,1); else S.carDisabled[m].push(key);
-  try{localStorage.setItem('gyav_carDisabled',JSON.stringify(S.carDisabled));}catch(e){}
+  try{localStorage.setItem('gyxl_carDisabled',JSON.stringify(S.carDisabled));}catch(e){}
   if(db) db.collection('carsState').doc('disabled').set({data:S.carDisabled}).catch(()=>{});
   closeModal(); render();
 }
 
 function loadAcAudits() {
-  try { S.acAudits = JSON.parse(localStorage.getItem('gyav_acaudits')||'{}'); } catch(e){ S.acAudits={}; }
+  try { S.acAudits = JSON.parse(localStorage.getItem('gyxl_acaudits')||'{}'); } catch(e){ S.acAudits={}; }
   // Firestore listener is wired by setupLiveSync — no duplicate listener here
 }
 function refreshAcAudits() {
@@ -11336,13 +11633,13 @@ function refreshAcAudits() {
   const month = acAuditMonthKey();
   db.collection('auditAircraft').where('month','==',month).get().then(snap=>{
     snap.docs.forEach(d=>{ S.acAudits[d.id] = auditNameKeep('ac-' + d.data().reg, {...(S.acAudits[d.id]||{}), ...d.data()}, 'auditorName'); });
-    try { localStorage.setItem('gyav_acaudits', JSON.stringify(S.acAudits)); } catch(e){}
+    try { localStorage.setItem('gyxl_acaudits', JSON.stringify(S.acAudits)); } catch(e){}
     render();
   }).catch(e=>console.log('refreshAcAudits failed:',e));
 }
 
 function saveAcAudit(reg) {
-  try { localStorage.setItem('gyav_acaudits', JSON.stringify(S.acAudits)); } catch(e){}
+  try { localStorage.setItem('gyxl_acaudits', JSON.stringify(S.acAudits)); } catch(e){}
   if(!db) return;
   const month = acAuditMonthKey();
   const type = S.acAuditType || (AIRCRAFT_WESTWIND.includes(reg)?'westwind':'metro');
@@ -11363,11 +11660,11 @@ function saveAcAuditDebounced(reg) {
 }
 
 function loadAcDisabled() {
-  try { S.acDisabled = JSON.parse(localStorage.getItem('gyav_acDisabled')||'{}'); } catch(e){}
+  try { S.acDisabled = JSON.parse(localStorage.getItem('gyxl_acDisabled')||'{}'); } catch(e){}
   if(!db) return;
   db.collection('acState').doc('disabled').onSnapshot(doc=>{
     if(doc.exists) S.acDisabled = doc.data().data || {};
-    try{localStorage.setItem('gyav_acDisabled',JSON.stringify(S.acDisabled));}catch(e){}
+    try{localStorage.setItem('gyxl_acDisabled',JSON.stringify(S.acDisabled));}catch(e){}
     render();
   }, e=>console.error('acDisabled onSnapshot error:', e));
 }
@@ -11379,17 +11676,17 @@ function toggleAcDisabled(reg) {
   if(!S.acDisabled[m]) S.acDisabled[m]=[];
   const i = S.acDisabled[m].indexOf(reg);
   if(i>=0) S.acDisabled[m].splice(i,1); else S.acDisabled[m].push(reg);
-  try{localStorage.setItem('gyav_acDisabled',JSON.stringify(S.acDisabled));}catch(e){}
+  try{localStorage.setItem('gyxl_acDisabled',JSON.stringify(S.acDisabled));}catch(e){}
   if(db) db.collection('acState').doc('disabled').set({data:S.acDisabled}).catch(()=>{});
   render();
 }
 
 function loadAcHidden() {
-  try { S.acHidden = JSON.parse(localStorage.getItem('gyav_acHidden')||'[]'); } catch(e){}
+  try { S.acHidden = JSON.parse(localStorage.getItem('gyxl_acHidden')||'[]'); } catch(e){}
   if(!db) return;
   db.collection('acState').doc('hidden').onSnapshot(doc=>{
     if(doc.exists) S.acHidden = doc.data().regs || [];
-    try{localStorage.setItem('gyav_acHidden',JSON.stringify(S.acHidden));}catch(e){}
+    try{localStorage.setItem('gyxl_acHidden',JSON.stringify(S.acHidden));}catch(e){}
     render();
   }, e=>console.error('acHidden onSnapshot error:', e));
 }
@@ -11401,7 +11698,7 @@ function toggleAcHidden(reg) {
   const i = arr.indexOf(reg);
   if(i>=0) arr.splice(i,1); else arr.push(reg);
   S.acHidden = arr;
-  try{localStorage.setItem('gyav_acHidden',JSON.stringify(arr));}catch(e){}
+  try{localStorage.setItem('gyxl_acHidden',JSON.stringify(arr));}catch(e){}
   if(db) db.collection('acState').doc('hidden').set({regs:arr}).catch(()=>{});
   closeModal();
   render();
@@ -11409,10 +11706,10 @@ function toggleAcHidden(reg) {
 }
 
 function getPdfVersion(type) {
-  try{const all=JSON.parse(localStorage.getItem('gyav_pdfVersions')||'{}');return all[type]||null;}catch(e){return null;}
+  try{const all=JSON.parse(localStorage.getItem('gyxl_pdfVersions')||'{}');return all[type]||null;}catch(e){return null;}
 }
 function savePdfVersion(type,data) {
-  try{const all=JSON.parse(localStorage.getItem('gyav_pdfVersions')||'{}');all[type]=data;localStorage.setItem('gyav_pdfVersions',JSON.stringify(all));}catch(e){}
+  try{const all=JSON.parse(localStorage.getItem('gyxl_pdfVersions')||'{}');all[type]=data;localStorage.setItem('gyxl_pdfVersions',JSON.stringify(all));}catch(e){}
 }
 const PDF_VERSION_DEFAULTS = {
   westwind:{version:'8.0', date:'September 23, 2025', form:'03-8'},
@@ -11642,7 +11939,7 @@ function setAcHeader(reg, field, value) {
   const d = acAuditData(reg);
   d[field] = value;
   if(field === 'auditorName') {   // the name saves on its own (see auditNameSave)
-    try { localStorage.setItem('gyav_acaudits', JSON.stringify(S.acAudits)); } catch(e){}
+    try { localStorage.setItem('gyxl_acaudits', JSON.stringify(S.acAudits)); } catch(e){}
     const month = acAuditMonthKey(), type = S.acAuditType || (AIRCRAFT_WESTWIND.includes(reg)?'westwind':'metro');
     auditNameSave('ac-' + reg, value, v => Promise.all([
       db.collection('auditAircraftState').doc(month).set({[reg]: {auditorName: v}}, {merge:true}),
@@ -11660,11 +11957,11 @@ function getAcLabel(type, key) {
 }
 
 function loadAcAuditLabels() {
-  try { S.acAuditLabels = JSON.parse(localStorage.getItem('gyav_aclabels')||'{}'); } catch(e){}
+  try { S.acAuditLabels = JSON.parse(localStorage.getItem('gyxl_aclabels')||'{}'); } catch(e){}
   if(!db) return;
   db.collection('auditLabels').get().then(snap=>{
     snap.forEach(doc=>{ S.acAuditLabels[doc.id] = doc.data(); });
-    try { localStorage.setItem('gyav_aclabels', JSON.stringify(S.acAuditLabels)); } catch(e){}
+    try { localStorage.setItem('gyxl_aclabels', JSON.stringify(S.acAuditLabels)); } catch(e){}
   }).catch(()=>{});
 }
 
@@ -11672,7 +11969,7 @@ function saveAcAuditLabel(type, key, field, value) {
   if(!S.acAuditLabels[type]) S.acAuditLabels[type]={};
   if(!S.acAuditLabels[type][key]) S.acAuditLabels[type][key]={};
   S.acAuditLabels[type][key][field]=value;
-  try { localStorage.setItem('gyav_aclabels', JSON.stringify(S.acAuditLabels)); } catch(e){}
+  try { localStorage.setItem('gyxl_aclabels', JSON.stringify(S.acAuditLabels)); } catch(e){}
   if(db) db.collection('auditLabels').doc(type).set(S.acAuditLabels[type],{merge:true}).catch(()=>{});
 }
 
@@ -12386,7 +12683,7 @@ let _dragOffX    = 0, _dragOffY = 0;
 
 function getOrderedHomeTiles(base) {
   try {
-    const saved = JSON.parse(localStorage.getItem('gyav_tileOrder')||'null');
+    const saved = JSON.parse(localStorage.getItem('gyxl_tileOrder')||'null');
     if(Array.isArray(saved)) {
       const map = Object.fromEntries(base.map(t=>[t.id,t]));
       const ordered = saved.filter(id=>map[id]).map(id=>map[id]);
@@ -12397,7 +12694,7 @@ function getOrderedHomeTiles(base) {
   return [...base];
 }
 function saveTileOrder() {
-  try { localStorage.setItem('gyav_tileOrder', JSON.stringify(_tileOrder.map(t=>t.id))); } catch(e) {}
+  try { localStorage.setItem('gyxl_tileOrder', JSON.stringify(_tileOrder.map(t=>t.id))); } catch(e) {}
 }
 function enterTileEditMode() {
   if(_tileEditMode) return;
@@ -12493,11 +12790,11 @@ function _tileDragEnd(e) {
 }
 
 function saveAuditTilesLocal() {
-  try { localStorage.setItem('gyav_auditTiles', JSON.stringify(S.auditTiles)); } catch(e) {}
+  try { localStorage.setItem('gyxl_auditTiles', JSON.stringify(S.auditTiles)); } catch(e) {}
 }
 function loadAuditTilesLocal() {
   try {
-    const raw=localStorage.getItem('gyav_auditTiles');
+    const raw=localStorage.getItem('gyxl_auditTiles');
     if(raw) S.auditTiles=JSON.parse(raw);
   } catch(e) {}
 }
@@ -12718,12 +13015,12 @@ function ctMapLogos(query) {
 }
 
 function ctSeg() {
-  if (!S.contactSeg) { try { S.contactSeg = localStorage.getItem('yav_contactSeg') || 'codes'; } catch (e) { S.contactSeg = 'codes'; } }
+  if (!S.contactSeg) { try { S.contactSeg = localStorage.getItem('yxl_contactSeg') || 'codes'; } catch (e) { S.contactSeg = 'codes'; } }
   return S.contactSeg;
 }
 function setContactSeg(k) {
   S.contactSeg = k;
-  try { localStorage.setItem('yav_contactSeg', k); } catch (e) {}
+  try { localStorage.setItem('yxl_contactSeg', k); } catch (e) {}
   const list = document.getElementById('contactsList');
   if (list) list.innerHTML = renderContactsList((S.contactSearch || '').toLowerCase().trim());
   const c = document.getElementById('content'); if (c) c.scrollTop = 0;
@@ -13037,7 +13334,7 @@ function toggleBored(id) {
   S.bored[idx].done=!S.bored[idx].done;
   haptic(); api({action:'toggleBored',task:S.bored[idx].task});
   fsSetBoredDone(S.bored[idx].task, S.bored[idx].done);
-  localStorage.setItem('gyav_bored',JSON.stringify(S.bored));
+  localStorage.setItem('gyxl_bored',JSON.stringify(S.bored));
   renderBored(document.getElementById('content'));
   toast(S.bored[idx].done?'✓ Done!':'Unchecked');
 }
@@ -13131,11 +13428,11 @@ function hideTaskToday(tabName,idx) {
     db.collection('taskState').doc(tabName).set(patch,{merge:true}).catch(()=>{});
   }
   try {
-    const ls=JSON.parse(localStorage.getItem('gyav_taskstate')||'{}');
+    const ls=JSON.parse(localStorage.getItem('gyxl_taskstate')||'{}');
     ls[tabName]=ls[tabName]||{};
     ls[tabName][fsKey(t.task)+'_hidden']=true;
     ls[tabName]._date=new Date().toDateString();
-    localStorage.setItem('gyav_taskstate',JSON.stringify(ls));
+    localStorage.setItem('gyxl_taskstate',JSON.stringify(ls));
   } catch(_) {}
   render(); toast('Hidden for today');
 }
@@ -13446,7 +13743,7 @@ function openDmgReport(key) {
         const tailNumber = _collectDmgTails();
         if(!text && !photo){toast('Add a description or photo first');return;}
         S.pendingDmgPhoto = null; S.dmgKeyCtx=null; // clear after use
-        localStorage.removeItem('gyav_dmg_draft');
+        localStorage.removeItem('gyxl_dmg_draft');
         if(!S.dmgReports[key]) S.dmgReports[key]=[];
         const date=new Date().toLocaleDateString('en-CA',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
         const report = {text:text||'(no description)',photo,date,tailNumber};
@@ -13482,23 +13779,23 @@ function saveDmgDraft() {
   if(!S.dmgKeyCtx) return;
   const textEl=document.getElementById('dmgText');
   const draft={procKey:S.dmgKeyCtx,text:textEl?textEl.value:'',photo:S.pendingDmgPhoto||''};
-  if(!draft.text && !draft.photo) { localStorage.removeItem('gyav_dmg_draft'); return; }
-  try { localStorage.setItem('gyav_dmg_draft', JSON.stringify(draft)); }
+  if(!draft.text && !draft.photo) { localStorage.removeItem('gyxl_dmg_draft'); return; }
+  try { localStorage.setItem('gyxl_dmg_draft', JSON.stringify(draft)); }
   catch(e) { console.log('saveDmgDraft quota error (non-fatal, draft just won\'t survive a reload):', e); }
 }
 function recoverDmgDraft() {
   try {
-    const raw=localStorage.getItem('gyav_dmg_draft');
+    const raw=localStorage.getItem('gyxl_dmg_draft');
     if(!raw) return;
     const draft=JSON.parse(raw);
-    if(!draft || !draft.photo || !draft.procKey) { localStorage.removeItem('gyav_dmg_draft'); return; }
+    if(!draft || !draft.photo || !draft.procKey) { localStorage.removeItem('gyxl_dmg_draft'); return; }
     if(!S.dmgReports[draft.procKey]) S.dmgReports[draft.procKey]=[];
     const date=new Date().toLocaleDateString('en-CA',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
     S.dmgReports[draft.procKey].push({text:draft.text||'(recovered photo)',photo:draft.photo,date});
     saveDmg();
-    localStorage.removeItem('gyav_dmg_draft');
+    localStorage.removeItem('gyxl_dmg_draft');
     toast('📸 Recovered a damage photo that didn\'t finish saving');
-  } catch(e) { localStorage.removeItem('gyav_dmg_draft'); }
+  } catch(e) { localStorage.removeItem('gyxl_dmg_draft'); }
 }
 
 // ── PHOTO HANDLING ─────────────────────────────────────────────────
@@ -13743,7 +14040,7 @@ function openModal(title,fields,onSave) {
   document.getElementById('overlay').classList.add('open');
   setTimeout(()=>document.querySelector('#mFields input,#mFields textarea')?.focus(),100);
 }
-function closeModal() { document.getElementById('overlay').classList.remove('open'); S.mCtx=null; S.pendingPhoto=null; const ms=document.getElementById('mSave'); ms.textContent='Save'; ms.disabled=false; ms.style.display=''; document.getElementById('mBtnRow').style.display=''; if(S.dmgKeyCtx){S.dmgKeyCtx=null; S.pendingDmgPhoto=null; localStorage.removeItem('gyav_dmg_draft');} }
+function closeModal() { document.getElementById('overlay').classList.remove('open'); S.mCtx=null; S.pendingPhoto=null; const ms=document.getElementById('mSave'); ms.textContent='Save'; ms.disabled=false; ms.style.display=''; document.getElementById('mBtnRow').style.display=''; if(S.dmgKeyCtx){S.dmgKeyCtx=null; S.pendingDmgPhoto=null; localStorage.removeItem('gyxl_dmg_draft');} }
 function mSubmit() { S.mCtx?.(); }
 
 function fuzzyDistance(a, b) {
@@ -14632,7 +14929,7 @@ async function runMigration() {
     // Load migrated tasks into memory
     DAYS.forEach(day => { S.tasks[day] = preview[day]; });
     // Wipe stale Sheets cache from localStorage
-    localStorage.removeItem('gyav_tasks');
+    localStorage.removeItem('gyxl_tasks');
     await db.collection('appConfig').doc('importing').set({ active: false });
   } catch(e) {
     setMigStatus('⚠️ Cutover failed — tasks written but source not flipped. Try escape hatch.', 'var(--red)');
@@ -15054,13 +15351,13 @@ function saveShoppingState() {
   // Save checked state of all items keyed by item name
   const state = {};
   S.shopping.forEach(i=>{ state[shopKey(i)] = i.checked; });
-  localStorage.setItem('gyav_shop_state', JSON.stringify(state));
+  localStorage.setItem('gyxl_shop_state', JSON.stringify(state));
 }
 
 function restoreShoppingState() {
   // Restore locally cached checked state onto freshly fetched items
   try {
-    const state = JSON.parse(localStorage.getItem('gyav_shop_state') || '{}');
+    const state = JSON.parse(localStorage.getItem('gyxl_shop_state') || '{}');
     S.shopping.forEach(i=>{
       const k = shopKey(i) in state ? shopKey(i) : i.item;
       if(k in state) {
@@ -15071,24 +15368,24 @@ function restoreShoppingState() {
   } catch(e) {}
 }
 function saveTripNotes(val) {
-  S.tripNotes=val; localStorage.setItem('gyav_trip',val);
+  S.tripNotes=val; localStorage.setItem('gyxl_trip',val);
   if(db) db.collection('teamData').doc('trip').set({notes:val}).catch(e=>console.log('saveTripNotes failed:',e));
 }
 function clearTrip() {
   if(!confirm('Clear trip notes?')) return;
-  S.tripNotes=''; localStorage.removeItem('gyav_trip');
+  S.tripNotes=''; localStorage.removeItem('gyxl_trip');
   if(db) db.collection('teamData').doc('trip').set({notes:''}).catch(()=>{});
   renderShopping(document.getElementById('content'));
   toast('Trip notes cleared');
 }
 function loadDayNotes() {
-  try { S.dayNotes = JSON.parse(localStorage.getItem('gyav_dayNotes')||'{}'); } catch(e) { S.dayNotes = {}; }
+  try { S.dayNotes = JSON.parse(localStorage.getItem('gyxl_dayNotes')||'{}'); } catch(e) { S.dayNotes = {}; }
   // Day notes only live on their own date -- forget past ones
   Object.keys(S.dayNotes).forEach(k => { if(k < localDateISO()) delete S.dayNotes[k]; });
 }
 function loadTaskCache() {
   try {
-    const cached = JSON.parse(localStorage.getItem('gyav_tasks')||'{}');
+    const cached = JSON.parse(localStorage.getItem('gyxl_tasks')||'{}');
     const today = new Date().toDateString();
     const cacheDate = cached._date;
     const sameDay = cacheDate === today;
@@ -15103,7 +15400,7 @@ function loadTaskCache() {
 }
 function saveDmg() {
   try {
-    localStorage.setItem('gyav_dmg',JSON.stringify(S.dmgReports));
+    localStorage.setItem('gyxl_dmg',JSON.stringify(S.dmgReports));
   } catch(e) {
     // Storage quota full (likely old large photos) — strip photos from the
     // oldest reports until the write fits, keeping all descriptions intact.
@@ -15114,7 +15411,7 @@ function saveDmg() {
     let prunedAny=false, saved=false;
     for(const {key,i} of all) {
       if(S.dmgReports[key][i].photo) { S.dmgReports[key][i].photo=''; prunedAny=true; }
-      try { localStorage.setItem('gyav_dmg',JSON.stringify(S.dmgReports)); saved=true; break; }
+      try { localStorage.setItem('gyxl_dmg',JSON.stringify(S.dmgReports)); saved=true; break; }
       catch(e2) { /* still too big, keep pruning the next oldest photo */ }
     }
     if(prunedAny) toast(saved
@@ -15122,7 +15419,7 @@ function saveDmg() {
       : '⚠️ Storage full — could not free enough room, some reports may not be saved');
   }
 }
-function loadDmg() { try{S.dmgReports=JSON.parse(localStorage.getItem('gyav_dmg')||'{}');}catch(e){S.dmgReports={};} }
+function loadDmg() { try{S.dmgReports=JSON.parse(localStorage.getItem('gyxl_dmg')||'{}');}catch(e){S.dmgReports={};} }
 function fallback() {
   return [
     {task:"Check O₂ beds & refill if needed",freq:"Daily",area:"AIRCRAFT",done:false},
@@ -15223,7 +15520,7 @@ function setupDraggableNav() {
         }
         // Save order
         const order = [...nav.querySelectorAll('.nb')].map(n=>n.id.replace('nb-',''));
-        localStorage.setItem('gyav_nav_order', JSON.stringify(order));
+        localStorage.setItem('gyxl_nav_order', JSON.stringify(order));
       }
       items.forEach(i=>i.classList.remove('drag-over','dragging'));
     });
@@ -15240,7 +15537,7 @@ function setupDraggableNav() {
 function restoreNavOrder() {
   return;   // the saved order is applied in buildNav (navOrdered); nothing to move here
   try {
-    const order = JSON.parse(localStorage.getItem('gyav_nav_order')||'[]');
+    const order = JSON.parse(localStorage.getItem('gyxl_nav_order')||'[]');
     if(!order.length) return;
     const nav = document.getElementById('nav');
     order.forEach(id=>{
@@ -15403,7 +15700,7 @@ function setupLiveSync() {
         const k = acAuditDocKey(reg);
         S.acAudits[k] = auditNameKeep('ac-' + reg, {...(S.acAudits[k]||{}), ...auditData}, 'auditorName');
       });
-      try { localStorage.setItem('gyav_acaudits', JSON.stringify(S.acAudits)); } catch(e) {}
+      try { localStorage.setItem('gyxl_acaudits', JSON.stringify(S.acAudits)); } catch(e) {}
       render();
     }, e => console.log('acAudits listener error:', e));
 
@@ -15443,7 +15740,7 @@ function setupLiveSync() {
       if(!snap.exists) return;
       const data=snap.data();
       Object.assign(S.crewCarData, data);
-      try { localStorage.setItem('gyav_ccd',JSON.stringify(S.crewCarData)); } catch(e){}
+      try { localStorage.setItem('gyxl_ccd',JSON.stringify(S.crewCarData)); } catch(e){}
       const v=S.crewCarsView;
       if(v && v!==null && S.tab==='procedures') {
         const el=document.getElementById('content');
@@ -15571,7 +15868,7 @@ function setupLiveSync() {
       // Remove deleted docs
       const liveIds = new Set(snap.docs.map(d=>d.id));
       Object.keys(S.dayNotes).forEach(k=>{ if(!liveIds.has(k)) delete S.dayNotes[k]; });
-      try { localStorage.setItem('gyav_dayNotes', JSON.stringify(S.dayNotes)); } catch(e) {}
+      try { localStorage.setItem('gyxl_dayNotes', JSON.stringify(S.dayNotes)); } catch(e) {}
       // Don't re-render if a note is currently open and being typed into — prevents textarea from closing
       if(window._dayNoteSaving > 0) return;
       const anyOpen = Object.values(window._dayNoteOpen||{}).some(Boolean);
@@ -15593,26 +15890,26 @@ function setupLiveSync() {
     db.collection('appConfig').doc('stores').onSnapshot(snap => {
       const data = snap.data();
       S.customStores = (data && Array.isArray(data.custom)) ? data.custom : [];
-      localStorage.setItem('gyav_custom_stores', JSON.stringify(S.customStores));
+      localStorage.setItem('gyxl_custom_stores', JSON.stringify(S.customStores));
     }, e => console.log('customStores listener error:', e));
 
     db.collection('appConfig').doc('cargoAircraft').onSnapshot(snap => {
       const data = snap.data();
       S.customAircraft = (data && Array.isArray(data.custom)) ? data.custom : [];
-      try { localStorage.setItem('gyav_custom_aircraft', JSON.stringify(S.customAircraft)); } catch (e) {}
+      try { localStorage.setItem('gyxl_custom_aircraft', JSON.stringify(S.customAircraft)); } catch (e) {}
     }, e => console.log('customAircraft listener error:', e));
 
     db.collection('appConfig').doc('cargoLocations').onSnapshot(snap => {
       const data = snap.data();
       S.customCargoLocations = (data && Array.isArray(data.custom)) ? data.custom : [];
-      localStorage.setItem('gyav_custom_cargo_locations', JSON.stringify(S.customCargoLocations));
+      localStorage.setItem('gyxl_custom_cargo_locations', JSON.stringify(S.customCargoLocations));
     }, e => console.log('customCargoLocations listener error:', e));
 
     // Trip notes — live so whoever is shopping sees the latest plan
     db.collection('teamData').doc('trip').onSnapshot(snap => {
       if(!snap.exists) return;
       const val = snap.data()?.notes || '';
-      S.tripNotes = val; localStorage.setItem('gyav_trip', val);
+      S.tripNotes = val; localStorage.setItem('gyxl_trip', val);
       if(S.tab==='shopping') renderShopping(document.getElementById('content'));
     }, e => console.log('tripNotes listener error:', e));
 
@@ -15762,7 +16059,7 @@ function fleetTrackingPaused() {
 }
 // Positions come from the company fleet job (OpenSky + adsb.lol, about every 2 min), saved in
 // the shared positions doc (Firebase project groomer-ykf, fleetPositions/live, readable without a login). Only position, altitude,
-// speed and track are taken from it -- distance and ETA are worked out here, from CYAV.
+// speed and track are taken from it -- distance and ETA are worked out here, from CYXL.
 function fsRestValue(v) {
   if(!v) return null;
   if('stringValue' in v)  return v.stringValue;
@@ -15786,8 +16083,8 @@ async function fetchFleetPositions() {
       tail: p.tail, reg: p.reg, lat: p.lat, lon: p.lon,
       altFt: p.onGround ? 0 : (p.altFt ?? null),
       speedKts: p.speedKts || 0, track: p.track || 0, trackRaw: p.track ?? null, onGround: !!p.onGround,
-      leaving: !!p.leavingYav, // the alert job saw it climbing out or moving away from CYAV
-      distNm: Math.round(haversineNm(p.lat, p.lon, CYAV_LAT, CYAV_LON))
+      leaving: !!p.leavingYxl, // set if the alert job ever tracks YXL departures (it doesn't yet)
+      distNm: Math.round(haversineNm(p.lat, p.lon, CYXL_LAT, CYXL_LON))
     }));
   } catch(e) { return []; }
 }
@@ -15810,7 +16107,7 @@ async function refreshFleet() {
     positions.forEach(p => {
       if(!p || !p.tail) return;
       // Only a plane heading for the base gets an ETA (and so shows under "Inbound")
-      const headingIn = !p.leaving && fleetHeadingToward(p.lat, p.lon, p.trackRaw, CYAV_LAT, CYAV_LON);
+      const headingIn = !p.leaving && fleetHeadingToward(p.lat, p.lon, p.trackRaw, CYXL_LAT, CYXL_LON);
       const eta = headingIn && p.distNm && p.speedKts ? etaMinutes(p.distNm, p.speedKts) : null;
       _fleetData[p.tail] = {
         callsign: p.reg || p.tail,
@@ -15878,7 +16175,7 @@ function fleetFlap(etaMins) {
   const tiles = etaMins < 60
     ? [...String(etaMins).padStart(2,'0')].map(c=>`<i>${c}</i>`).join('') + '<i class="sp"></i><i class="u">M</i><i class="u">N</i>'
     : [...String(Math.floor(etaMins/60))].map(c=>`<i>${c}</i>`).join('') + '<i class="u">H</i>' + [...String(etaMins%60).padStart(2,'0')].map(c=>`<i>${c}</i>`).join('');
-  return `<span class="fl-flap" title="ETA to CYAV">${tiles}</span>`;
+  return `<span class="fl-flap" title="ETA to CYXL">${tiles}</span>`;
 }
 
 function renderFleet(el) {
@@ -15902,7 +16199,7 @@ function renderFleet(el) {
   // In the air: inbound first (closest first), then everyone else flying
   const airList = [...inbound, ...airborne.filter(a=>!inbound.includes(a))];
 
-  const notifBtn = ('Notification' in window && 'serviceWorker' in navigator && localStorage.getItem('gyav_notifications_enabled')!=='1')
+  const notifBtn = ('Notification' in window && 'serviceWorker' in navigator && localStorage.getItem('gyxl_notifications_enabled')!=='1')
     ? `<button class="fl-alertbtn" onclick="requestNotificationPermission().then(()=>renderFleet(document.getElementById('content')))">🔔 Enable ${FLEET_ALERT_NM} nm arrival alerts</button>` : '';
 
   const etaText = m => m<60 ? m+' min' : Math.floor(m/60)+'h '+String(m%60).padStart(2,'0');
@@ -15910,7 +16207,7 @@ function renderFleet(el) {
     const d=_fleetData[ac.tail];
     if(!d) return `<div class="fl-row"><span class="fl-dot off"></span><div class="fl-grow"><span class="fl-reg off">${ac.reg}</span> <span class="fl-type">${ac.type}</span><div class="fl-sub off">${_fleetPaused?'Overnight — tracking resumes 5 AM':'No signal'}</div></div></div>`;
     const sub = d.onGround
-      ? (d.distNm!=null&&d.distNm<=5 ? 'On the ground · CYAV' : 'On the ground')
+      ? (d.distNm!=null&&d.distNm<=5 ? 'On the ground · CYXL' : 'On the ground')
       : [d.distNm!=null ? d.distNm+' nm' : null, d.altFt ? d.altFt.toLocaleString()+' ft' : null, d.speedKts ? d.speedKts+' kts' : null].filter(Boolean).join(' · ');
     const right = d.onGround ? `<span class="fl-state gnd">Ground</span>`
       : d.eta!=null ? fleetFlap(d.eta) : `<span class="fl-state air">Airborne</span>`;
@@ -15932,13 +16229,13 @@ function renderFleet(el) {
 
   <div class="fl-sheet"><div class="fl-grab"></div>
     ${inbound.length ? `
-    <div class="fl-sec acc">⬇ Inbound to CYAV<span>${inbound.length}</span></div>
+    <div class="fl-sec acc">⬇ Inbound to CYXL<span>${inbound.length}</span></div>
     ${inbound.map(ac=>{
       const d=_fleetData[ac.tail];
       const ring = d.distNm<=FLEET_ALERT_NM ? `<span class="fl-ring">◉ ${FLEET_ALERT_NM} NM</span>` : '';
       return `<div class="fl-inb">
         <div class="fl-inb-top"><span class="fl-dot air"></span><span class="fl-reg big">${ac.reg}</span><span class="fl-type">${ac.type}</span>${ring}
-          <div class="fl-eta"><b>${d.eta!=null?etaText(d.eta):'—'}</b><small>ETA CYAV</small></div></div>
+          <div class="fl-eta"><b>${d.eta!=null?etaText(d.eta):'—'}</b><small>ETA CYXL</small></div></div>
         <div class="fl-stats">
           <div><b>${d.distNm} nm</b><small>Distance</small></div>
           <div><b>${d.altFt?d.altFt.toLocaleString():'—'} ft</b><small>Altitude</small></div>
@@ -15954,7 +16251,7 @@ function renderFleet(el) {
     ${S.fleetOffOpen ? `<div class="fl-card" style="margin-top:8px">${noSignal.map(row).join('')}</div>` : ''}` : ''}
 
     ${notifBtn}
-    <p class="fl-fine">Live ADS-B (OpenSky + adsb.lol), refreshed about every minute from 5 AM to 7 PM (no tracking or alerts overnight). Distances and ETAs are from CYAV. The push alert fires once per inbound arrival, within ${FLEET_ALERT_NM} nm of CYAV.</p>
+    <p class="fl-fine">Live ADS-B (OpenSky + adsb.lol), refreshed about every minute from 5 AM to 7 PM (no tracking or alerts overnight). Distances and ETAs are from CYXL. The push alert fires once per inbound arrival, within ${FLEET_ALERT_NM} nm of CYXL.</p>
     <div style="height:90px"></div>
   </div>`;
 
@@ -15964,13 +16261,13 @@ function renderFleet(el) {
     const mapEl = document.getElementById('fleetMap');
     if(!mapEl || mapEl._leaflet_id) return;
     const acc = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4A9EFF';
-    const map = L.map('fleetMap',{zoomControl:false,attributionControl:false}).setView([CYAV_LAT,CYAV_LON],7);
+    const map = L.map('fleetMap',{zoomControl:false,attributionControl:false}).setView([CYXL_LAT,CYXL_LON],7);
     // CARTO's dark basemap now requires a paid API key (every tile came back "API key required").
     // Esri's dark-gray basemap is free with no key or account needed.
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:16}).addTo(map);
-    // CYAV marker + the push-alert ring
-    L.circle([CYAV_LAT,CYAV_LON],{radius:FLEET_ALERT_NM*1852,color:acc,weight:1.2,fillOpacity:0.06,dashArray:'6,6'}).addTo(map);
-    L.circleMarker([CYAV_LAT,CYAV_LON],{radius:6,color:'#fff',fillColor:acc,fillOpacity:1,weight:2}).bindTooltip('CYAV',{permanent:true,direction:'right',className:'fleet-tip'}).addTo(map);
+    // CYXL marker + the push-alert ring
+    L.circle([CYXL_LAT,CYXL_LON],{radius:FLEET_ALERT_NM*1852,color:acc,weight:1.2,fillOpacity:0.06,dashArray:'6,6'}).addTo(map);
+    L.circleMarker([CYXL_LAT,CYXL_LON],{radius:6,color:'#fff',fillColor:acc,fillOpacity:1,weight:2}).bindTooltip('CYXL',{permanent:true,direction:'right',className:'fleet-tip'}).addTo(map);
     // Aircraft markers
     FLEET_AIRCRAFT.forEach(ac=>{
       const d=_fleetData[ac.tail];
@@ -15991,7 +16288,7 @@ function renderFleet(el) {
     });
     // Fit bounds if aircraft present
     const pts=FLEET_AIRCRAFT.filter(a=>_fleetData[a.tail]&&_fleetData[a.tail].lat).map(a=>[_fleetData[a.tail].lat,_fleetData[a.tail].lon]);
-    if(pts.length) { pts.push([CYAV_LAT,CYAV_LON]); try{map.fitBounds(pts,{padding:[40,40]});}catch(e){} }
+    if(pts.length) { pts.push([CYXL_LAT,CYXL_LON]); try{map.fitBounds(pts,{padding:[40,40]});}catch(e){} }
   },100);
 
   // Auto-refresh every 60s while on fleet tab
@@ -16092,7 +16389,7 @@ function scheduleSaveDayNote(isoDate) {
   // Defer localStorage write so it doesn't block keystrokes
   clearTimeout(window._dayNoteTimer[isoDate]);
   window._dayNoteTimer[isoDate] = setTimeout(()=>{
-    try { localStorage.setItem('gyav_dayNotes', JSON.stringify(S.dayNotes)); } catch(e) {}
+    try { localStorage.setItem('gyxl_dayNotes', JSON.stringify(S.dayNotes)); } catch(e) {}
     fsSaveDayNote(isoDate, true);
   }, 1000);
 }
@@ -16100,7 +16397,7 @@ function scheduleSaveDayNote(isoDate) {
 function completeDayNote(isoDate) {
   delete S.dayNotes[isoDate];
   delete window._dayNoteOpen[isoDate];
-  try { localStorage.setItem('gyav_dayNotes', JSON.stringify(S.dayNotes)); } catch(e) {}
+  try { localStorage.setItem('gyxl_dayNotes', JSON.stringify(S.dayNotes)); } catch(e) {}
   if(db) db.collection('dayNotes').doc(isoDate).delete().catch(()=>{});
   const el = document.getElementById('content');
   if(S.tab==='today') renderToday(el);
@@ -16207,8 +16504,8 @@ async function requestNotificationPermission() {
     });
 
     const subId = btoa(sub.endpoint).replace(/[^a-zA-Z0-9]/g,'').slice(-40);
-    localStorage.setItem('gyav_push_sub_id', subId);
-    localStorage.setItem('gyav_push_endpoint', sub.endpoint);
+    localStorage.setItem('gyxl_push_sub_id', subId);
+    localStorage.setItem('gyxl_push_endpoint', sub.endpoint);
 
     try {
       await db.collection('pushSubscriptions').doc(subId).set({
@@ -16217,7 +16514,7 @@ async function requestNotificationPermission() {
         ua: navigator.userAgent.slice(0, 80)
       }, { merge: true });
       console.log('Push sub saved to Firestore ✓', subId);
-      localStorage.setItem('gyav_notifications_enabled', '1');
+      localStorage.setItem('gyxl_notifications_enabled', '1');
       updateNotifBtn();
       toast('✅ Notifications enabled & saved to server!');
     } catch(e) {
@@ -16250,13 +16547,13 @@ async function disableNotifications() {
     if (sub) await sub.unsubscribe();
   } catch(e) {}
 
-  const subId = localStorage.getItem('gyav_push_sub_id');
+  const subId = localStorage.getItem('gyxl_push_sub_id');
   if (subId && db) {
     db.collection('pushSubscriptions').doc(subId).delete().catch(()=>{});
   }
 
-  localStorage.removeItem('gyav_notifications_enabled');
-  localStorage.removeItem('gyav_push_sub_id');
+  localStorage.removeItem('gyxl_notifications_enabled');
+  localStorage.removeItem('gyxl_push_sub_id');
   toast('🔕 Notifications disabled');
   updateNotifBtn();
 }
@@ -16264,7 +16561,7 @@ async function disableNotifications() {
 function updateNotifBtn() {
   const btn = document.getElementById('notifBtn');
   if (!btn) return;
-  const enabled = localStorage.getItem('gyav_notifications_enabled') === '1';
+  const enabled = localStorage.getItem('gyxl_notifications_enabled') === '1';
   btn.textContent = enabled ? '🔔' : '🔕';
   btn.title = enabled ? 'Notifications ON — hold to test' : 'Enable notifications';
 }
@@ -16282,7 +16579,7 @@ function _notifPressEnd() {
 }
 
 async function sendTestPush() {
-  const subId = localStorage.getItem('gyav_push_sub_id');
+  const subId = localStorage.getItem('gyxl_push_sub_id');
   if (!subId) { toast('⚠️ No subscription found — try disabling and re-enabling notifications'); return; }
   if (!db) { toast('⚠️ Database not ready'); return; }
 
@@ -16333,7 +16630,7 @@ async function sendTestPush() {
 }
 
 function toggleNotifications() {
-  const enabled = localStorage.getItem('gyav_notifications_enabled') === '1';
+  const enabled = localStorage.getItem('gyxl_notifications_enabled') === '1';
   if (enabled) {
     disableNotifications();
   } else {
@@ -16347,18 +16644,18 @@ window.addEventListener('load', () => {
     // Re-sync push subscription to Firestore on every load.
     // Guards against SW updates that change the endpoint, or a previous
     // Firestore write that silently failed.
-    if (localStorage.getItem('gyav_notifications_enabled') === '1') {
+    if (localStorage.getItem('gyxl_notifications_enabled') === '1') {
       try {
         const swReg = await navigator.serviceWorker.ready;
         let sub = await swReg.pushManager.getSubscription();
         if (sub && !pushKeyMatches(sub)) { await sub.unsubscribe(); sub = null; } // old key -> ask again
         if (sub && db) {
           const subId = btoa(sub.endpoint).replace(/[^a-zA-Z0-9]/g,'').slice(-40);
-          const storedEndpoint = localStorage.getItem('gyav_push_endpoint');
+          const storedEndpoint = localStorage.getItem('gyxl_push_endpoint');
           // Only re-save if endpoint changed or subId not yet in localStorage
-          if (sub.endpoint !== storedEndpoint || !localStorage.getItem('gyav_push_sub_id')) {
-            localStorage.setItem('gyav_push_sub_id', subId);
-            localStorage.setItem('gyav_push_endpoint', sub.endpoint);
+          if (sub.endpoint !== storedEndpoint || !localStorage.getItem('gyxl_push_sub_id')) {
+            localStorage.setItem('gyxl_push_sub_id', subId);
+            localStorage.setItem('gyxl_push_endpoint', sub.endpoint);
             await db.collection('pushSubscriptions').doc(subId).set({
               sub: JSON.parse(JSON.stringify(sub)),
               ts: firebase.firestore.FieldValue.serverTimestamp(),
@@ -16368,9 +16665,9 @@ window.addEventListener('load', () => {
           }
         } else if (!sub) {
           // Subscription was lost (SW update, browser clear) — reset state
-          localStorage.removeItem('gyav_notifications_enabled');
-          localStorage.removeItem('gyav_push_sub_id');
-          localStorage.removeItem('gyav_push_endpoint');
+          localStorage.removeItem('gyxl_notifications_enabled');
+          localStorage.removeItem('gyxl_push_sub_id');
+          localStorage.removeItem('gyxl_push_endpoint');
           updateNotifBtn();
           console.log('Push subscription lost — reset notification state');
         }

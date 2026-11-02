@@ -1,4 +1,4 @@
-const CACHE = 'skycare-yav-v24';
+const CACHE = 'skycare-yxl-v1';
 const SHELL = ['./', './index.html', './manifest.json', './baseConfig.js'];
 
 self.addEventListener('install', e => {
@@ -25,7 +25,7 @@ self.addEventListener('fetch', e => {
 self.addEventListener('push', e => {
   let data = {};
   try { data = e.data ? e.data.json() : {}; } catch(err) {}
-  const title = data.title || 'Skycare YAV';
+  const title = data.title || 'Skycare YXL';
   const options = {
     body: data.body || '',
     icon: data.icon || './cars/Skycare_logo-removebg-preview.png',

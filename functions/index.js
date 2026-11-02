@@ -1,11 +1,11 @@
-// Nightly cleanup for YAV cargo (runs on Google's servers, skycare-yav project).
+// Nightly cleanup for YXL cargo (runs on Google's servers, skycare-yxl project).
 // A delivered piece shows in Records for 1 month; 90 days after its delivery it is removed for good:
 // first its photos (storage, cargo/<id>/), then its record (cargoTracker/<id>).
 // Never touched: pieces not delivered (on the list or on standby), pieces reopened, pieces deleted with 🗑
 // (those stay hidden in the database). Safety nets: deleted photos are kept 90 days by Google (soft delete),
 // and the database has daily backups (14 days) and point-in-time recovery (7 days).
 const KEEP_DAYS = 90;
-const BUCKET = 'skycare-yav.firebasestorage.app';
+const BUCKET = 'skycare-yxl.firebasestorage.app';
 
 // The cleanup itself, given a Firestore db and a storage bucket (kept separate so it can be tested with fakes)
 async function cleanDelivered(db, bucket, now, log = console.log) {
@@ -31,7 +31,7 @@ async function cleanDelivered(db, bucket, now, log = console.log) {
 }
 exports.cleanDelivered = cleanDelivered;
 
-// Nightly cleanup for YAV Master Task one-time tasks: the app hides a one-time task 2 days after it is
+// Nightly cleanup for YXL Master Task one-time tasks: the app hides a one-time task 2 days after it is
 // marked done, and this removes it from the database for good (the team doesn't keep that history).
 // Never touched: daily/weekly/monthly tasks, one-time tasks not done, tasks deleted with 🗑 (left hidden).
 const TASK_KEEP_DAYS = 2;

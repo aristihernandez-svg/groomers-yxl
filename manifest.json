@@ -1,11 +1,11 @@
 {
-  "name": "Groomies YAV",
-  "short_name": "Groomies YAV",
-  "description": "Groomies — Skycare aviation grooming team, YAV",
+  "name": "Groomies YXL",
+  "short_name": "Groomies YXL",
+  "description": "Groomies — Skycare aviation grooming team, YXL",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#171310",
-  "theme_color": "#171310",
+  "background_color": "#1A3A5C",
+  "theme_color": "#1A3A5C",
   "orientation": "portrait",
   "icons": [
     {
