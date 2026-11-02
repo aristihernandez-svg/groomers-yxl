@@ -1,0 +1,50 @@
+const CACHE = 'skycare-yav-v24';
+const SHELL = ['./', './index.html', './manifest.json', './baseConfig.js'];
+
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => clients.claim())
+  );
+});
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  // "Network first" only means anything if the fetch actually reaches the
+  // network -- fetch() otherwise honors the browser's own HTTP cache first,
+  // and GitHub Pages sends Cache-Control: max-age=600, so a reload could
+  // silently reuse a 10-minute-old copy of index.html even right after a
+  // fresh deploy. cache:'no-store' forces a real network round-trip here;
+  // the offline fallback below still uses this worker's own cache.
+  e.respondWith(fetch(e.request, {cache: 'no-store'}).catch(() => caches.match(e.request)));
+});
+
+self.addEventListener('push', e => {
+  let data = {};
+  try { data = e.data ? e.data.json() : {}; } catch(err) {}
+  const title = data.title || 'Skycare YAV';
+  const options = {
+    body: data.body || '',
+    icon: data.icon || './cars/Skycare_logo-removebg-preview.png',
+    badge: data.badge || './cars/Skycare_logo-removebg-preview.png',
+    tag: data.tag,
+    data: { url: data.url || './' },
+  };
+  e.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = e.notification.data?.url || '/';
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if (client.url === url && 'focus' in client) return client.focus();
+      }
+      if (clients.openWindow) return clients.openWindow(url);
+    })
+  );
+});

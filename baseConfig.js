@@ -1,0 +1,45 @@
+// Per-base configuration for YXL (Sioux Lookout). Mirrors YKF's baseConfig.js shape exactly —
+// see that file's comment for what each field does.
+//
+// YXL is built from YAV (Master Task, cargo, side quests, opening screen, handoff notes) with
+// YKF's look and YKF's crew cars, home designs, procedures, contacts, fleet, records and admin.
+// It starts empty on purpose: crews add their own cars, aircraft, contacts, stores and
+// procedures from their phones.
+const BASE_CONFIG = {
+  baseId: 'yxl',
+  baseName: 'Skycare YXL',
+  baseAddress: '17 Airport Rd, Sioux Lookout, ON P8T 1A3',
+  companyName: 'Skycare Aviation Services',
+  themeColor: '#1A3A5C',
+  pinCorrect: '1201',
+  adminPin: '0000',    // guards audit/procedure/car admin actions
+
+  firebaseConfig: {
+    apiKey: "AIzaSyDMHZfbWevezkjVx9kesLRc9hPFQ5TUta0",
+    authDomain: "skycare-yxl.firebaseapp.com",
+    projectId: "skycare-yxl",
+    storageBucket: "skycare-yxl.firebasestorage.app",
+    messagingSenderId: "1014551050381",
+    appId: "1:1014551050381:web:8eb65782892a80c53c0ac4"
+  },
+  vapidPublicKey: "", // set when YXL's push keys are made (Phase: notifications)
+
+  // No built-in cars: YXL's cars are added in the app (Audits → Crew Cars → + Add a car),
+  // starting from the seven Bouncie trackers, so crews can change photos, names and plates.
+  crewCars: [],
+
+  // Shared across all bases -- see bouncie-worker/index.js in the YKF repo
+  // for why this isn't a separate per-base Worker.
+  bouncieWorkerUrl: 'https://bouncie-proxy.skycare.workers.dev',
+
+  // Metro audits only for now (no Navajo audits yet). Tails are added in the app.
+  aircraftFleet: {
+    metro: [], westwind: [], astra: [],   // westwind/astra unused at YXL
+  },
+
+  // Absence of a key (or true) means enabled.
+  features: {
+    fleet: true,            // Fleet tab measured from CYXL
+    facilityAudits: false,  // YXL has no facility audits
+  },
+};
