@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Skycare · Dashboard</title>
+<script src="baseConfig.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;
+  --white:#ffffff;
+  --text:#1a2332;
+  --muted:#64748b;
+  --safe:#16a34a;--safe-bg:#dcfce7;--safe-border:#bbf7d0;
+  --warn:#d97706;--warn-bg:#fef3c7;--warn-border:#fde68a;
+  --danger:#dc2626;--danger-bg:#fee2e2;--danger-border:#fecaca;
+  --blue:#2563eb;--blue-bg:#dbeafe;
+  --radius:16px;
+  --shadow:0 2px 12px rgba(0,0,0,.07);
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  --sb-w:220px;
+  --tb-h:52px;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.5;min-height:100vh;padding-bottom:60px}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sb-w);background:#0d1520;display:flex;flex-direction:column;z-index:200;border-right:1px solid rgba(255,255,255,.05)}
+.sb-brand{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
+.sb-brand-icon{font-size:18px;margin-bottom:6px}
+.sb-brand-name{font-size:14px;font-weight:900;color:#fff;letter-spacing:-.02em;line-height:1}
+.sb-brand-sub{font-size:10px;color:#2a4a6a;text-transform:uppercase;letter-spacing:.12em;margin-top:3px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 0;scrollbar-width:none}
+.sb-nav::-webkit-scrollbar{display:none}
+.sb-group-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#1e3a5f;padding:14px 16px 5px;user-select:none}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;border-left:3px solid transparent;transition:background .12s,border-color .12s,color .12s;text-decoration:none;color:#4a6a8a;font-size:13px;font-weight:600;position:relative}
+.sb-item:hover{background:rgba(255,255,255,.04);color:#94a3b8}
+.sb-item.active{background:linear-gradient(90deg,rgba(37,99,235,.18) 0%,transparent 100%);border-left-color:#3b82f6;color:#fff}
+.sb-item-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.sb-item-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-item-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-left:auto}
+.sb-item-dot.safe{background:#22c55e}.sb-item-dot.warn{background:#f59e0b}.sb-item-dot.danger{background:#ef4444}.sb-item-dot.free{background:#1e3a5f}
+.sb-sep{height:1px;background:rgba(255,255,255,.05);margin:8px 16px}
+.sb-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
+.sb-refresh{width:100%;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);color:#60a5fa;border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:background .12s}
+.sb-refresh:hover{background:rgba(37,99,235,.25)}
+.sb-ts{font-size:10px;color:#1e3a5f;text-align:center;margin-top:6px}
+
+/* ── TOPBAR (right of sidebar) ── */
+.topbar{position:fixed;top:0;left:var(--sb-w);right:0;height:var(--tb-h);background:#111e30;color:#fff;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:100;border-bottom:1px solid rgba(255,255,255,.06)}
+.tb-title{font-size:15px;font-weight:800;letter-spacing:-.02em;color:#fff}
+.tb-right{display:flex;align-items:center;gap:10px}
+.live-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:20px;padding:3px 10px;font-size:10px;color:#4ade80;font-weight:700}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.refresh-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#94a3b8;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;transition:background .12s}
+.refresh-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+.ham-btn{display:none;background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer;padding:4px}
+
+/* ── LAYOUT SHELL ── */
+.layout{margin-left:var(--sb-w);padding-top:var(--tb-h)}
+/* ── SECTIONS ── */
+.page{max-width:960px;margin:0 auto;padding:24px 20px;display:flex;flex-direction:column;gap:20px}
+
+/* ── SIDEBAR OVERLAY (mobile) ── */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199}
+.sb-overlay.show{display:block}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .22s ease}
+  .sidebar.open{transform:translateX(0)}
+  .topbar{left:0}
+  .layout{margin-left:0}
+  .ham-btn{display:block}
+}
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+
+/* BUDGET HERO — the trial/credit warning */
+.budget-hero{background:linear-gradient(135deg,#1a2332 0%,#2d3f5c 100%);border-radius:var(--radius);padding:28px 28px 24px;color:#fff;position:relative;overflow:hidden}
+.budget-hero::after{content:'$';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:120px;font-weight:900;color:rgba(255,255,255,.04);line-height:1}
+.bh-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px}
+.bh-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:4px}
+.bh-big{font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:1;color:#fff}
+.bh-big span{font-size:24px;font-weight:600;color:#94a3b8}
+.bh-caption{font-size:13px;color:#64748b;margin-top:4px}
+.bh-meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+.bh-meter{background:rgba(255,255,255,.06);border-radius:10px;padding:14px 16px}
+.bh-meter-label{font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.bh-meter-val{font-size:22px;font-weight:900;color:#fff;line-height:1;margin-bottom:8px}
+.bh-track{height:6px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden}
+.bh-fill{height:100%;border-radius:4px;transition:width 1s ease}
+.fill-safe{background:#4ade80}.fill-warn{background:#fbbf24}.fill-danger{background:#f87171}
+.bh-note{font-size:11px;color:#64748b;margin-top:6px}
+.manual-link{display:inline-flex;align-items:center;gap:5px;margin-top:16px;font-size:12px;color:#60a5fa;text-decoration:none;font-weight:600}
+.manual-link:hover{color:#93c5fd}
+
+/* TRAFFIC LIGHT CARDS */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.cards{grid-template-columns:1fr}}
+.card-wide{grid-column:span 2}
+@media(max-width:640px){.card-wide{grid-column:span 1}}
+
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+.card-top{padding:20px 20px 0}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-icon-name{display:flex;align-items:center;gap:10px}
+.card-icon{font-size:24px;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-name{font-size:15px;font-weight:800;color:var(--text);line-height:1.2}
+.card-system{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* STATUS BADGE */
+.status{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.status.safe{background:var(--safe-bg);color:var(--safe);border:1px solid var(--safe-border)}
+.status.warn{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-border)}
+.status.danger{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border)}
+.status.muted{background:#f1f5f9;color:var(--muted);border:1px solid #e2e8f0}
+
+/* BIG METRIC */
+.big-metric{text-align:center;padding:12px 8px 16px}
+.big-num{font-size:56px;font-weight:900;letter-spacing:-.04em;line-height:1}
+.big-num.safe{color:var(--safe)}.big-num.warn{color:var(--warn)}.big-num.danger{color:var(--danger)}.big-num.blue{color:var(--blue)}
+.big-label{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* PLAIN ROWS */
+.rows{display:flex;flex-direction:column;gap:0}
+.row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid #f1f5f9}
+.row:first-child{border-top:none}
+.row-q{font-size:13px;color:var(--muted)}
+.row-a{font-size:13px;font-weight:700;color:var(--text);text-align:right;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-a.safe{color:var(--safe)}.row-a.warn{color:var(--warn)}.row-a.danger{color:var(--danger)}
+
+/* QUOTA BAR inline */
+.quota-block{margin-bottom:14px}
+.quota-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.quota-name{font-size:12px;font-weight:600;color:var(--text)}
+.quota-nums{font-size:12px;font-weight:700}
+.quota-nums.safe{color:var(--safe)}.quota-nums.warn{color:var(--warn)}.quota-nums.danger{color:var(--danger)}
+.quota-track{height:10px;background:#f1f5f9;border-radius:6px;overflow:hidden;margin-bottom:4px}
+.quota-fill{height:100%;border-radius:6px;transition:width 1.2s ease}
+.quota-caption{font-size:11px;color:var(--muted)}
+
+/* CARD DIVIDER */
+.card-divider{height:1px;background:#f1f5f9;margin:0 20px}
+
+/* CARD BODY + FOOTER */
+.card-body{padding:16px 20px;flex:1}
+.card-footer{padding:12px 20px;background:#fafbfc;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.cost-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
+.cost-free{background:#dcfce7;color:#15803d}
+.cost-watch{background:#fef3c7;color:#92400e}
+.cost-manual{background:#ede9fe;color:#6d28d9}
+.cf-link{font-size:11px;color:var(--blue);text-decoration:none;font-weight:600}
+.cf-link:hover{text-decoration:underline}
+
+/* COLLECTION MINI GRID */
+.coll-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.coll-item{background:#f8fafc;border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center}
+.coll-name{font-size:11px;color:var(--muted);font-weight:600}
+.coll-count{font-size:13px;font-weight:800;color:var(--text)}
+
+/* EMOJI STATUS BIG */
+.card-emoji-status{text-align:center;padding:8px 20px 0;font-size:36px}
+
+/* LAST UPDATED */
+.last-updated{text-align:center;font-size:11px;color:var(--muted);padding-top:4px;padding-bottom:12px}
+
+/* ANALYSIS BOX */
+.analysis{border-radius:10px;padding:13px 15px;margin:14px 0 4px;font-size:13px;line-height:1.55}
+.analysis.safe{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
+.analysis.warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.analysis.danger{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
+.analysis.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+.analysis-title{font-weight:800;margin-bottom:4px;font-size:13px}
+.analysis-action{margin-top:8px;font-weight:700;display:flex;align-items:flex-start;gap:6px}
+.analysis-action::before{content:'→';flex-shrink:0}
+/* PIN LOCK */
+#pin-lock{position:fixed;inset:0;z-index:99999;background:#1a2332;display:flex;align-items:center;justify-content:center;flex-direction:column}
+#pin-lock.hidden{display:none}
+.pin-box{background:#0f172a;border-radius:20px;padding:40px 36px;width:320px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.pin-logo{font-size:36px;margin-bottom:12px}
+.pin-title{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.03em;margin-bottom:4px}
+.pin-sub{font-size:13px;color:#64748b;margin-bottom:28px}
+.pin-dots{display:flex;justify-content:center;gap:12px;margin-bottom:24px}
+.pin-dot{width:14px;height:14px;border-radius:50%;background:#1e293b;border:2px solid #334155;transition:all .15s}
+.pin-dot.filled{background:#3b82f6;border-color:#3b82f6;transform:scale(1.1)}
+.pin-dot.error{background:#ef4444;border-color:#ef4444}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pin-key{background:#1e293b;border:1px solid #334155;color:#fff;font-size:20px;font-weight:700;border-radius:12px;padding:16px;cursor:pointer;transition:background .1s;-webkit-tap-highlight-color:transparent}
+.pin-key:active,.pin-key:hover{background:#2d3f5c}
+.pin-key.del{color:#94a3b8;font-size:16px}
+.pin-err{font-size:13px;color:#ef4444;margin-top:16px;min-height:20px}
+</style>
+</head>
+<body>
+
+<!-- PIN LOCK OVERLAY -->
+<div id="pin-lock">
+  <div class="pin-box">
+    <div class="pin-logo">✈</div>
+    <div class="pin-title">Skycare Admin</div>
+    <div class="pin-sub">Enter your PIN to continue</div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-pad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key" style="visibility:hidden"></button>
+      <button class="pin-key" onclick="pinKey('0')">0</button>
+      <button class="pin-key del" onclick="pinDel()">⌫</button>
+    </div>
+    <div class="pin-err" id="pin-err"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var PIN=BASE_CONFIG.adminPin, entered='', locked=false;
+  // Check session
+  if(sessionStorage.getItem('sky_admin_ok')==='1'){
+    document.getElementById('pin-lock').classList.add('hidden');
+    return;
+  }
+  function updateDots(){
+    for(var i=0;i<4;i++){
+      var d=document.getElementById('pd'+i);
+      d.className='pin-dot'+(i<entered.length?' filled':'');
+    }
+  }
+  window.pinKey=function(k){
+    if(locked||entered.length>=4)return;
+    entered+=k;
+    updateDots();
+    document.getElementById('pin-err').textContent='';
+    if(entered.length===4){
+      if(entered===PIN){
+        sessionStorage.setItem('sky_admin_ok','1');
+        document.getElementById('pin-lock').classList.add('hidden');
+      } else {
+        locked=true;
+        for(var i=0;i<4;i++) document.getElementById('pd'+i).className='pin-dot error';
+        document.getElementById('pin-err').textContent='Wrong PIN. Try again.';
+        setTimeout(function(){entered='';locked=false;updateDots();document.getElementById('pin-err').textContent='';},1200);
+      }
+    }
+  };
+  window.pinDel=function(){
+    if(locked)return;
+    entered=entered.slice(0,-1);
+    updateDots();
+  };
+  // Keyboard support
+  document.addEventListener('keydown',function(e){
+    if(e.key>='0'&&e.key<='9') pinKey(e.key);
+    else if(e.key==='Backspace') pinDel();
+  });
+})();
+</script>
+
+<!-- SIDEBAR OVERLAY (mobile tap-outside) -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-brand-icon">✈</div>
+    <div class="sb-brand-name">Skycare YKF</div>
+    <div class="sb-brand-sub">Admin Dashboard</div>
+  </div>
+
+  <div class="sb-nav">
+    <div class="sb-group-label">Overview</div>
+    <a class="sb-item active" id="sbn-guide" href="#sec-guide" onclick="sbClick(event,this,'sec-guide')">
+      <span class="sb-item-icon">📋</span><span class="sb-item-label">Quick Guide</span>
+    </a>
+    <a class="sb-item" id="sbn-budget" href="#sec-budget" onclick="sbClick(event,this,'sec-budget')">
+      <span class="sb-item-icon">💰</span><span class="sb-item-label">Budget &amp; Trial</span>
+      <span class="sb-item-dot warn"></span>
+    </a>
+
+    <div class="sb-sep"></div>
+    <div class="sb-group-label">App Infrastructure</div>
+    <a class="sb-item" id="sbn-database" href="#sec-database" onclick="sbClick(event,this,'sec-database')">
+      <span class="sb-item-icon">🔥</span><span class="sb-item-label">Database</span>
+      <span class="sb-item-dot warn" id="dot-database"></span>
+    </a>
+    <a class="sb-item" id="sbn-storage" href="#sec-storage" onclick="sbClick(event,this,'sec-storage')">
+      <span class="sb-item-icon">📂</span><span class="sb-item-label">File Storage</span>
+      <span class="sb-item-dot safe" id="dot-storage"></span>
+    </a>
+    <a class="sb-item" id="sbn-app" href="#sec-app" onclick="sbClick(event,this,'sec-app')">
+      <span class="sb-item-icon">🌐</span><span class="sb-item-label">Live App</span>
+      <span class="sb-item-dot safe" id="dot-app"></span>
+    </a>
+
+    <div class="sb-sep"></div>
+    <div class="sb-group-label">Development</div>
+    <a class="sb-item" id="sbn-github" href="#sec-github" onclick="sbClick(event,this,'sec-github')">
+      <span class="sb-item-icon">🐙</span><span class="sb-item-label">GitHub</span>
+      <span class="sb-item-dot safe" id="dot-github"></span>
+    </a>
+    <a class="sb-item" id="sbn-notif" href="#sec-notif" onclick="sbClick(event,this,'sec-notif')">
+      <span class="sb-item-icon">🔔</span><span class="sb-item-label">Notifications</span>
+      <span class="sb-item-dot free"></span>
+    </a>
+    <a class="sb-item" id="sbn-claude" href="#sec-claude" onclick="sbClick(event,this,'sec-claude')">
+      <span class="sb-item-icon">✦</span><span class="sb-item-label">Claude AI</span>
+      <span class="sb-item-dot warn"></span>
+    </a>
+    <a class="sb-item" id="sbn-worker" href="#sec-worker" onclick="sbClick(event,this,'sec-worker')">
+      <span class="sb-item-icon">⚡</span><span class="sb-item-label">Cloudflare Worker</span>
+      <span class="sb-item-dot free"></span>
+    </a>
+  </div>
+
+  <div class="sb-footer">
+    <button class="sb-refresh" onclick="loadAll()">↻ Refresh all data</button>
+    <div class="sb-ts" id="sb-ts">—</div>
+  </div>
+</nav>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="ham-btn" onclick="openSidebar()">☰</button>
+    <div class="tb-title" id="tb-section-name">Quick Guide</div>
+  </div>
+  <div class="tb-right">
+    <div class="live-pill"><div class="live-dot"></div>Live</div>
+    <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+  </div>
+</div>
+
+<div class="layout">
+
+<div class="page">
+
+  <div id="sec-guide"></div>
+  <!-- ══ QUICK REFERENCE TABLE ══ -->
+  <div>
+    <div class="section-label">📋 What's running Skycare — quick guide</div>
+    <div class="card card-wide" style="overflow:auto">
+      <div style="padding:18px 20px 6px;font-size:13px;color:var(--muted);line-height:1.5">
+        Every system below keeps a different part of Skycare alive. Click <strong>Go there ↓</strong> to jump to its full details and live numbers.
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0">
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);white-space:nowrap">System</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)">What is it? (in plain English)</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);white-space:nowrap">What does it do for the app?</th>
+            <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);white-space:nowrap">Cost risk</th>
+            <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #f1f5f9">
+            <td style="padding:13px 16px;white-space:nowrap"><strong>🔥 Firebase</strong><br><span style="font-size:11px;color:var(--muted)">Blaze plan · Google</span></td>
+            <td style="padding:13px 16px;color:var(--muted)">Think of it as the app's brain and filing cabinet. It remembers everything — tasks, audits, who's working, shopping lists — and serves that info instantly when someone opens the app.</td>
+            <td style="padding:13px 16px">Stores <em>all</em> app data. Without it, the app is a blank screen.</td>
+            <td style="padding:13px 16px;text-align:center"><span style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap">⚠ Watch it</span></td>
+            <td style="padding:13px 16px;text-align:center"><a href="#sec-database" style="color:var(--blue);font-weight:700;font-size:12px;text-decoration:none;white-space:nowrap">Go there ↓</a></td>
+          </tr>
+          <tr style="border-bottom:1px solid #f1f5f9;background:#fafbfc">
+            <td style="padding:13px 16px;white-space:nowrap"><strong>📂 Storage</strong><br><span style="font-size:11px;color:var(--muted)">Firebase · Google</span></td>
+            <td style="padding:13px 16px;color:var(--muted)">Like a hard drive in the cloud. When someone takes a photo during an audit, or generates a PDF report, the file goes here. It just sits there until someone downloads it.</td>
+            <td style="padding:13px 16px">Holds audit photos and generated PDF reports.</td>
+            <td style="padding:13px 16px;text-align:center"><span style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap">⚠ Check monthly</span></td>
+            <td style="padding:13px 16px;text-align:center"><a href="#sec-storage" style="color:var(--blue);font-weight:700;font-size:12px;text-decoration:none;white-space:nowrap">Go there ↓</a></td>
+          </tr>
+          <tr style="border-bottom:1px solid #f1f5f9">
+            <td style="padding:13px 16px;white-space:nowrap"><strong>🌐 GitHub Pages</strong><br><span style="font-size:11px;color:var(--muted)">Microsoft · Free</span></td>
+            <td style="padding:13px 16px;color:var(--muted)">The address where your team opens Skycare. It's like a free web host — when you go to the app's URL, GitHub serves it to your phone instantly, from servers all over the world.</td>
+            <td style="padding:13px 16px">Makes the app accessible at its URL, 24/7.</td>
+            <td style="padding:13px 16px;text-align:center"><span style="background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap">✅ Free forever</span></td>
+            <td style="padding:13px 16px;text-align:center"><a href="#sec-app" style="color:var(--blue);font-weight:700;font-size:12px;text-decoration:none;white-space:nowrap">Go there ↓</a></td>
+          </tr>
+          <tr style="border-bottom:1px solid #f1f5f9;background:#fafbfc">
+            <td style="padding:13px 16px;white-space:nowrap"><strong>🐙 GitHub</strong><br><span style="font-size:11px;color:var(--muted)">Microsoft · Free</span></td>
+            <td style="padding:13px 16px;color:var(--muted)">A safe where every version of the app's code is stored forever. Every time your developer makes a change, a snapshot is saved here. If something breaks, you can go back to any older version.</td>
+            <td style="padding:13px 16px">Stores the code. Every update to the app goes through here.</td>
+            <td style="padding:13px 16px;text-align:center"><span style="background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap">✅ Free forever</span></td>
+            <td style="padding:13px 16px;text-align:center"><a href="#sec-github" style="color:var(--blue);font-weight:700;font-size:12px;text-decoration:none;white-space:nowrap">Go there ↓</a></td>
+          </tr>
+          <tr style="border-bottom:1px solid #f1f5f9">
+            <td style="padding:13px 16px;white-space:nowrap"><strong>🔔 Notifications</strong><br><span style="font-size:11px;color:var(--muted)">FCM · Google · Free</span></td>
+            <td style="padding:13px 16px;color:var(--muted)">The "ding" service. When a shift starts, when coffee is ready, or when MX needs something — this is what makes every team member's phone buzz. Google runs this for free, forever, no limits.</td>
+            <td style="padding:13px 16px">Sends push alerts to every team member's phone.</td>
+            <td style="padding:13px 16px;text-align:center"><span style="background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap">✅ Free forever</span></td>
+            <td style="padding:13px 16px;text-align:center"><a href="#sec-notif" style="color:var(--blue);font-weight:700;font-size:12px;text-decoration:none;white-space:nowrap">Go there ↓</a></td>
+          </tr>
+          <tr style="border-bottom:1px solid #f1f5f9;background:#fafbfc">
+            <td style="padding:13px 16px;white-space:nowrap"><strong>✦ Claude</strong><br><span style="font-size:11px;color:var(--muted)">Anthropic · Subscription</span></td>
+            <td style="padding:13px 16px;color:var(--muted)">The AI that writes all the code. Every button, every screen, every feature of Skycare was built by Claude. It's like having a developer available 24/7 who knows the entire codebase by heart.</td>
+            <td style="padding:13px 16px">Builds and fixes every feature of the app.</td>
+            <td style="padding:13px 16px;text-align:center"><span style="background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap">✦ Monthly sub</span></td>
+            <td style="padding:13px 16px;text-align:center"><a href="#sec-claude" style="color:var(--blue);font-weight:700;font-size:12px;text-decoration:none;white-space:nowrap">Go there ↓</a></td>
+          </tr>
+          <tr>
+            <td style="padding:13px 16px;white-space:nowrap"><strong>⚡ Cloudflare</strong><br><span style="font-size:11px;color:var(--muted)">Worker · Free</span></td>
+            <td style="padding:13px 16px;color:var(--muted)">A tiny robot that wakes up every 45 minutes, checks how much of the database has been used, and writes the numbers you see on this dashboard. Without it, the usage bars above would stay empty.</td>
+            <td style="padding:13px 16px">Keeps this admin page's numbers up to date.</td>
+            <td style="padding:13px 16px;text-align:center"><span style="background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap">✅ Free forever</span></td>
+            <td style="padding:13px 16px;text-align:center"><a href="#sec-worker" style="color:var(--blue);font-weight:700;font-size:12px;text-decoration:none;white-space:nowrap">Go there ↓</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="sec-budget"></div>
+  <!-- ══ BUDGET SECTION ══ -->
+  <div>
+    <div class="section-label">💰 Money &amp; Free Credits — Read this first</div>
+    <div class="budget-hero">
+      <!-- TOP ROW: credit remaining + deadline -->
+      <div class="bh-top">
+        <div>
+          <div class="bh-title">🔥 Firebase Blaze · Google Cloud Free Trial</div>
+          <div class="bh-big">$<span id="gcp-dollars">425.27</span> <span>CAD left</span></div>
+          <div class="bh-caption" id="gcp-days-left">70 days left · expires October 11, 2026</div>
+        </div>
+        <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:14px 18px;min-width:200px">
+          <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">⚠ What happens Oct 11, 2026?</div>
+          <div style="font-size:13px;color:#cbd5e1;line-height:1.5">Your free trial ends. After that, Firebase charges your <strong style="color:#fff">real credit card</strong> for every read, write and photo stored. At current usage that's about <strong style="color:#4ade80">$0.30 CAD/month</strong> — very cheap, but your card WILL be charged.</div>
+          <a class="manual-link" href="https://console.firebase.google.com/project/skycare-yxl/overview" target="_blank" style="margin-top:10px">→ Firebase billing console ↗</a>
+        </div>
+      </div>
+
+      <!-- METERS ROW -->
+      <div class="bh-meters">
+        <div class="bh-meter">
+          <div class="bh-meter-label">Days left in trial</div>
+          <div class="bh-meter-val" id="bm-days-val">70</div>
+          <div class="bh-track"><div class="bh-fill" id="bm-days-bar" style="width:0%"></div></div>
+          <div class="bh-note" id="bm-days-note">Expires Oct 11, 2026</div>
+        </div>
+        <div class="bh-meter">
+          <div class="bh-meter-label">Credit remaining (CAD)</div>
+          <div class="bh-meter-val">$425.27</div>
+          <div class="bh-track"><div class="bh-fill fill-safe" style="width:85%"></div></div>
+          <div class="bh-note">~$0.30/month at current usage → lasts forever</div>
+        </div>
+        <div class="bh-meter">
+          <div class="bh-meter-label">Est. daily Firebase cost</div>
+          <div class="bh-meter-val" id="bm-daily-cost">—</div>
+          <div class="bh-track"><div class="bh-fill fill-safe" id="bm-cost-bar" style="width:5%"></div></div>
+          <div class="bh-note" id="bm-cost-note">Based on today's reads &amp; writes</div>
+        </div>
+        <div class="bh-meter">
+          <div class="bh-meter-label">🐙 GitHub &amp; Pages</div>
+          <div class="bh-meter-val" style="color:#4ade80">$0.00</div>
+          <div class="bh-track"><div class="bh-fill fill-safe" style="width:100%"></div></div>
+          <div class="bh-note">Free forever — no credit card ever</div>
+        </div>
+      </div>
+
+      <!-- WARNING BOX -->
+      <div style="margin-top:18px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:12px 16px;font-size:13px;color:#fbbf24;line-height:1.5">
+        <strong>The real clock is October 11, 2026 — not the money.</strong> You have $425 CAD left but the app only costs ~$0.30/month, so you'll never run out of credit. What matters is the date: after Oct 11 your linked credit card starts getting small automatic charges. Set a reminder to review the Firebase billing page around that date.
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px">
+        <a class="manual-link" href="https://console.firebase.google.com/project/skycare-yxl/overview" target="_blank">→ Firebase Console ↗</a>
+        <a class="manual-link" href="https://console.cloud.google.com/billing" target="_blank">→ Google Cloud Billing ↗</a>
+        <a class="manual-link" href="https://console.anthropic.com" target="_blank">→ Claude / Anthropic ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DATABASE (FIRESTORE) ══ -->
+  <div id="sec-database"></div>
+  <div>
+    <div class="section-label">🗄️ The App's Database — Firebase Firestore</div>
+    <div class="card card-wide">
+      <div class="card-top">
+        <div class="card-header">
+          <div class="card-icon-name">
+            <div class="card-icon" style="background:#fff7ed;font-size:26px">🔥</div>
+            <div>
+              <div class="card-name">Database (Firestore)</div>
+              <div class="card-system">This is where ALL the app's info is stored — tasks, audits, users, shopping lists, everything.</div>
+            </div>
+          </div>
+          <div class="status muted" id="fs-status-badge">Loading…</div>
+        </div>
+
+        <!-- QUOTA BARS -->
+        <div>
+          <div class="quota-block">
+            <div class="quota-header">
+              <div class="quota-name">📖 How many times the app READ something today</div>
+              <div class="quota-nums" id="q-reads-label">— / 50,000</div>
+            </div>
+            <div class="quota-track"><div class="quota-fill" id="q-reads-bar" style="width:0%;background:#3b82f6"></div></div>
+            <div class="quota-caption" id="q-reads-cap">Free limit: 50,000 reads per day. Resets at midnight.</div>
+          </div>
+          <div class="quota-block">
+            <div class="quota-header">
+              <div class="quota-name">✏️ How many times the app SAVED something today</div>
+              <div class="quota-nums" id="q-writes-label">— / 20,000</div>
+            </div>
+            <div class="quota-track"><div class="quota-fill" id="q-writes-bar" style="width:0%;background:#22c55e"></div></div>
+            <div class="quota-caption" id="q-writes-cap">Free limit: 20,000 writes per day. Resets at midnight.</div>
+          </div>
+          <div class="quota-block">
+            <div class="quota-header">
+              <div class="quota-name">🗑️ How many times something was DELETED today</div>
+              <div class="quota-nums" id="q-deletes-label">— / 20,000</div>
+            </div>
+            <div class="quota-track"><div class="quota-fill" id="q-deletes-bar" style="width:0%;background:#8b5cf6"></div></div>
+            <div class="quota-caption" id="q-deletes-cap">Free limit: 20,000 deletes per day.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="rows">
+          <div class="row">
+            <div class="row-q">Last checked</div>
+            <div class="row-a" id="q-updated">—</div>
+          </div>
+          <div class="row">
+            <div class="row-q">Storage used (docs &amp; indexes)</div>
+            <div class="row-a" id="q-fs-storage-label">—</div>
+          </div>
+          <div class="row">
+            <div class="row-q">Free storage limit</div>
+            <div class="row-a safe">1 GB — you're fine</div>
+          </div>
+        </div>
+
+        <!-- COLLECTION COUNTS -->
+        <div style="margin-top:16px">
+          <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">What's stored inside</div>
+          <div class="coll-grid">
+            <div class="coll-item"><span class="coll-name">✅ Tasks</span><span class="coll-count" id="col-tasks">…</span></div>
+            <div class="coll-item"><span class="coll-name">🔄 Task State</span><span class="coll-count" id="col-taskState">…</span></div>
+            <div class="coll-item"><span class="coll-name">🚗 Car Audits</span><span class="coll-count" id="col-auditCars">…</span></div>
+            <div class="coll-item"><span class="coll-name">✈ Aircraft Audits</span><span class="coll-count" id="col-auditAircraft">…</span></div>
+            <div class="coll-item"><span class="coll-name">📋 Audit History</span><span class="coll-count" id="col-auditHistory">…</span></div>
+            <div class="coll-item"><span class="coll-name">📦 Audit Archive</span><span class="coll-count" id="col-auditArchive">…</span></div>
+            <div class="coll-item"><span class="coll-name">🏢 Facility Audits</span><span class="coll-count" id="col-facilityAudits">…</span></div>
+            <div class="coll-item"><span class="coll-name">🛒 Shopping</span><span class="coll-count" id="col-shoppingCatalog">…</span></div>
+          </div>
+        </div>
+      </div>
+
+        <div id="analysis-fs" class="analysis info"><div class="analysis-title">⏳ Loading analysis…</div></div>
+      </div>
+
+      <div class="card-footer">
+        <div class="cost-tag cost-watch">⚠ Watch this one — it has daily limits</div>
+        <a class="cf-link" href="https://console.firebase.google.com/project/skycare-yxl/firestore" target="_blank">Open Database Console ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ROW: STORAGE + APP STATUS ══ -->
+  <div id="sec-storage"></div>
+  <div>
+    <div class="section-label">📂 File Storage &amp; App Status</div>
+    <div class="cards">
+
+      <!-- FIREBASE STORAGE -->
+      <div class="card">
+        <div class="card-emoji-status" id="storage-emoji">📂</div>
+        <div class="card-top">
+          <div class="card-header">
+            <div class="card-icon-name">
+              <div>
+                <div class="card-name">Photo &amp; File Storage</div>
+                <div class="card-system">Where audit photos and PDFs are saved</div>
+              </div>
+            </div>
+            <div class="status" id="storage-badge">Loading…</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="big-metric">
+            <div class="big-num blue" id="storage-used">—</div>
+            <div class="big-label">used out of 5 GB free</div>
+          </div>
+          <div class="quota-block" style="margin-top:4px">
+            <div class="quota-track" style="height:14px"><div class="quota-fill" id="q-gcs-bar" style="width:0%;background:#3b82f6"></div></div>
+            <div class="quota-caption" style="margin-top:6px" id="storage-caption">Free limit is 5 GB. Photos fill this up over time.</div>
+          </div>
+          <div class="rows" style="margin-top:8px">
+            <div class="row"><div class="row-q">Downloads per day</div><div class="row-a safe">1 GB free</div></div>
+            <div class="row"><div class="row-q">What goes here</div><div class="row-a">Audit photos, PDFs</div></div>
+          </div>
+          <div id="analysis-storage" class="analysis info"><div class="analysis-title">⏳ Loading analysis…</div></div>
+        </div>
+        <div class="card-footer">
+          <div class="cost-tag cost-watch">⚠ Check monthly — photos add up</div>
+          <a class="cf-link" href="https://console.firebase.google.com/project/skycare-yxl/storage" target="_blank">Open Storage ↗</a>
+        </div>
+      </div>
+
+      <!-- APP LIVE STATUS -->
+      <div class="card">
+        <div class="card-emoji-status" id="pages-emoji">🌐</div>
+        <div class="card-top">
+          <div class="card-header">
+            <div class="card-icon-name">
+              <div>
+                <div class="card-name">The App (Live Website)</div>
+                <div class="card-system">Is Skycare loading for users right now?</div>
+              </div>
+            </div>
+            <div class="status" id="pages-badge">Checking…</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="big-metric">
+            <div class="big-num" id="pages-speed">—</div>
+            <div class="big-label" id="pages-speed-label">checking response time…</div>
+          </div>
+          <div class="rows">
+            <div class="row"><div class="row-q">Is the app online?</div><div class="row-a" id="pages-online">Checking…</div></div>
+            <div class="row"><div class="row-q">Last code update</div><div class="row-a" id="gh-deploy">…</div></div>
+            <div class="row"><div class="row-q">How to update it</div><div class="row-a">Just push to GitHub</div></div>
+          </div>
+          <div id="analysis-pages" class="analysis info"><div class="analysis-title">⏳ Loading analysis…</div></div>
+        </div>
+        <div class="card-footer">
+          <div class="cost-tag cost-free">✓ Free forever · no limits</div>
+          <a class="cf-link" href="https://aristihernandez-svg.github.io/groomers-yxl/" target="_blank">Open Live App ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ROW: GITHUB + NOTIFICATIONS ══ -->
+  <div id="sec-github"></div><div id="sec-app"></div><div id="sec-notif"></div>
+  <div>
+    <div class="section-label">🐙 Code &amp; Notifications</div>
+    <div class="cards">
+
+      <!-- GITHUB -->
+      <div class="card">
+        <div class="card-top">
+          <div class="card-header">
+            <div class="card-icon-name">
+              <div class="card-icon" style="background:#f8fafc">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#1a2332"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.49.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.34-3.369-1.34-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+              </div>
+              <div>
+                <div class="card-name">GitHub — The Code Safe</div>
+                <div class="card-system">Every line of Skycare's code lives here</div>
+              </div>
+            </div>
+            <div class="status safe" id="gh-badge">Loading…</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="rows">
+            <div class="row"><div class="row-q">Last update</div><div class="row-a safe" id="gh-time">…</div></div>
+            <div class="row"><div class="row-q">What was changed</div><div class="row-a" id="gh-msg">…</div></div>
+            <div class="row"><div class="row-q">Changed by</div><div class="row-a" id="gh-author">…</div></div>
+            <div class="row"><div class="row-q">Total saves (commits)</div><div class="row-a" id="gh-commits">…</div></div>
+            <div class="row"><div class="row-q">Repo size</div><div class="row-a" id="gh-size">…</div></div>
+            <div class="row"><div class="row-q">Will this ever cost money?</div><div class="row-a safe">Never — it's free forever</div></div>
+          </div>
+          <div id="analysis-gh" class="analysis info"><div class="analysis-title">⏳ Loading analysis…</div></div>
+        </div>
+        <div class="card-footer">
+          <div class="cost-tag cost-free">✓ Free forever</div>
+          <a class="cf-link" href="https://github.com/aristihernandez-svg/groomers-yxl" target="_blank">Open GitHub ↗</a>
+        </div>
+      </div>
+
+      <!-- FCM NOTIFICATIONS -->
+      <div class="card">
+        <div class="card-top">
+          <div class="card-header">
+            <div class="card-icon-name">
+              <div class="card-icon" style="background:#f0fdf4;font-size:22px">🔔</div>
+              <div>
+                <div class="card-name">Push Notifications</div>
+                <div class="card-system">The "ding" that alerts your team's phones</div>
+              </div>
+            </div>
+            <div class="status safe">Free forever</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="big-metric">
+            <div class="big-num safe" id="fcm-devices">—</div>
+            <div class="big-label">devices registered</div>
+          </div>
+          <div class="rows">
+            <div class="row"><div class="row-q">Cost per notification</div><div class="row-a safe">$0.00 — completely free</div></div>
+            <div class="row"><div class="row-q">Monthly limit</div><div class="row-a safe">Unlimited</div></div>
+            <div class="row"><div class="row-q">Used for</div><div class="row-a">Shift alerts, coffee, MX</div></div>
+            <div class="row"><div class="row-q">Will this ever cost money?</div><div class="row-a safe">Never</div></div>
+          </div>
+          <div id="analysis-fcm" class="analysis safe">
+            <div class="analysis-title">✅ Nothing to worry about here</div>
+            Push notifications are 100% free, forever, with no limits. Google doesn't charge for FCM — ever. You can send 1 notification or 1 million, it costs exactly $0.
+            <div class="analysis-action">No action needed. Relax on this one.</div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="cost-tag cost-free">✓ Free forever · unlimited</div>
+          <a class="cf-link" href="https://console.firebase.google.com/project/skycare-yxl/messaging" target="_blank">Open FCM ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CLAUDE / ANTHROPIC ══ -->
+  <div id="sec-claude"></div>
+  <div>
+    <div class="section-label">✦ Claude — The AI that builds Skycare</div>
+    <div class="card card-wide">
+      <div class="card-top">
+        <div class="card-header">
+          <div class="card-icon-name">
+            <div class="card-icon" style="background:#f5f3ff;font-size:22px">✦</div>
+            <div>
+              <div class="card-name">Anthropic · Claude Code</div>
+              <div class="card-system">The AI assistant writing every feature of this app — aristihernandez@gmail.com</div>
+            </div>
+          </div>
+          <div class="status warn">Check manually</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div style="background:#faf5ff;border-radius:10px;padding:14px 16px;margin-bottom:14px;border:1px solid #e9d5ff">
+          <div style="font-size:13px;font-weight:700;color:#7c3aed;margin-bottom:4px">⚠ I can't read Claude's billing automatically</div>
+          <div style="font-size:13px;color:#6b21a8">The Anthropic API doesn't share billing data publicly. You need to check it yourself at the link below. It shows how many tokens were used and how much was charged this month.</div>
+        </div>
+        <div class="rows">
+          <div class="row"><div class="row-q">Plan</div><div class="row-a">Pro or Max subscription</div></div>
+          <div class="row"><div class="row-q">Model being used</div><div class="row-a">claude-sonnet-4-6 (very capable)</div></div>
+          <div class="row"><div class="row-q">What was built with Claude</div><div class="row-a">The entire app — 100%</div></div>
+          <div class="row"><div class="row-q">Billing type</div><div class="row-a warn">Monthly subscription — check console</div></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="cost-tag cost-manual">✦ Monthly — check console for exact spend</div>
+        <a class="cf-link" href="https://console.anthropic.com" target="_blank">Check Claude Billing ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CLOUDFLARE WORKER ══ -->
+  <div id="sec-worker"></div>
+  <div>
+    <div class="section-label">⚡ Background Helper (Cloudflare Worker)</div>
+    <div class="card card-wide">
+      <div class="card-top" style="padding-bottom:16px">
+        <div class="card-header">
+          <div class="card-icon-name">
+            <div class="card-icon" style="background:#fff7ed;font-size:22px">⚡</div>
+            <div>
+              <div class="card-name">Cloudflare Worker — Quota Tracker</div>
+              <div class="card-system">This tiny robot wakes up every 45 min and checks how much of the database has been used, then writes the numbers you see above.</div>
+            </div>
+          </div>
+          <div class="status safe">Free · Running</div>
+        </div>
+        <div class="rows">
+          <div class="row"><div class="row-q">What it does</div><div class="row-a">Checks database usage every 45 minutes</div></div>
+          <div class="row"><div class="row-q">Free limit</div><div class="row-a safe">100,000 runs/day — we use ~32/day</div></div>
+          <div class="row"><div class="row-q">Will this ever cost money?</div><div class="row-a safe">No — we're far below the free limit</div></div>
+          <div class="row"><div class="row-q">Last data update</div><div class="row-a" id="worker-last-run">—</div></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="cost-tag cost-free">✓ Free forever</div>
+        <a class="cf-link" href="https://dash.cloudflare.com" target="_blank">Cloudflare Dashboard ↗</a>
+        <a class="cf-link" href="https://skycare-quota-tracker.skycare.workers.dev" target="_blank">Force refresh now ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:11px;color:var(--muted);padding-top:8px" id="page-ts">Last refreshed: —</div>
+
+</div><!-- /page -->
+</div><!-- /layout -->
+
+<script>
+firebase.initializeApp(BASE_CONFIG.firebaseConfig);   // YXL: settings come from baseConfig.js
+var db = firebase.firestore();
+
+// ── TRIAL COUNTDOWN ──
+(function(){
+  var expiry = new Date('2026-10-11T00:00:00');
+  var daysLeft = Math.ceil((expiry - Date.now()) / 86400000);
+  daysLeft = Math.max(0, daysLeft);
+  document.getElementById('bm-days-val').textContent = daysLeft;
+  document.getElementById('gcp-days-left').textContent = daysLeft + ' days left · expires October 11, 2026';
+  var totalDays = Math.ceil((expiry - new Date('2026-08-02')) / 86400000); // approx trial total from today
+  var elapsed = totalDays - daysLeft;
+  var pct = Math.min(100, Math.round((elapsed / totalDays) * 100));
+  var bar = document.getElementById('bm-days-bar');
+  bar.style.width = pct + '%';
+  bar.className = 'bh-fill ' + (daysLeft < 14 ? 'fill-danger' : daysLeft < 30 ? 'fill-warn' : 'fill-safe');
+  if (daysLeft < 14) document.getElementById('bm-days-note').textContent = '⚠ Less than 2 weeks left!';
+  else if (daysLeft < 30) document.getElementById('bm-days-note').textContent = 'Under a month — check billing settings';
+  else document.getElementById('bm-days-note').textContent = 'Expires Oct 11, 2026';
+})();
+
+// ── BLAZE COST CALCULATOR ──
+// Pricing in CAD (approx 1.36x USD rates as of 2026)
+var BLAZE = {
+  readPer100k:    0.082,  // CAD per 100K reads
+  writePer100k:   0.245,  // CAD per 100K writes
+  deletePer100k:  0.027,  // CAD per 100K deletes
+  storagePerGB:   0.035,  // CAD per GB/month
+};
+function calcDailyCost(reads, writes, deletes) {
+  return (reads  / 100000 * BLAZE.readPer100k) +
+         (writes / 100000 * BLAZE.writePer100k) +
+         (deletes/ 100000 * BLAZE.deletePer100k);
+}
+function updateCostMeter(reads, writes, deletes) {
+  var daily = calcDailyCost(reads, writes, deletes);
+  var monthly = daily * 30;
+  document.getElementById('bm-daily-cost').textContent = '$' + daily.toFixed(4) + ' CAD';
+  document.getElementById('bm-cost-note').textContent = '≈ $' + monthly.toFixed(2) + ' CAD/month at this rate';
+  // Bar: $0.50/day would be concerning, scale to that
+  var barPct = Math.min(100, Math.round((daily / 0.50) * 100));
+  var costBar = document.getElementById('bm-cost-bar');
+  costBar.style.width = Math.max(3, barPct) + '%';
+  costBar.className = 'bh-fill ' + (daily > 0.30 ? 'fill-danger' : daily > 0.10 ? 'fill-warn' : 'fill-safe');
+}
+
+// ── HELPERS ──
+function fmt(n) { return n === null || n === undefined ? '—' : Number(n).toLocaleString(); }
+function fmtBytes(b) {
+  if (!b && b !== 0) return '—';
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+  if (b < 1073741824) return (b / 1048576).toFixed(1) + ' MB';
+  return (b / 1073741824).toFixed(2) + ' GB';
+}
+function pct(val, max) { return Math.min(100, Math.round((val / max) * 100)); }
+function timeAgo(iso) {
+  var diff = Math.round((Date.now() - new Date(iso)) / 60000);
+  if (diff < 1) return 'just now';
+  if (diff < 60) return diff + 'm ago';
+  if (diff < 1440) return Math.round(diff / 60) + 'h ago';
+  return Math.round(diff / 1440) + 'd ago';
+}
+function colorClass(p, a, r) { return p >= r ? 'danger' : p >= a ? 'warn' : 'safe'; }
+function fillColor(p, a, r) { return p >= r ? '#ef4444' : p >= a ? '#f59e0b' : '#22c55e'; }
+function setAnalysis(id, level, title, body, action) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'analysis ' + level;
+  el.innerHTML = '<div class="analysis-title">' + title + '</div>' + body +
+    (action ? '<div class="analysis-action">' + action + '</div>' : '');
+}
+function setQuotaBar(barId, labelId, capId, val, max, unit, warnPct, dangerPct) {
+  var p = pct(val, max);
+  var cl = colorClass(p, warnPct, dangerPct);
+  document.getElementById(barId).style.width = p + '%';
+  document.getElementById(barId).style.background = fillColor(p, warnPct, dangerPct);
+  var lbl = document.getElementById(labelId);
+  lbl.textContent = fmt(val) + ' / ' + fmt(max) + (unit ? ' ' + unit : '');
+  lbl.className = 'quota-nums ' + cl;
+  if (capId) {
+    var pText = p < 40 ? '✅ You\'re well within the free limit — no worries!' :
+                p < 70 ? '⚡ Getting busy — keep an eye on this.' :
+                p < 90 ? '⚠️ This is getting close to the limit!' :
+                '🚨 ALMOST AT THE LIMIT — tell your developer!';
+    document.getElementById(capId).textContent = pText;
+  }
+}
+
+// ── GITHUB ──
+async function loadGitHub() {
+  try {
+    var r1 = await fetch('https://api.github.com/repos/aristihernandez-svg/groomers-ykf/commits?per_page=1');
+    var commits = await r1.json();
+    if (commits[0]) {
+      var c = commits[0].commit;
+      document.getElementById('gh-time').textContent = timeAgo(c.author.date);
+      document.getElementById('gh-msg').textContent = c.message.split('\n')[0];
+      document.getElementById('gh-author').textContent = c.author.name;
+      document.getElementById('gh-deploy').textContent = timeAgo(c.author.date);
+    }
+    var r2 = await fetch('https://api.github.com/repos/aristihernandez-svg/groomers-ykf');
+    var repo = await r2.json();
+    document.getElementById('gh-size').textContent = repo.size > 1024 ? (repo.size / 1024).toFixed(1) + ' MB' : repo.size + ' KB';
+    var r3 = await fetch('https://api.github.com/repos/aristihernandez-svg/groomers-ykf/commits?per_page=1');
+    var link = r3.headers.get('Link') || '';
+    var m = link.match(/page=(\d+)>; rel="last"/);
+    if (m) document.getElementById('gh-commits').textContent = m[1];
+    document.getElementById('gh-badge').textContent = '✓ Connected';
+    document.getElementById('gh-badge').className = 'status safe';
+
+    var commitCount = m ? parseInt(m[1]) : 0;
+    var repoSizeMB = repo.size > 1024 ? (repo.size / 1024).toFixed(1) : null;
+    var lastDate = commits[0] ? new Date(commits[0].commit.author.date) : null;
+    var hoursAgo = lastDate ? Math.round((Date.now() - lastDate) / 3600000) : null;
+    var activityMsg = hoursAgo < 2 ? 'The team is actively working on the app right now.' :
+                      hoursAgo < 24 ? 'The last change was made ' + hoursAgo + ' hours ago — the app is being actively developed.' :
+                      'The last change was ' + Math.round(hoursAgo/24) + ' day(s) ago.';
+    setAnalysis('analysis-gh', 'safe',
+      '✅ Your code is safe and healthy',
+      'GitHub is like a filing cabinet that keeps every version of the app ever made — ' + (commitCount ? 'all ' + commitCount + ' of them. ' : '') +
+      activityMsg + ' The repo is ' + (repoSizeMB ? repoSizeMB + ' MB' : repo.size + ' KB') + ' total, which GitHub hosts for free with no size limits.',
+      'No action needed. GitHub will never charge you for this.'
+    );
+  } catch (e) {
+    document.getElementById('gh-badge').textContent = 'Error';
+    document.getElementById('gh-badge').className = 'status danger';
+    setAnalysis('analysis-gh', 'danger', '❌ Could not reach GitHub', 'GitHub may be down or there is a network issue. Try refreshing.', 'Check github.com to see if it\'s a global outage.');
+  }
+}
+
+// ── PAGES PING ──
+async function loadPages() {
+  var t0 = performance.now();
+  try {
+    await fetch('https://aristihernandez-svg.github.io/groomers-yxl/', { mode: 'no-cors', cache: 'no-store' });
+    var ms = Math.round(performance.now() - t0);
+    var speed = ms < 400 ? 'Fast' : ms < 1000 ? 'Normal' : 'Slow';
+    var cl = ms < 400 ? 'safe' : ms < 1000 ? 'warn' : 'danger';
+    document.getElementById('pages-emoji').textContent = ms < 400 ? '🟢' : ms < 1000 ? '🟡' : '🔴';
+    document.getElementById('pages-speed').textContent = ms + 'ms';
+    document.getElementById('pages-speed').className = 'big-num ' + cl;
+    document.getElementById('pages-speed-label').textContent = speed + ' response — app is online';
+    document.getElementById('pages-online').textContent = '✅ Yes — loading normally';
+    document.getElementById('pages-online').className = 'row-a safe';
+    document.getElementById('pages-badge').textContent = '✓ Online';
+    document.getElementById('pages-badge').className = 'status safe';
+    var feel = ms < 300 ? 'That\'s lightning fast — faster than blinking.' : ms < 600 ? 'That\'s a good speed — users won\'t notice any delay.' : ms < 1200 ? 'A bit slow but acceptable. Users may notice a slight pause.' : 'This is slow. Users might think the app is broken.';
+    var lvl = ms < 600 ? 'safe' : ms < 1200 ? 'warn' : 'danger';
+    var act = ms < 600 ? 'No action needed. The app is performing well.' : ms < 1200 ? 'Keep an eye on this. If it stays slow, tell your developer.' : 'Tell your developer — the app is loading too slowly for your team.';
+    setAnalysis('analysis-pages', lvl,
+      (ms < 600 ? '✅' : ms < 1200 ? '⚡' : '🐢') + ' App loaded in ' + ms + 'ms',
+      feel + ' GitHub Pages hosts your app for free on servers all around the world, so it\'s almost always fast and reliable.',
+      act
+    );
+  } catch (e) {
+    document.getElementById('pages-emoji').textContent = '🔴';
+    document.getElementById('pages-speed').textContent = '!!';
+    document.getElementById('pages-speed').className = 'big-num danger';
+    document.getElementById('pages-speed-label').textContent = 'App may be down!';
+    document.getElementById('pages-online').textContent = '❌ Not responding';
+    document.getElementById('pages-online').className = 'row-a danger';
+    document.getElementById('pages-badge').textContent = '✗ Down';
+    document.getElementById('pages-badge').className = 'status danger';
+    setAnalysis('analysis-pages', 'danger',
+      '🚨 The app is not responding!',
+      'When we tried to load Skycare, it didn\'t answer. This means your team can\'t open the app right now.',
+      'Contact your developer immediately. This is urgent.'
+    );
+  }
+}
+
+// ── FIRESTORE QUOTA ──
+async function loadQuota() {
+  try {
+    var doc = await db.collection('adminStats').doc('quota').get();
+    if (!doc.exists) {
+      document.getElementById('fs-status-badge').textContent = 'No data yet';
+      return;
+    }
+    var d = doc.data();
+
+    var reads   = d.reads_today   || 0;
+    var writes  = d.writes_today  || 0;
+    var deletes = d.deletes_today || 0;
+    updateCostMeter(reads, writes, deletes);
+    setQuotaBar('q-reads-bar', 'q-reads-label', 'q-reads-cap', reads,   50000, '', 60, 85);
+    setQuotaBar('q-writes-bar', 'q-writes-label', 'q-writes-cap', writes, 20000, '', 60, 85);
+    setQuotaBar('q-deletes-bar', 'q-deletes-label', 'q-deletes-cap', deletes, 20000, '', 60, 85);
+
+    var fsBytes = d.firestore_bytes || 0;
+    document.getElementById('q-fs-storage-label').textContent = fmtBytes(fsBytes) + ' used of 1 GB free';
+
+    // Overall status
+    var maxPct = Math.max(
+      pct(d.reads_today, 50000),
+      pct(d.writes_today, 20000),
+      pct(d.deletes_today, 20000)
+    );
+    var badge = document.getElementById('fs-status-badge');
+    if (maxPct < 50) { badge.textContent = '✅ All good'; badge.className = 'status safe'; }
+    else if (maxPct < 80) { badge.textContent = '⚡ Getting busy'; badge.className = 'status warn'; }
+    else { badge.textContent = '🚨 Close to limit!'; badge.className = 'status danger'; }
+
+    // Storage
+    var gcsBytes = d.storage_bytes || 0;
+    var gcsPct = pct(gcsBytes, 5 * 1073741824);
+    document.getElementById('storage-used').textContent = fmtBytes(gcsBytes);
+    document.getElementById('storage-used').className = 'big-num ' + colorClass(gcsPct, 60, 85);
+    document.getElementById('q-gcs-bar').style.width = gcsPct + '%';
+    document.getElementById('q-gcs-bar').style.background = fillColor(gcsPct, 60, 85);
+    document.getElementById('storage-caption').textContent =
+      gcsPct < 30 ? '✅ You\'re using ' + gcsPct + '% of your free storage. No worries at all.' :
+      gcsPct < 60 ? '⚡ At ' + gcsPct + '% — still fine but keep an eye as photos accumulate.' :
+      '⚠️ ' + gcsPct + '% used — consider cleaning up old audit photos.';
+    var sb = document.getElementById('storage-badge');
+    if (gcsPct < 60) { sb.textContent = '✓ Fine'; sb.className = 'status safe'; }
+    else if (gcsPct < 85) { sb.textContent = '⚡ Watch this'; sb.className = 'status warn'; }
+    else { sb.textContent = '🚨 Almost full!'; sb.className = 'status danger'; }
+    document.getElementById('storage-emoji').textContent = gcsPct < 60 ? '📂' : gcsPct < 85 ? '📁' : '📦';
+
+    if (d.updated_at) {
+      var ts = timeAgo(d.updated_at) + ' (' + new Date(d.updated_at).toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' }) + ')';
+      document.getElementById('q-updated').textContent = ts;
+      document.getElementById('worker-last-run').textContent = ts;
+    }
+
+    // ── FIRESTORE ANALYSIS ──
+    var readPct  = pct(reads,  50000);
+    var writePct = pct(writes, 20000);
+    var delPct   = pct(deletes, 20000);
+    var worst    = Math.max(readPct, writePct, delPct);
+    var readsLeft  = 50000 - reads;
+    var writesLeft = 20000 - writes;
+    var projReads  = Math.round(reads / (new Date().getHours() + 1) * 24);
+    var dailyCostCAD = calcDailyCost(reads, writes, deletes);
+    var monthlyCostCAD = dailyCostCAD * 30;
+
+    var fsLevel, fsTitle, fsBody, fsAction;
+    var costStr = '$' + dailyCostCAD.toFixed(4) + ' CAD today (~$' + monthlyCostCAD.toFixed(2) + ' CAD/month)';
+    if (worst < 30) {
+      fsLevel = 'safe'; fsTitle = '✅ Your database is relaxed and cheap today';
+      fsBody = 'The app read the database ' + fmt(reads) + ' times and saved data ' + fmt(writes) + ' times today — only ' + readPct + '% of your daily limit. ' +
+        'At this pace you\'ll use about ' + fmt(projReads) + ' reads by midnight, leaving you ' + fmt(readsLeft) + ' reads to spare. ' +
+        'On the Blaze plan, today\'s usage costs approximately <strong>' + costStr + '</strong>.';
+      fsAction = 'Nothing to do. Usage and cost are both very low.';
+    } else if (worst < 60) {
+      fsLevel = 'safe'; fsTitle = '✅ Database is healthy — moderately busy';
+      fsBody = 'The app has used ' + readPct + '% of its daily reads and ' + writePct + '% of its daily writes. ' +
+        'You still have ' + fmt(readsLeft) + ' reads and ' + fmt(writesLeft) + ' writes left today. ' +
+        'Cost so far: approximately <strong>' + costStr + '</strong>.';
+      fsAction = 'No action needed, but check back tonight to make sure usage doesn\'t spike unexpectedly.';
+    } else if (worst < 85) {
+      fsLevel = 'warn'; fsTitle = '⚡ Getting busy — keep an eye on this';
+      fsBody = 'You\'ve used ' + worst + '% of your daily limit. The app is working hard today. At this pace you might hit the ceiling before midnight — ' +
+        'if that happens, the app stops reading/saving data until midnight when it resets. ' +
+        'Cost today: approximately <strong>' + costStr + '</strong>.';
+      fsAction = 'Tell your developer. Something may be reading data more than expected.';
+    } else {
+      fsLevel = 'danger'; fsTitle = '🚨 ALMOST AT THE LIMIT — act now';
+      fsBody = 'You\'ve used ' + worst + '% of your daily quota. If this hits 100% before midnight, the app stops working for your whole team — ' +
+        'no tasks, no audits, nothing. It resets automatically at midnight PT. ' +
+        'Cost today: approximately <strong>' + costStr + '</strong>.';
+      fsAction = 'Contact your developer immediately.';
+    }
+    setAnalysis('analysis-fs', fsLevel, fsTitle, fsBody, fsAction);
+
+    // ── STORAGE ANALYSIS ──
+    var gcsBytes  = d.storage_bytes || 0;
+    var gcsMB     = (gcsBytes / 1048576).toFixed(1);
+    var gcsGB     = (gcsBytes / 1073741824).toFixed(3);
+    var gcsPctVal = pct(gcsBytes, 5 * 1073741824);
+    var stLevel, stTitle, stBody, stAction;
+    if (gcsPctVal < 5) {
+      stLevel = 'safe'; stTitle = '✅ Storage is practically empty';
+      stBody = 'You\'re using ' + gcsMB + ' MB out of 5,000 MB free — that\'s ' + gcsPctVal + '% full. ' +
+        'At this rate, even if you took a photo every single day, it would take years to fill this up. This is not something you need to think about right now.';
+      stAction = 'No action needed. Come back and check this in 6 months.';
+    } else if (gcsPctVal < 40) {
+      stLevel = 'safe'; stTitle = '✅ Storage is in great shape';
+      stBody = 'You\'ve used ' + gcsMB + ' MB (' + gcsPctVal + '% of 5 GB free). Audit photos and PDFs are accumulating slowly. You have plenty of room.';
+      stAction = 'No action needed, but make a habit of checking this monthly.';
+    } else if (gcsPctVal < 75) {
+      stLevel = 'warn'; stTitle = '⚡ Storage is filling up';
+      stBody = 'You\'ve used ' + (gcsBytes / 1073741824).toFixed(2) + ' GB of your 5 GB free storage (' + gcsPctVal + '%). Old audit photos are piling up. ' +
+        'You still have time, but this needs a plan.';
+      stAction = 'Ask your developer about archiving or deleting old audit photos to free up space.';
+    } else {
+      stLevel = 'danger'; stTitle = '🚨 Storage is almost full!';
+      stBody = 'You\'ve used ' + (gcsBytes / 1073741824).toFixed(2) + ' GB of your 5 GB free limit (' + gcsPctVal + '%). When it hits 100%, uploads will fail — ' +
+        'your team won\'t be able to save new audit photos.';
+      stAction = 'Contact your developer immediately to delete old files before the limit is hit.';
+    }
+    setAnalysis('analysis-storage', stLevel, stTitle, stBody, stAction);
+
+  } catch (e) {
+    console.warn('Quota:', e.message);
+  }
+}
+
+// ── COLLECTIONS ──
+async function loadCollections() {
+  var cols = [
+    ['tasks','col-tasks'], ['taskState','col-taskState'],
+    ['auditCars','col-auditCars'], ['auditAircraft','col-auditAircraft'],
+    ['auditHistory','col-auditHistory'], ['auditArchive','col-auditArchive'],
+    ['facilityAudits','col-facilityAudits'], ['shoppingCatalog','col-shoppingCatalog'],
+  ];
+  await Promise.all(cols.map(async ([name, id]) => {
+    try {
+      var snap = await db.collection(name).get();
+      document.getElementById(id).textContent = snap.size;
+    } catch (e) {
+      document.getElementById(id).textContent = '—';
+    }
+  }));
+}
+
+// ── FCM ──
+async function loadFCM() {
+  try {
+    var snap = await db.collection('notifTokens').get();
+    var count = snap.size;
+    if (count === 0) { snap = await db.collection('fcmTokens').get(); count = snap.size; }
+    document.getElementById('fcm-devices').textContent = count > 0 ? count : '—';
+  } catch (e) {
+    document.getElementById('fcm-devices').textContent = '—';
+  }
+}
+
+// ── ALL ──
+async function loadAll() {
+  document.getElementById('page-ts').textContent = 'Last refreshed: ' + new Date().toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  await Promise.all([loadGitHub(), loadPages(), loadQuota(), loadCollections(), loadFCM()]);
+}
+loadAll();
+
+// ── SIDEBAR JS ──
+var SB_SECTIONS = [
+  {id:'sec-guide',   nav:'sbn-guide',    label:'Quick Guide'},
+  {id:'sec-budget',  nav:'sbn-budget',   label:'Budget & Trial'},
+  {id:'sec-database',nav:'sbn-database', label:'Database'},
+  {id:'sec-storage', nav:'sbn-storage',  label:'File Storage'},
+  {id:'sec-app',     nav:'sbn-app',      label:'Live App'},
+  {id:'sec-github',  nav:'sbn-github',   label:'GitHub'},
+  {id:'sec-notif',   nav:'sbn-notif',    label:'Notifications'},
+  {id:'sec-claude',  nav:'sbn-claude',   label:'Claude AI'},
+  {id:'sec-worker',  nav:'sbn-worker',   label:'Cloudflare Worker'},
+];
+
+// Smooth scroll with offset for fixed topbar
+function sbClick(e, el, secId) {
+  e.preventDefault();
+  var target = document.getElementById(secId);
+  if (!target) return;
+  var offset = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--tb-h')) || 52;
+  var top = target.getBoundingClientRect().top + window.scrollY - offset - 12;
+  window.scrollTo({top: top, behavior: 'smooth'});
+  if (window.innerWidth <= 768) closeSidebar();
+}
+
+// Active state via IntersectionObserver
+var activeNav = 'sbn-guide';
+function setActive(navId) {
+  if (navId === activeNav) return;
+  var prev = document.getElementById(activeNav);
+  if (prev) prev.classList.remove('active');
+  var next = document.getElementById(navId);
+  if (next) { next.classList.add('active'); activeNav = navId; }
+  var sec = SB_SECTIONS.find(function(s){ return s.nav === navId; });
+  if (sec) document.getElementById('tb-section-name').textContent = sec.label;
+}
+
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      var sec = SB_SECTIONS.find(function(s){ return s.id === entry.target.id; });
+      if (sec) setActive(sec.nav);
+    }
+  });
+}, { rootMargin: '-52px 0px -60% 0px', threshold: 0 });
+
+SB_SECTIONS.forEach(function(s) {
+  var el = document.getElementById(s.id);
+  if (el) observer.observe(el);
+});
+
+// Status dots — called from load functions
+function setSbDot(dotId, level) {
+  var el = document.getElementById(dotId);
+  if (el) el.className = 'sb-item-dot ' + level;
+}
+
+// Mobile open/close
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sbOverlay').classList.add('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('show');
+}
+
+// Keep sidebar timestamp in sync
+var _origLoadAll = loadAll;
+loadAll = async function() {
+  await _origLoadAll();
+  var ts = new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('sb-ts').textContent = 'Updated ' + ts;
+};
+</script>
+</body>
+</html>
