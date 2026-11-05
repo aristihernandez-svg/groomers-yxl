@@ -5095,7 +5095,7 @@ function homeFleetInfo() {
   const hf = S.homeFleet;
   const plane = {Metroliner:HOME_PLANE_IMGS[1], Westwind:HOME_PLANE_IMGS[0], Navajo:HOME_PLANE_IMGS[2], Astra:HOME_PLANE_IMGS[3]};
   if(!hf) return {reg:'Checking…', line:'', sub:'', tone:'idle', img:HOME_PLANE_IMGS[0], inbound:false};
-  if(_fleetPaused) return {reg:'Overnight', line:'Tracking resumes 6 AM', sub:'', tone:'idle', img:HOME_PLANE_IMGS[0], inbound:false};
+  if(_fleetPaused) return {reg:'Overnight', line:'Tracking resumes 5 AM', sub:'', tone:'idle', img:HOME_PLANE_IMGS[0], inbound:false};
   if(!_fleetFeedAt || Date.now()-_fleetFeedAt > 15*60000)
     return {reg:'No live feed', line:'', sub:'Open the Fleet tab', tone:'idle', img:HOME_PLANE_IMGS[0], inbound:false};
   if(hf.inbound) {
