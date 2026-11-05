@@ -1848,11 +1848,12 @@ body::before{
 .fleet-tip::before{display:none!important}
 
 /* ── YXL Classic home = Spotlight: the aircraft on a dark stage, three status chips, app-icon tiles ── */
-.spot-stage{position:relative;height:230px;overflow:hidden;background:radial-gradient(60% 75% at 50% 0%,rgba(225,232,255,.20),rgba(225,232,255,.04) 55%,transparent 75%),#000}
+.spot-stage{position:relative;height:252px;overflow:hidden;background:radial-gradient(60% 75% at 50% 0%,rgba(225,232,255,.20),rgba(225,232,255,.04) 55%,transparent 75%),#000}
 .spot-beam{position:absolute;left:50%;top:-24px;width:360px;height:250px;margin-left:-180px;background:linear-gradient(rgba(230,236,255,.13),transparent 85%);clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);pointer-events:none}
-.spot-floor{position:absolute;left:12%;right:12%;top:172px;height:26px;border-radius:50%;background:radial-gradient(closest-side,rgba(205,215,255,.18),transparent)}
-.spot-stage .hero-img{position:absolute;left:50%;top:64px;width:min(300px,80%);transform:translateX(-50%);opacity:0;transition:opacity 1.2s ease;-webkit-box-reflect:below 0px linear-gradient(transparent 58%,rgba(255,255,255,.16))}
+.spot-floor{position:absolute;left:12%;right:12%;top:190px;height:26px;border-radius:50%;background:radial-gradient(closest-side,rgba(205,215,255,.18),transparent)}
+.spot-stage .hero-img{position:absolute;left:50%;top:66px;width:min(290px,78%);transform:translateX(-50%);opacity:0;transition:opacity 1.2s ease;-webkit-box-reflect:below 0px linear-gradient(transparent 58%,rgba(255,255,255,.16))}
 .spot-stage .hero-img.active{opacity:1}
+.spot-stage .hero-img.eagle{top:62px;width:140px}
 .spot-logo{position:absolute;left:0;right:0;bottom:10px;height:20px;margin:0 auto;filter:brightness(0) invert(1);opacity:.55}
 .spot-head{text-align:center;padding:6px 16px 0}
 .spot-head small{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--t3)}
@@ -4791,6 +4792,7 @@ async function renderHome(el) {
   const HERO_IMGS = [
     {src:'cars/Metroliner_logo-removebg-preview.png'},
     {src:'cars/Navajo_logo-removebg-preview.png'},
+    {src:'cars/groomies-emblem.svg', cls:'eagle'},   // the Groomies eagle gets its turn too
   ];
 
   const HOME_TILES = [
@@ -4833,7 +4835,7 @@ async function renderHome(el) {
     </style>
 
     <div class="spot-stage"><div class="spot-beam"></div><div class="spot-floor"></div>
-      ${HERO_IMGS.map((img,i)=>`<img class="hero-img${i===0?' active':''}" src="${img.src}" id="hImg${i}" alt="">`).join('')}
+      ${HERO_IMGS.map((img,i)=>`<img class="hero-img${img.cls?' '+img.cls:''}${i===0?' active':''}" src="${img.src}" id="hImg${i}" alt="">`).join('')}
     </div>
     <div class="spot-head"><small>${dateStr}</small><h2>${homeGreeting()}, YXL</h2></div>
     ${(()=>{ const st = homeStats(), due = st.total - st.done, cg = homeCargoStats();
