@@ -2336,6 +2336,34 @@ async function setCustomCarRetired(key, retired) {
     toast(retired ? 'Car removed — its records are kept' : '✅ Car is back');
   } catch (e) { console.log('Retire car failed:', e); toast('⚠️ Failed — check connection'); }
 }
+function carCheckinLink(key) { return new URL('crew-access.html?car=' + encodeURIComponent(key), location.href).href; }
+function nfcLinkHtml(key) {
+  return `<div style="display:flex;gap:8px;padding:6px 14px 0">
+    <button onclick="copyCarNfcLink('${key}')" style="flex:1;padding:11px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--glass2);color:var(--t1);font-size:13px;font-weight:700;cursor:pointer">📲 Copy NFC link</button>
+    <button onclick="showNfcHowTo()" style="padding:11px 14px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--glass2);color:var(--t2);font-size:13px;font-weight:700;cursor:pointer">❔ How to</button>
+  </div>`;
+}
+function showNfcHowTo() {
+  const step = (n, title, body) => `<div style="display:flex;gap:10px;margin-bottom:12px"><div style="width:24px;height:24px;border-radius:50%;background:var(--accent-dim);color:var(--accent);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">${n}</div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.5"><b style="color:var(--t1)">${title}</b><br>${body}</div></div>`;
+  openModal('📲 Set up a car\'s NFC sticker', `<div style="padding-top:2px">
+    <p style="font-size:13px;color:var(--t2);line-height:1.5;margin:0 0 14px">A sticker in the car opens its check-in page when someone holds their phone near it — like the QR code, without scanning. You need the free <b style="color:var(--t1)">NFC Tools</b> app (iPhone 7 or newer; on Android, turn NFC on in Settings).</p>
+    ${step(1, 'Copy the link', 'On this car\'s page tap <b>📲 Copy NFC link</b>.')}
+    ${step(2, 'Write the sticker', 'NFC Tools → <b>Write</b> → <b>Add a record</b> → <b>URL / URI</b> → paste → OK → <b>Write</b>. Hold the sticker flat on the phone (iPhone: near the top, by the camera; Android: middle of the back) until it says it\'s done. If there\'s a separate "https://" box, paste only what comes after https://.')}
+    ${step(3, 'Test it', 'Hold a phone near the sticker. It must open <b>this car</b> (its name and "Take the car"). If it opens the car list instead, write it again — it can be rewritten until it\'s locked.')}
+    ${step(4, 'Lock it', 'Only once it works: NFC Tools → <b>Other</b> → <b>Lock tag</b> → hold the sticker to the phone. Nobody can change it after that — it can\'t be undone.')}
+    ${step(5, 'Stick it in the car', '<b>Not on metal</b> (it blocks the signal): use glass or plastic — a side window corner, the plastic dash or console, or the key tag. Next to the QR code is ideal, with a small "Tap phone here" label.')}
+    <p style="font-size:12px;color:var(--t3);line-height:1.5;margin:4px 0 0">Spare stickers: if one gets damaged or the car is replaced, write a new one the same way. A new car added in the app gets its own link here too.</p>
+  </div>`, closeModal);
+  document.getElementById('mSave').textContent = 'Got it';
+}
+async function copyCarNfcLink(key) {
+  const link = carCheckinLink(key);
+  try { await navigator.clipboard.writeText(link); toast('📋 Link copied — paste it in NFC Tools'); return; } catch (e) {}
+  // the phone wouldn't copy it: show it so it can be copied by hand
+  openModal('NFC link', `<p style="font-size:13px;color:var(--t2);margin:0 0 8px">Press and hold the link, then Copy.</p><input readonly value="${link}" onfocus="this.select()" style="font-size:13px">`, closeModal);
+  document.getElementById('mSave').textContent = 'Done';
+}
 // ── Link an added car to its Bouncie tracker ──
 // Someone with the company's Bouncie account plugs the tracker into the car and adds it in the Bouncie app; then here
 // they pick it from the trackers no car uses yet (the Worker's /devices). The link is saved on the car's entry
@@ -3101,7 +3129,7 @@ function render() {
 }
 // Audits are locked for YXL for now. This one switch turns the tab AND the 8th–10th audit reminder
 // back on together; while it is off, nothing about audits pops up.
-var AUDITS_ENABLED = false;
+var AUDITS_ENABLED = true;   // YXL: crew car + Metro audits (no facility audits)
 function renderAuditsLocked(el) {
   setBar({title:'Audits'});
   document.getElementById('fab').style.display='none';
@@ -4581,34 +4609,8 @@ async function fetchContacts() {
     }
   } catch(e) {}
 
-  // Hardcoded fallback
-  S.contacts = [
-    // Stores & Suppliers
-    {name:'Zehrs',              address:'Kitchener, ON',                                    notes:'Regular grocery & supply run'},
-    {name:'Costco',             address:'Kitchener, ON',                                    notes:'Bulk items — bring membership card'},
-    {name:'A1 Cash & Carry',    address:'Kitchener, ON',                                    notes:'Fiji water · water crates · coffee cups'},
-    {name:'Home Depot',         address:'Kitchener, ON',                                    notes:'Aisle 3: mop heads · Aisle 9: acid brushes · Aisle 4: zip ties'},
-    {name:'Canadian Tire',      address:'Kitchener, ON',                                    notes:'Valve grind · distilled water · invisible glass · washer fluid'},
-    {name:'Monarch Oil',        address:'2216 Shirley Dr, Kitchener, ON N2B 3Y1',           notes:'ISO & oil products — call to order'},
-    {name:'Aviation Supplier',  address:'',                                                 notes:'Prist x5 — call ahead'},
-    {name:'JSA Grimsby',        address:'262 Mud St W, Grassie, ON L0R 1M0',                notes:'Seat and uniform pick ups — hangar inside the airfield'},
-    {name:'Aircraft Spruce',    address:'27 York Rd, Brantford, ON N3T 0L2',                notes:'Pick up aircraft parts — Luis'},
-    {name:'Crew House',         address:'220 Thomas Slee Drive, Kitchener',                notes:'Drop-off & pick up'},
-    {name:'Laundry — Centreville', address:'1077 Weber St E Unit #1, Kitchener, ON N2A 3Y5', notes:'Drop-off laundry'},
-    // Codes
-    {name:'Code MX Hangar',            address:'', notes:'Code: 0626',              code:'0626'},
-    {name:'Code CR Office',            address:'', notes:'Code: 0626',              code:'0626'},
-    {name:'Code Medic Trailer @ MX',   address:'', notes:'Code: 911#',              code:'911#'},
-    {name:'Code Medic Room @ CR',      address:'', notes:'Code: 9119',              code:'9119'},
-    {name:'Code Lock Medic Room @ CR', address:'', notes:'Code: 911 (top to bottom)',code:'911'},
-    {name:'Ramp Hangar Doors @ CR',    address:'', notes:'Code: 2451',              code:'2451'},
-    {name:'Gate',                      address:'', notes:'Code: 3548',              code:'3548'},
-    // Contacts
-    {name:'Wes Verboon',        address:'', notes:'778-838-1498 · Mon–Fri 0700–1900', role:'MX Supervisor', phone:'7788381498'},
-    {name:'Josh',               address:'', notes:'519-276-0204 · 14 on 14 off, do not call during off days', role:'Crew Chief', phone:'5192762040'},
-    {name:'Keddy',              address:'', notes:'519-301-3170 · 14 on 14 off, do not call during off days', role:'Crew Chief', phone:'5193013170'},
-  ];
-  console.log('Contacts from fallback:', S.contacts.length);
+  // No built-in list at YXL: contacts, stores and codes are added in the app
+  S.contacts = S.contacts || [];  console.log('Contacts from fallback:', S.contacts.length);
 }
 
 
@@ -6478,7 +6480,7 @@ function cabLabel(c) { return c || 'Other'; }   // YXL: locations show as they a
 const SHOP_SRC = {
   crewhouse: { label: '🏠 Crew House', col: '#E8A33D', ink: '#F0C070' },
 };
-const SHOP_PAGES_BASE = 'https://aristihernandez-svg.github.io/groomers-ykf/';
+const SHOP_PAGES_BASE = 'https://aristihernandez-svg.github.io/groomers-yxl/';
 const REQUEST_PAGES = [];   // YXL has no outside request pages (yet)
 const SHOP_LOC_ORDER = ['CR Office', "CR Groomers' Corner", 'MX Hangar', 'MX Office', 'Metro Cabinet', "Jet's Cabinet", 'Crew House', CT_CABINET];
 const SHOP_LOC_ICON = { 'CR Office': '🖥', "CR Groomers' Corner": '🧹', 'MX Hangar': '🔧', 'MX Office': '🗂', 'Metro Cabinet': '✈', "Jet's Cabinet": '✈', 'Crew House': '🏠', [CT_CABINET]: '🏡' };
@@ -6723,7 +6725,7 @@ function saveCarStatus(key, val) {
 
 function openStatusDrop(key, btn) {
   document.querySelectorAll('.status-drop').forEach(d=>d.remove());
-  const SC={'CR':'#27AE60','MX':'#E8A000','N/A':'#78705E','OUT':'#E74C3C'};
+  const SC={'CR':'#27AE60','MX':'#E8A000','N/A':'#5a6478','OUT':'#E74C3C'};
   const d=carData(key);
   const rect=btn.getBoundingClientRect();
   const drop=document.createElement('div');
@@ -6936,7 +6938,7 @@ function monthLabelToMonthKey(label) {
 // the instant it happens, anywhere, without needing to be reopened to refresh.
 let _recordsListenersAttached = false;
 function loadAllAuditRecords() {
-  if (!db || _recordsListenersAttached) { if (S.recordsView) render(); return; }
+  if (!db || _recordsListenersAttached) { if (S.recordsView || (S.tab === 'audits' && S.auditsTab === 'records')) render(); return; }
   _recordsListenersAttached = true;
   const FACILITY_TYPES = ['crewhouse','hangar','msds','parking','ykfbase'];
 
@@ -6950,7 +6952,7 @@ function loadAllAuditRecords() {
       if (!Object.keys(data.items||{}).length) return; // never-touched month, nothing to show
       S.auditRecords['fa-'+doc.id] = {monthKey: monthLabelToMonthKey(monthLabel), monthLabel, type, data, pdfUrl: data.pdfUrl||null, done: !!data.done};
     });
-    if (S.recordsView) render();
+    if (S.recordsView || (S.tab === 'audits' && S.auditsTab === 'records')) render();
   }, e => console.log('facilityAudits records listener failed:', e));
 
   db.collection('auditCars').onSnapshot(snap => {
@@ -6960,7 +6962,7 @@ function loadAllAuditRecords() {
       if (!data.month || !data.carKey) return;
       S.auditRecords['car-'+doc.id] = {monthKey: monthLabelToMonthKey(data.month), monthLabel: data.month, type:'cars', carKey: data.carKey, data, pdfUrl: data.pdfUrl||null, done: !!data.done};
     });
-    if (S.recordsView) render();
+    if (S.recordsView || (S.tab === 'audits' && S.auditsTab === 'records')) render();
   }, e => console.log('auditCars records listener failed:', e));
 
   db.collection('auditAircraft').onSnapshot(snap => {
@@ -6970,7 +6972,7 @@ function loadAllAuditRecords() {
       if (!data.month || !data.reg) return;
       S.auditRecords['ac-'+doc.id] = {monthKey: monthLabelToMonthKey(data.month), monthLabel: data.month, type:'aircraft', reg: data.reg, acType: data.type, data, pdfUrl: data.pdfUrl||null, done: !!data.done};
     });
-    if (S.recordsView) render();
+    if (S.recordsView || (S.tab === 'audits' && S.auditsTab === 'records')) render();
   }, e => console.log('auditAircraft records listener failed:', e));
 
   db.collection('monthSummaries').onSnapshot(snap => {
@@ -6980,7 +6982,7 @@ function loadAllAuditRecords() {
       if (!data.pdfUrl) return;
       S.monthSummaries[monthLabelToMonthKey(doc.id)] = {monthLabel: doc.id, pdfUrl: data.pdfUrl};
     });
-    if (S.recordsView) render();
+    if (S.recordsView || (S.tab === 'audits' && S.auditsTab === 'records')) render();
   }, e => console.log('monthSummaries records listener failed:', e));
 }
 
@@ -7344,7 +7346,10 @@ function renderCrewCarsList(el) {
     setBar({title:'Crew Cars', back:'Audits', backFn: backToProcs});
   }
   document.getElementById('fab').style.display='none';
-  let html = '';
+  let html = `<div style="display:flex;align-items:center;justify-content:flex-end;padding:8px 14px 4px">
+    <button onclick="openQrWindow('https://aristihernandez-svg.github.io/groomers-yxl/crew-access.html','Crew Car Check-in','Scan to check in with a crew car and report any damage.')"
+      style="background:var(--glass2);border:1px solid var(--border2);border-radius:8px;padding:6px 12px;color:var(--t1);font-size:12px;font-weight:600;cursor:pointer">🔗 QR</button>
+  </div>`;
   if (BOUNCIE_WORKER_URL && S.bouncieSyncFailed) {
     html += `<div style="margin:0 14px 8px;padding:8px 12px;border-radius:8px;background:var(--red-dim);border:1px solid var(--red);color:var(--red);font-size:12px;font-weight:600">
       ⚠️ GPS sync unavailable — odometer/fuel/battery below may be out of date
@@ -7401,7 +7406,7 @@ function renderCrewCarsList(el) {
       : `<div style="margin:36px 20px;text-align:center;color:#7A88A0;font-size:14px">No cars here right now 🎉</div>`;
     // add a car straight from here (the same form as Audits → Crew Cars → + Add a car)
     if (typeof openAddCarFlow === 'function') html += `<div style="padding:4px 14px 16px"><button onclick="openAddCarFlow()" style="width:100%;padding:13px;border-radius:14px;border:1.5px dashed #2A3A55;background:transparent;color:#9AB0D0;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-size:20px;line-height:1">+</span> Add a car</button></div>`;
-    // cars removed from the app can come back from here too (YXL has no audits page)
+    // cars removed from the app can come back from here too (YAV has no audits page)
     if (typeof RETIRED_CARS !== 'undefined' && RETIRED_CARS.length) html += `<div style="padding:0 14px 16px"><div style="font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#5E7090;margin-bottom:6px">Removed cars</div>${RETIRED_CARS.map(c => `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid #1E2A40;border-radius:10px;margin-bottom:6px;opacity:.75"><span style="font-size:13.5px;font-weight:700;color:#C8D4E8">${_carEsc(c.name)}</span><button onclick="setCustomCarRetired('${c.key}',false)" style="font-size:12px;font-weight:800;color:#8FB4FF;background:none;border:none;cursor:pointer">Bring back</button></div>`).join('')}</div>`;
 
   } else {
@@ -7433,7 +7438,7 @@ function renderCrewCarsList(el) {
       const inProcess=!auditCD.done&&!carDis&&!pendingUrgent&&carAuditStarted(car.key);
       const auditCol=carDis?'var(--t4)':auditCD.done?'#27AE60':pendingUrgent?'#E74C3C':inProcess?'#E8A000':'var(--t3)';
       const statusLabel=carDis?'Skipped':auditCD.done?'Completed':pendingUrgent?(overdue?'Overdue':'Urgent'):inProcess?'In Process':'Pending';
-      const dotCol=carDis?'var(--border2)':auditCD.done?'#27AE60':pendingUrgent?'#E74C3C':inProcess?'#E8A000':'#A89A80';
+      const dotCol=carDis?'var(--border2)':auditCD.done?'#27AE60':pendingUrgent?'#E74C3C':inProcess?'#E8A000':'#9CA3AF';
       const lp=`onpointerdown="carAuditLongPress(event,'${car.key}')" onpointerup="carAuditCancelPress()" onpointercancel="carAuditCancelPress()" onpointermove="carAuditCancelPress()"`;
       auditGridCards.push(`
         <div onclick="${carDis?'':'openCarDetail(\''+car.key+'\')'}" ${lp} class="${pendingUrgent?'audit-blink':''}"
@@ -7581,6 +7586,13 @@ function carKeySvg(car, out, w = 78) {
 }
 
 function _carEsc(t) { return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function carTripLine(d) {
+  if (d.trip && d.trip.out) {
+    const since = d.trip.outAt ? new Date(d.trip.outAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) : '';
+    return `<div style="font-size:11px;font-weight:700;color:#F5B041;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🔑 Out · ${_carEsc(d.trip.by)}${since?' · '+since:''}</div>`;
+  }
+  return `<div style="font-size:11px;font-weight:700;color:#4ADE80;margin-top:2px">🅿 At base</div>`;
+}
 // For a car brought back without scanning: one narrow write (only that car's trip fields)
 function markCarReturned(key) {
   const d = carData(key);
@@ -7647,7 +7659,7 @@ function renderCarDetail(el, key) {
   const fuelVal=_bFuel?Math.round(_b.fuelLevel)+'%':(fuelLog?fuelLog.value:'—');
   const fuelCol=_bFuel?(_b.fuelLevel<20?'#FF7A7A':'#2ECC8A'):'var(--t1)';
   const tiles=[
-    ['⛽', fuelVal, _bFuel?'Fuel':(fuelLog?'Fuel · '+fmtDate(fuelLog.date):'Fuel'), fuelCol, _bFuel?'':`openFuelGauge('${key}')`],
+    ['⛽', fuelVal, _bFuel?'Fuel':(fuelLog?'Fuel · '+fmtDate(fuelLog.date):'Fuel'), fuelCol, ''],
     ['🔋', !_bOk?'—':_battAlert?_b.battery:'OK', 'Battery', !_bOk?'var(--t3)':_battAlert?'#FF7A7A':'#2ECC8A', ''],
     ['⚙️', !_bOk?'—':_milAlert?'Check':'OK', 'Engine', !_bOk?'var(--t3)':_milAlert?'#FF7A7A':'#2ECC8A', ''],
   ].map(([i,v,s,c,tap])=>`<div class="cd-card cd-tile"${tap?` onclick="${tap}" style="cursor:pointer"`:''}><div style="font-size:22px">${i}</div><div class="cd-v" style="color:${c}">${v}</div><div class="cd-s">${s}</div></div>`).join('');
@@ -7710,6 +7722,7 @@ function renderCarDetail(el, key) {
         `<button class="${tab===k?'on':''}" onclick="S.carTab='${k}';renderCarDetail(document.getElementById('content'),'${key}')">${l}${dot(a)}</button>`).join('')}
     </div></div>
     ${tab==='service'?servicePane:tab==='papers'?papersPane:statusPane}
+    ${nfcLinkHtml(key)}
     ${customCarAdminHtml(key)}
     <div style="height:80px"></div>`;
 }
@@ -8094,7 +8107,7 @@ function auditSectionHTML(key) {
     if(p) {
       const rc=p.rating==='Good'?'rating-good':p.rating==='Fair'?'rating-fair':'rating-poor';
       h+=`<div style="position:relative;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);background:var(--glass)">
-        <img src="${p.src}" onclick="viewPhoto('${p.src}')" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;cursor:pointer">
+        <img src="${p.thumb||p.src}" loading="lazy" onclick="viewPhoto('${p.src}')" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;cursor:pointer">
         <div class="audit-rating ${rc}" style="position:absolute;bottom:28px;left:4px">${p.rating}</div>
         ${locked?'':`<button onclick="removeAuditPhoto('${key}',${i})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);border:none;color:#fff;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;line-height:1">✕</button>`}
         <div style="padding:4px 6px 6px;display:flex;gap:4px;align-items:center">
@@ -8122,7 +8135,7 @@ function auditSectionHTML(key) {
     h+=`<div style="margin-bottom:14px">`;
     takenPhotos.forEach(({p,i})=>{
       h+=`<div style="background:var(--glass);border-radius:var(--radius-sm);padding:7px 10px;margin-bottom:5px;border:1px solid var(--border);display:flex;align-items:center;gap:8px">
-        <img src="${p.src}" onclick="viewPhoto('${p.src}')" style="width:28px;height:28px;border-radius:5px;object-fit:cover;flex-shrink:0;cursor:pointer">
+        <img src="${p.thumb||p.src}" loading="lazy" onclick="viewPhoto('${p.src}')" style="width:28px;height:28px;border-radius:5px;object-fit:cover;flex-shrink:0;cursor:pointer">
         <span style="font-size:10px;color:var(--t3);flex-shrink:0;font-weight:600">${AUDIT_PHOTO_SLOTS[i]}</span>
         <input value="${p.note||''}" placeholder="Note..." ${locked?'disabled':''} data-ac-car="${key}" data-ac-field="photo:${i}" onblur="carAuditFieldDone('${key}')" oninput="setAuditPhotoNote('${key}',${i},this.value)"
           style="flex:1;min-width:0;padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--glass2);font-size:11px;font-family:inherit;color:var(--t1);outline:none">
@@ -8212,7 +8225,7 @@ async function archiveAudit() {
 // Builds one car's audit card HTML — shared between the combined monthly PDF
 // (generateAuditPDF, all cars) and the single-car PDF (generateSingleCarPDF,
 // auto-uploaded to records when that car's audit is marked done).
-function buildCarSectionHtml(car, d) {
+function buildCarSectionHtml(car, d, isFirst=true) {
     const photos=Array.isArray(d.photos)&&d.photos.length===8?d.photos:Array.from({length:8},(_,i)=>(d.photos||[])[i]||null);
     const poorCount=photos.filter(p=>p&&p.rating==='Poor').length;
     const checks=d.checks||{};
@@ -8229,9 +8242,9 @@ function buildCarSectionHtml(car, d) {
         ?`<span style="display:inline-flex;align-items:center;justify-content:center;padding:1px 8px;border-radius:8px;font-size:7.5px;font-weight:800;background:#d4edda;color:#1a7a40">✓ Done</span>`
         :`<span style="color:#bbb;font-size:8px">—</span>`;
       return `<tr style="background:${rowBg}">
-        <td style="padding:3px 8px;font-size:8.5px;color:#333;border-bottom:0.5px solid #EEF1F8;width:58%">${c.label}</td>
-        <td style="padding:3px 8px;text-align:center;border-bottom:0.5px solid #EEF1F8;width:14%">${pill}</td>
-        <td style="padding:3px 8px;font-size:7.5px;color:#666;font-style:italic;border-bottom:0.5px solid #EEF1F8">${note}</td>
+        <td style="padding:1.5px 8px;font-size:8.5px;color:#333;border-bottom:0.5px solid #EEF1F8;width:58%">${c.label}</td>
+        <td style="padding:1.5px 8px;text-align:center;border-bottom:0.5px solid #EEF1F8;width:14%">${pill}</td>
+        <td style="padding:1.5px 8px;font-size:7.5px;color:#666;font-style:italic;border-bottom:0.5px solid #EEF1F8">${note}</td>
       </tr>`;
     }).join('');
     const statusBadge=d.done
@@ -8244,19 +8257,19 @@ function buildCarSectionHtml(car, d) {
       const p=photos[i];
       return p
         ?`<div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-            <img src="${p.src}" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:3px;display:block">
-            <div style="font-size:6px;font-weight:700;color:#444;text-align:center;line-height:1.2">${label}</div>
-            <div style="font-size:6.5px;font-weight:700;text-align:center;padding:0 3px;border-radius:2px;${p.rating==='Good'?'background:#d4edda;color:#1a7a40':p.rating==='Fair'?'background:#fff3cd;color:#856404':'background:#f8d7da;color:#842029'}">${p.rating||'—'}</div>
-            ${p.note?`<div style="font-size:6px;color:#555;text-align:center">${p.note}</div>`:''}
+            <img src="${p.src}" style="width:100%;aspect-ratio:4/2.7;object-fit:cover;border-radius:4px;display:block">
+            <div style="font-size:7px;font-weight:700;color:#444;text-align:center;line-height:1.15">${label}</div>
+            <div style="font-size:7.5px;font-weight:700;text-align:center;padding:1px 4px;border-radius:3px;${p.rating==='Good'?'background:#d4edda;color:#1a7a40':p.rating==='Fair'?'background:#fff3cd;color:#856404':'background:#f8d7da;color:#842029'}">${p.rating||'—'}</div>
+            ${p.note?`<div style="font-size:6.5px;color:#555;text-align:center">${p.note}</div>`:''}
           </div>`
         :`<div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-            <div style="width:100%;aspect-ratio:4/3;background:#f0f0f0;border:1px dashed #C8D4E8;border-radius:3px"></div>
-            <div style="font-size:6px;font-weight:700;color:#aaa;text-align:center;line-height:1.2">${label}</div>
-            <div style="font-size:6.5px;color:#bbb;text-align:center">—</div>
+            <div style="width:100%;aspect-ratio:4/2.7;background:#f0f0f0;border:1px dashed #C8D4E8;border-radius:4px"></div>
+            <div style="font-size:7px;font-weight:700;color:#aaa;text-align:center;line-height:1.15">${label}</div>
+            <div style="font-size:7.5px;color:#bbb;text-align:center">—</div>
           </div>`;
     }).join('');
     return `
-      <div style="border:1px solid #C8D4E8;margin-bottom:10px;break-inside:avoid">
+      <div style="border:1px solid #C8D4E8;margin-bottom:10px;break-inside:avoid${isFirst?'':';page-break-before:always;break-before:page'}">
         <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;background:#F0F4FA;border-bottom:1px solid #C8D4E8">
           <img src="${carImgSrc(car)}" style="width:50px;height:34px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">
           <div style="flex:1">
@@ -8279,7 +8292,7 @@ function buildCarSectionHtml(car, d) {
         <div style="padding:4px 10px;background:#D8E4F5;border-top:1px solid #C8D4E8;border-bottom:1px solid #C8D4E8">
           <span style="font-size:7.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#1A3A6A">Condition Photos</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:5px;padding:8px 10px">${photoGrid}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:5px 10px">${photoGrid}</div>
         ${d.comments?`<div style="padding:6px 10px;background:#FAFBFD;border-top:1px solid #C8D4E8;font-size:8px;color:#444"><strong>Comments:</strong> ${d.comments}</div>`:''}
         ${d.groomer?`<div style="padding:4px 10px 6px;font-size:7.5px;color:#888;font-style:italic;border-top:1px solid #EEF1F8">Audited by: ${d.groomer}</div>`:''}
       </div>`;
@@ -8290,9 +8303,9 @@ function generateAuditPDF(month, silent) {
   const generatedFmt=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   const logoSrc=location.origin+location.pathname.replace('index.html','')+'cars/Skycare_logo-removebg-preview.png';
   let carSections='';
-  carsForMonth(month).forEach(car=>{
+  carsForMonth(month).forEach((car,i)=>{
     const d=S.monthlyCarAudits[month+'-'+car.key]||{};
-    carSections+=buildCarSectionHtml(car, d);
+    carSections+=buildCarSectionHtml(car, d, i===0);
   });
 
   const html=`<!DOCTYPE html><html><head><meta charset="utf-8">
@@ -8308,7 +8321,7 @@ function generateAuditPDF(month, silent) {
     <tr>
       <td style="width:100px;vertical-align:middle"><img src="${logoSrc}" style="height:28px;display:block" onerror="this.style.display='none'"></td>
       <td style="text-align:right;vertical-align:middle">
-        <div style="font-size:13px;font-weight:800;color:#1A3A6A;line-height:1.2">YKF Crew Car Monthly Audit</div>
+        <div style="font-size:13px;font-weight:800;color:#1A3A6A;line-height:1.2">YXL Crew Car Monthly Audit</div>
         <div style="font-size:8px;color:#666;margin-top:2px">${BASE_ADDRESS}</div>
       </td>
     </tr>
@@ -8336,7 +8349,7 @@ function generateAuditPDF(month, silent) {
   </table>
   ${carSections}
   <div style="margin-top:8px;padding-top:6px;border-top:1px solid #C8D4E8;display:flex;justify-content:space-between;font-size:7.5px;color:#999">
-    <span>${COMPANY_NAME} · YKF Base · ${BASE_ADDRESS}</span>
+    <span>${COMPANY_NAME} · YXL Base · ${BASE_ADDRESS}</span>
     <span>Generated ${generatedFmt}</span>
   </div>
   <div class="pdf-back-btn" style="position:fixed;top:12px;left:12px;z-index:9999"><button onclick="window.close()" style="background:#1A3A6A;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3)">← Close</button></div><style>@media print{.pdf-back-btn{display:none!important}}</style>
@@ -8418,7 +8431,7 @@ function renderPastAuditView(el, month) {
       </div>
       ${photos.length?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px">
         ${photos.map(p=>`<div style="position:relative;width:calc(14.28% - 5px)">
-          <img src="${p.src}" onclick="viewPhoto('${p.src}')" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px">
+          <img src="${p.thumb||p.src}" loading="lazy" onclick="viewPhoto('${p.src}')" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px">
           <div style="position:absolute;bottom:2px;left:2px;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;background:${p.rating==='Good'?'#1a7a40':p.rating==='Fair'?'#856404':'#842029'};color:#fff">${p.rating||''}</div>
         </div>`).join('')}</div>`:''}
       ${d.comments?`<div style="font-size:12px;color:var(--t2);background:var(--glass);padding:8px 10px;border-radius:var(--radius-sm)">${d.comments}</div>`:''}
@@ -8496,76 +8509,8 @@ function openCrewCarLog(key) {
 
 function loadProcs() {
   loadCrewCarStatus();
+  // YXL starts with no procedures: crews add their own (+ on the Procedures tab), saved in Firestore "procedures"
   S.procs={
-    o2:{title:"O₂ Med Beds",icon:"🫁",open:false,done:[],
-      warn:"⚠ Fill SLOWLY. No dirty/oily hands. Stop and ask lead if unsure.",
-      video:PROC_VIDEOS.o2,
-      steps:[
-        {t:"Confirm both valves (bed AND tank) fully CLOSED.",n:"Safety — never skip"},
-        {t:"Connect hose to bed fitting.",n:""},
-        {t:"Tighten with wrenches — firm, no over-torque.",n:""},
-        {t:"Open both valves.",n:""},
-        {t:"Slowly equalize pressure; push O₂ SLOWLY with gold valve.",n:"Gold valve = fill valve"},
-        {t:"Correct PSI reached → shut off BOTH valves immediately.",n:"Confirm PSI with lead"},
-        {t:"Disconnect hoses.",n:""},
-        {t:"Release remaining pressure in tank line.",n:""},
-      ]},
-    westwind:{title:"Westwind Groom",icon:"✈",open:false,done:[],warn:"",
-      video:PROC_VIDEOS.westwind,
-      steps:[
-        {t:"Leather seats — Citra or leather cleaner",n:""},
-        {t:"Vacuum floor / carpet",n:""},
-        {t:"Cockpit: instruments, CBs, panel & overhead",n:""},
-        {t:"Windshields",n:"Aviation-safe cleaner"},
-        {t:"Tables",n:""},{t:"Empty & clean coffee/tea kettle",n:""},
-        {t:"Walls with Citra",n:"Diluted"},
-        {t:"Rails ✦",n:"2nd groomer",g:true},
-        {t:"Under velcro seats ✦",n:"2nd groomer",g:true},
-        {t:"Deep clean cockpit (q-tips) ✦",n:"2nd groomer",g:true},
-        {t:"Engines, under wings & landing gear",n:""},
-        {t:"Cargo compartments ✦",n:"2nd groomer",g:true},
-        {t:"Belly ✦",n:"2nd groomer",g:true},
-        {t:"Entire fuselage ✦",n:"2nd groomer",g:true},
-        {t:"Put sun shades on",n:"Before leaving"},
-      ]},
-    metro:{title:"Metro Groom",icon:"✈",open:false,done:[],warn:"",
-      video:PROC_VIDEOS.metro,
-      steps:[
-        {t:"Leather seats — Citra or leather cleaner",n:""},
-        {t:"Empty pilots' pockets",n:""},
-        {t:"Cockpit: CBs & instrument panel",n:""},
-        {t:"Cockpit plastic — Citra",n:"Diluted"},
-        {t:"Windshields & nose area",n:"Aviation-safe cleaner"},
-        {t:"Organize commissary & folders",n:""},
-        {t:"Vacuum floors",n:""},{t:"Check O₂ levels",n:"Log the reading"},
-        {t:"Med beds — full clean ✦",n:"2nd groomer",g:true},
-        {t:"Rails ✦",n:"2nd groomer",g:true},
-        {t:"Brush main door steps ✦",n:"2nd groomer",g:true},
-        {t:"Mop floor — Citra & Pine Sol",n:"Dilute per label"},
-        {t:"Clean landing gear",n:""},
-        {t:"Outside: nose compts, cargo door, main door",n:""},
-        {t:"Belly ✦",n:"2nd groomer",g:true},
-        {t:"Nose & rear cargo compartments ✦",n:"2nd groomer",g:true},
-        {t:"Fuselage & engine cowlings",n:""},
-      ]},
-    astra:{title:"Astra Groom",icon:"✈",open:false,done:[],warn:"",
-      video:'',
-      steps:[
-        {t:"Leather/fabric seats — Citra or leather cleaner",n:""},
-        {t:"Vacuum floor & carpet thoroughly",n:""},
-        {t:"Cockpit: instruments, CBs, panel",n:""},
-        {t:"Windshields — aviation-safe cleaner",n:""},
-        {t:"Tables & tray surfaces",n:""},
-        {t:"Walls with diluted Citra",n:""},
-        {t:"Rails ✦",n:"2nd groomer",g:true},
-        {t:"Deep clean cockpit (q-tips) ✦",n:"2nd groomer",g:true},
-        {t:"Engines, under wings & landing gear",n:""},
-        {t:"Cargo compartments ✦",n:"2nd groomer",g:true},
-        {t:"Belly ✦",n:"2nd groomer",g:true},
-        {t:"Entire fuselage ✦",n:"2nd groomer",g:true},
-        {t:"Mop floor (IAW)",n:""},
-        {t:"Put sun shades on before leaving",n:""},
-      ]},
     audits:{title:"Audits",icon:"📁",open:false,done:[],warn:"",video:'',isAuditsHub:true,steps:[]},
   };
 }
@@ -9201,7 +9146,8 @@ function renderAuditsLanding(el) {
   setBar({title:'Audits', rightLabel:'?'});
   const _qBtn=document.getElementById('barDay');
   if(_qBtn){_qBtn.style.cursor='pointer';_qBtn.title='How to do audits';_qBtn.onclick=openAuditGuide;}
-  showFab(openAddAudit);
+  document.getElementById('fab').style.display='none';   // adding audits lives in the Admin tab
+  if(!S.auditsTab) S.auditsTab='todo';
 
   // Slideshow CSS: 1s per car
   if(document.getElementById('cc-slide-style')?.dataset.n !== String(CREW_CARS.length)){
@@ -9227,6 +9173,10 @@ function renderAuditsLanding(el) {
   const _facDone   = BASE_CONFIG.features?.facilityAudits === false ? true
     : [S.crewHouseAudit, S.hangarAudit, S.msdsAudit, S.parkingAudit, S.ykfBaseAudit].every(a=>a && a.done);
   const _allDone   = _carsDone && _metroDone && _wwDone && _astraDone && _customDone && _facDone;
+  const _auditsLeft = [..._metroRegs.map(r=>acIsDone(r,'metro')), ..._wwRegs.map(r=>acIsDone(r,'westwind')), ..._astraRegs.map(r=>acIsDone(r,'astra')),
+    ...S.customAcTypesList.flatMap(ct=>ct.regs.filter(r=>!isAcDisabled(r)).map(r=>acIsDone(r,ct.id))),
+    ..._audCars.map(c=>!!carAuditData(c.key).done),
+    ...(BASE_CONFIG.features?.facilityAudits === false ? [] : [S.crewHouseAudit, S.hangarAudit, S.msdsAudit, S.parkingAudit, S.ykfBaseAudit].map(a=>!!(a&&a.done)))].filter(x=>!x).length;
 
   // Section label helper
   const sectionLabel = (icon, text) =>
@@ -9237,18 +9187,18 @@ function renderAuditsLanding(el) {
      </div>`;
 
   // Audit row helper: onclick, iconHtml, name, sub, badge html
-  const auditRow = (onclick, iconHtml, name, sub, badgeHtml, extra='') =>
-    `<div onclick="${onclick}" style="margin:0 16px 8px;background:var(--glass2);border:1px solid var(--border2)${extra};border-radius:12px;display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent">
-       <div style="width:44px;height:44px;border-radius:10px;background:var(--navy2,#241A0C);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">${iconHtml}</div>
-       <div style="flex:1;min-width:0">
-         <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:2px">${name}</div>
-         <div style="font-size:11px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sub}</div>
-       </div>
-       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+  // Audit tile: icon + badge, name, progress bar, short detail line
+  const auditRow = (onclick, iconHtml, name, sub, badgeHtml, extra='', pct=null, done=false) =>
+    `<div onclick="${onclick}" style="background:var(--glass2);border:1px solid var(--border2)${extra};border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;cursor:pointer;min-width:0">
+       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px">
+         <div style="width:44px;height:44px;border-radius:10px;background:var(--navy2,#0B1628);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">${iconHtml}</div>
          ${badgeHtml}
-         <span style="color:var(--border2);font-size:18px;font-weight:600">›</span>
        </div>
+       <div style="font-size:13px;font-weight:700;color:var(--t1);line-height:1.25">${name}</div>
+       ${pct===null?'':`<div style="height:4px;border-radius:2px;background:var(--border2);overflow:hidden"><div style="height:100%;width:${Math.round(Math.min(1,pct)*100)}%;background:${done?'var(--green)':'var(--accent)'}"></div></div>`}
+       <div style="font-size:11px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sub}</div>
      </div>`;
+  const tileGrid = html => `<div style="margin:0 16px 8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">${html}</div>`;
 
   const badge = (label, bg, color) =>
     `<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:${bg};color:${color};white-space:nowrap">${label}</span>`;
@@ -9259,22 +9209,23 @@ function renderAuditsLanding(el) {
   // Aircraft rows
   const metroMonth = acAuditMonthKey();
   const metroDone  = _metroRegs.filter(r=>acIsDone(r,'metro')).length;
-  const metroBadge = _metroDone ? badge('Done','#0F3020','#2ECC71')
+  // YXL starts with no Metro tails: the tile says so until one is added (Metro folder → + Add aircraft)
+  const metroBadge = !_metroRegs.length ? badge('Add tails','#0F1E40','#4A90D9') : _metroDone ? badge('Done','#0F3020','#2ECC71')
     : metroDone>0 ? badge(`${_metroRegs.length-metroDone} left`,'#2A1010','#E74C3C')
-    : badge('New','#402E0F','#E8A33D');
+    : badge('New','#0F1E40','#4A90D9');
   const metroSub = `${_metroRegs.join(', ')} · ${metroMonth}`;
 
   const wwDone = _wwRegs.filter(r=>acIsDone(r,'westwind')).length;
   const wwBadge = _wwDone ? badge('Done','#0F3020','#2ECC71')
     : wwDone>0 ? badge(`${_wwRegs.length-wwDone} left`,'#2A1010','#E74C3C')
-    : badge('New','#402E0F','#E8A33D');
+    : badge('New','#0F1E40','#4A90D9');
   const wwSub = `${_wwRegs.join(', ')} · ${metroMonth}`;
 
   const astraDoneCount = _astraRegs.filter(r=>acIsDone(r,'astra')).length;
   const astraBadge = _astraDone ? badge('Done','#0F3020','#2ECC71')
     : astraDoneCount>0 ? badge(`${_astraRegs.length-astraDoneCount} left`,'#2A1010','#E74C3C')
-    : badge('New','#402E0F','#E8A33D');
-  const astraBorder = !_astraDone && astraDoneCount===0 ? ';border-color:#5C3A10' : '';
+    : badge('New','#0F1E40','#4A90D9');
+  const astraBorder = !_astraDone && astraDoneCount===0 ? ';border-color:#2E5080' : '';
   const astraSub = `${_astraRegs.map(r=>'C-'+r).join(', ')} · ${_astraDone?'Last: '+metroMonth:'Not yet completed'}`;
 
   // Custom aircraft types
@@ -9282,8 +9233,8 @@ function renderAuditsLanding(el) {
     const regs = ct.regs.filter(r=>!isAcDisabled(r));
     const done = regs.filter(r=>acIsDone(r,ct.id)).length;
     const allD = regs.length>0 && done===regs.length;
-    const b = allD ? badge('Done','#0F3020','#2ECC71') : done>0 ? badge(`${regs.length-done} left`,'#2A1010','#E74C3C') : badge('New','#402E0F','#E8A33D');
-    return auditRow(`S.acCustomTypeView='${ct.id}';render()`, `<span style="font-size:26px">🛫</span>`, ct.name, `${regs.join(', ')} · ${metroMonth}`, b);
+    const b = allD ? badge('Done','#0F3020','#2ECC71') : done>0 ? badge(`${regs.length-done} left`,'#2A1010','#E74C3C') : badge('New','#0F1E40','#4A90D9');
+    return auditRow(`S.acCustomTypeView='${ct.id}';render()`, `<span style="font-size:26px">🛫</span>`, ct.name, `${done} of ${regs.length} tails`, b, '', regs.length?done/regs.length:0, allD);
   }).join('');
 
   // Facility & Base rows (custom tiles)
@@ -9292,7 +9243,7 @@ function renderAuditsLanding(el) {
       ? `<img src="${t.iconImg}" style="width:38px;height:38px;object-fit:cover;border-radius:6px">`
       : `<span style="font-size:26px">${t.icon||'📋'}</span>`;
     const onclick = `S.auditTileView='${key}';render()" onpointerdown="auditTileLongPress(event,'${key}')" onpointerup="auditTileCancelPress()" onpointercancel="auditTileCancelPress()" onpointermove="auditTileCancelPress()`;
-    return auditRow(onclick, iconHtml, t.title, t.subtitle||'Tap to open', badge('Open','#3A2A10','#E8A33D'));
+    return auditRow(onclick, iconHtml, t.title, t.subtitle||'Tap to open', badge('Open','#1A2840','#4A90D9'));
   }).join('');
 
   // Crew House — live audit
@@ -9302,9 +9253,9 @@ function renderAuditsLanding(el) {
   const chComplete = !!chData.done;
   const chBadge = chComplete ? badge('Done','#0F3020','#2ECC71')
     : chDone>0 ? badge(`${chDone}/${chTotal}`,'#2A2010','#E8A000')
-    : badge('New','#402E0F','#E8A33D');
-  const chIcon = `<svg width="28" height="28" viewBox="0 0 40 40" fill="none"><rect x="8" y="16" width="24" height="18" rx="2" fill="#8C6A3D" opacity="0.6"/><path d="M6 18L20 8l14 10" stroke="#F0C070" stroke-width="2" fill="none"/><rect x="15" y="24" width="10" height="10" rx="1" fill="#E8A33D" opacity="0.5"/></svg>`;
-  const crewHouseRow = auditRow('S.crewHouseView=true;render()', chIcon, 'Crew House', `220 Thomas Slee Dr. · ${chDone}/${chTotal} items`, chBadge);
+    : badge('New','#0F1E40','#4A90D9');
+  const chIcon = `<svg width="28" height="28" viewBox="0 0 40 40" fill="none"><rect x="8" y="16" width="24" height="18" rx="2" fill="#3D5C8C" opacity="0.6"/><path d="M6 18L20 8l14 10" stroke="#5BA3F5" stroke-width="2" fill="none"/><rect x="15" y="24" width="10" height="10" rx="1" fill="#4A90D9" opacity="0.5"/></svg>`;
+  const crewHouseRow = auditRow('S.crewHouseView=true;render()', chIcon, 'Crew House', `${chDone}/${chTotal} items · score 1–10`, chBadge, '', chDone/chTotal, chComplete);
 
   // MSDS — live audit
   const msAuditData = S.msdsAudit;
@@ -9313,9 +9264,9 @@ function renderAuditsLanding(el) {
   const msComplete = !!msAuditData.done;
   const msBadge = msComplete ? badge('Done','#0F3020','#2ECC71')
     : msDone>0 ? badge(`${msDone}/${MSDS_TOTAL}`,'#2A2010','#E8A000')
-    : badge('New','#402E0F','#E8A33D');
-  const msIcon = `<svg width="28" height="28" viewBox="0 0 40 40" fill="none"><rect x="7" y="10" width="26" height="20" rx="3" fill="#8C6A3D" opacity="0.5"/><rect x="11" y="14" width="8" height="6" rx="1" fill="#E8A33D" opacity="0.6"/><rect x="21" y="14" width="8" height="6" rx="1" fill="#E8A33D" opacity="0.6"/><rect x="11" y="22" width="18" height="4" rx="1" fill="#F0C070" opacity="0.3"/></svg>`;
-  const msdsRow = auditRow('S.msdsView=true;render()', msIcon, 'MSDS', `Safety data sheets · ${msDone}/${MSDS_TOTAL} items`, msBadge);
+    : badge('New','#0F1E40','#4A90D9');
+  const msIcon = `<svg width="28" height="28" viewBox="0 0 40 40" fill="none"><rect x="7" y="10" width="26" height="20" rx="3" fill="#3D5C8C" opacity="0.5"/><rect x="11" y="14" width="8" height="6" rx="1" fill="#4A90D9" opacity="0.6"/><rect x="21" y="14" width="8" height="6" rx="1" fill="#4A90D9" opacity="0.6"/><rect x="11" y="22" width="18" height="4" rx="1" fill="#5BA3F5" opacity="0.3"/></svg>`;
+  const msdsRow = auditRow('S.msdsView=true;render()', msIcon, 'MSDS', `${msDone}/${MSDS_TOTAL} sheets`, msBadge, '', msDone/MSDS_TOTAL, msComplete);
 
   // Hangar & Office — live audit
   const hoAuditData = S.hangarAudit;
@@ -9324,9 +9275,9 @@ function renderAuditsLanding(el) {
   const hoComplete = !!hoAuditData.done;
   const hoBadge = hoComplete ? badge('Done','#0F3020','#2ECC71')
     : hoDone>0 ? badge(`${hoDone}/${hoTotal}`,'#2A2010','#E8A000')
-    : badge('New','#402E0F','#E8A33D');
-  const hoIcon = `<svg width="28" height="28" viewBox="0 0 40 40" fill="none"><path d="M6 22 Q20 10 34 22 L34 36 L6 36Z" fill="#8C6A3D" opacity="0.5"/><path d="M4 22 Q20 8 36 22" stroke="#F0C070" stroke-width="1.5" fill="none"/><rect x="14" y="26" width="12" height="10" rx="1" fill="#E8A33D" opacity="0.5"/></svg>`;
-  const hangarRow = auditRow('S.hangarView=true;render()', hoIcon, 'Hangar & Office', `YKF Base · ${hoDone}/${hoTotal} items`, hoBadge);
+    : badge('New','#0F1E40','#4A90D9');
+  const hoIcon = `<svg width="28" height="28" viewBox="0 0 40 40" fill="none"><path d="M6 22 Q20 10 34 22 L34 36 L6 36Z" fill="#3D5C8C" opacity="0.5"/><path d="M4 22 Q20 8 36 22" stroke="#5BA3F5" stroke-width="1.5" fill="none"/><rect x="14" y="26" width="12" height="10" rx="1" fill="#4A90D9" opacity="0.5"/></svg>`;
+  const hangarRow = auditRow('S.hangarView=true;render()', hoIcon, 'Hangar & Office', `${hoDone}/${hoTotal} items · score 1–10`, hoBadge, '', hoDone/hoTotal, hoComplete);
 
   // Parking Lot MX — live audit
   const plAuditData = S.parkingAudit;
@@ -9335,19 +9286,19 @@ function renderAuditsLanding(el) {
   const plComplete = !!plAuditData.done;
   const plBadge = plComplete ? badge('Done','#0F3020','#2ECC71')
     : plDone>0 ? badge(`${plDone}/${plTotal}`,'#2A2010','#E8A000')
-    : badge('New','#402E0F','#E8A33D');
-  const plIcon = `<svg width="28" height="28" viewBox="0 0 40 40" fill="none"><rect x="6" y="28" width="28" height="6" rx="1" fill="#8C6A3D" opacity="0.6"/><rect x="10" y="18" width="6" height="10" rx="1" fill="#E8A33D" opacity="0.5"/><rect x="24" y="18" width="6" height="10" rx="1" fill="#E8A33D" opacity="0.5"/><rect x="8" y="14" width="24" height="6" rx="1" fill="#F0C070" opacity="0.3"/><circle cx="12" cy="34" r="3" fill="#E8A33D" opacity="0.7"/><circle cx="28" cy="34" r="3" fill="#E8A33D" opacity="0.7"/></svg>`;
-  const parkingRow = auditRow('S.parkingView=true;render()', plIcon, 'Parking Lot MX', `YKF Base · ${plDone}/${plTotal} items`, plBadge);
+    : badge('New','#0F1E40','#4A90D9');
+  const plIcon = `<svg width="28" height="28" viewBox="0 0 40 40" fill="none"><rect x="6" y="28" width="28" height="6" rx="1" fill="#3D5C8C" opacity="0.6"/><rect x="10" y="18" width="6" height="10" rx="1" fill="#4A90D9" opacity="0.5"/><rect x="24" y="18" width="6" height="10" rx="1" fill="#4A90D9" opacity="0.5"/><rect x="8" y="14" width="24" height="6" rx="1" fill="#5BA3F5" opacity="0.3"/><circle cx="12" cy="34" r="3" fill="#4A90D9" opacity="0.7"/><circle cx="28" cy="34" r="3" fill="#4A90D9" opacity="0.7"/></svg>`;
+  const parkingRow = auditRow('S.parkingView=true;render()', plIcon, 'Parking Lot MX', `${plDone}/${plTotal} items · score 1–10`, plBadge, '', plDone/plTotal, plComplete);
 
-  // YKF Base — live audit
+  // YXL Base — live audit
   const ykfAuditData = S.ykfBaseAudit;
   const ykfDone = YKF_BASE_CHECKLIST.reduce((a,s)=>a+s.items.filter(i=>i.type!=='date'&&(ykfAuditData.items||{})[i.key]&&(ykfAuditData.items||{})[i.key].val).length, 0);
   const ykfComplete = !!ykfAuditData.done;
   const ykfBadge = ykfComplete ? badge('Done','#0F3020','#2ECC71')
     : ykfDone>0 ? badge(`${ykfDone}/${YKF_TOTAL}`,'#2A2010','#E8A000')
-    : badge('New','#402E0F','#E8A33D');
-  const ykfIcon = `<svg width="28" height="28" viewBox="0 0 40 40" fill="none"><path d="M20 8L8 16v18h24V16z" fill="#8C6A3D" opacity="0.5"/><path d="M14 34V24h12v10" fill="#E8A33D" opacity="0.4"/><path d="M8 16L20 8l12 8" stroke="#F0C070" stroke-width="1.5" fill="none"/></svg>`;
-  const ykfBaseRow = auditRow('S.ykfBaseView=true;render()', ykfIcon, 'YKF Base', `Monthly checklist · ${ykfDone}/${YKF_TOTAL} items`, ykfBadge);
+    : badge('New','#0F1E40','#4A90D9');
+  const ykfIcon = `<svg width="28" height="28" viewBox="0 0 40 40" fill="none"><path d="M20 8L8 16v18h24V16z" fill="#3D5C8C" opacity="0.5"/><path d="M14 34V24h12v10" fill="#4A90D9" opacity="0.4"/><path d="M8 16L20 8l12 8" stroke="#5BA3F5" stroke-width="1.5" fill="none"/></svg>`;
+  const ykfBaseRow = auditRow('S.ykfBaseView=true;render()', ykfIcon, 'YXL Base', `${ykfDone}/${YKF_TOTAL} checks · yes / no`, ykfBadge, '', ykfDone/YKF_TOTAL, ykfComplete);
 
   const facilityPlaceholders = '';
 
@@ -9362,81 +9313,80 @@ function renderAuditsLanding(el) {
   ).join('');
   const carIconHtml = `<div style="position:relative;width:100%;height:100%">${carSlides}</div>`;
 
-  el.innerHTML=`
-    <div style="padding:18px 16px 10px">
-      <div style="font-size:22px;font-weight:800;color:var(--t1);margin-bottom:3px">Audit Forms</div>
-      <div style="font-size:12px;color:var(--t3)">Tap an audit to open and fill</div>
-    </div>
+  // ── Totals for the summary panel ──
+  const _facOn = BASE_CONFIG.features?.facilityAudits !== false;
+  const _acRegsAll = [..._metroRegs.map(r=>[r,'metro']), ..._wwRegs.map(r=>[r,'westwind']), ..._astraRegs.map(r=>[r,'astra']),
+    ...S.customAcTypesList.flatMap(ct=>ct.regs.filter(r=>!isAcDisabled(r)).map(r=>[r,ct.id]))];
+  const _acTotal = _acRegsAll.length, _acDoneN = _acRegsAll.filter(([r,t])=>acIsDone(r,t)).length;
+  const _facList = _facOn ? [S.crewHouseAudit, S.hangarAudit, S.msdsAudit, S.parkingAudit, S.ykfBaseAudit] : [];
+  const _facDoneN = _facList.filter(a=>a&&a.done).length;
+  const _total = _acTotal + _audCars.length + _facList.length;
+  const _doneN = _total - _auditsLeft;
+  const { urgent:_urg, overdue:_over, daysLeft:_dl } = auditDeadlineStatus();
+  const _monthName = new Date().toLocaleString('en-US',{month:'long'});
+  const _dueTxt = _allDone ? 'All done 🎉' : _over ? 'Overdue — was due the 10th' : _dl===0 ? 'Due today' : `Due ${_monthName} 10 · ${_dl} day${_dl>1?'s':''} left`;
+  const _dueCol = _allDone ? 'var(--green)' : (_urg||_over) ? 'var(--red)' : 'var(--t2)';
+  const chip = (label, d, t) => `<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${d===t?'var(--green-dim)':'var(--glass2)'};color:${d===t?'var(--green)':'var(--t2)'};border:1px solid ${d===t?'rgba(46,204,138,0.35)':'var(--border2)'}">${label} ${d}/${t}</span>`;
 
-    ${sectionLabel('✈','Aircraft')}
-    ${auditRow("openAircraftFolder('metro')", acImg('cars/Metroliner_logo-removebg-preview.png'), 'Metro SW3/SW4', metroSub, metroBadge)}
-    ${auditRow("openAircraftFolder('westwind')", acImg('cars/Westwind-removebg-preview.png'), 'WestWind WW24', wwSub, wwBadge)}
-    ${auditRow("openAircraftFolder('astra')", acImg('cars/Astra-removebg-preview.png'), 'Astra AJ25', astraSub, astraBadge, astraBorder)}
-    ${customAcRows}
-    <div style="margin:0 16px 8px">
-      <button onclick="openAddAircraftTypeFlow()" style="width:100%;padding:11px;border-radius:10px;border:1.5px dashed var(--border2);background:transparent;color:var(--t2);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
-        <span style="font-size:16px;line-height:1">+</span> Add aircraft type
-      </button>
-    </div>
+  const tabBtn = (id, label) => `<button onclick="S.auditsTab='${id}';render();${id==='records'?'loadAllAuditRecords()':''}" style="flex:1;height:36px;border-radius:9px;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;background:${S.auditsTab===id?'var(--bg4)':'transparent'};color:${S.auditsTab===id?'var(--t1)':'var(--t2)'}">${label}</button>`;
+  const tabsHtml = `<div style="margin:12px 16px 6px;padding:4px;border-radius:12px;background:var(--glass);border:1px solid var(--border2);display:flex;gap:4px">
+      ${tabBtn('todo','To do')}${tabBtn('records','Records')}${tabBtn('admin','Admin')}
+    </div>`;
 
-    ${BASE_CONFIG.features?.facilityAudits === false ? '' : `
+  // ── Records tab: the archive, under the same tabs ──
+  if (S.auditsTab === 'records') {
+    el.innerHTML = tabsHtml + '<div id="audRecords"></div>';
+    renderRecordsView(document.getElementById('audRecords'));
+    setBar({title:'Audits', rightLabel:'?'});
+    const _q=document.getElementById('barDay'); if(_q){_q.style.cursor='pointer';_q.onclick=openAuditGuide;}
+    return;
+  }
+
+  // ── Admin tab: tools for setting up and managing the audits ──
+  if (S.auditsTab === 'admin') {
+    const adminRow = (onclick, icon, title, sub, danger) => `
+      <button onclick="${onclick}" style="width:100%;padding:13px 16px;border-radius:12px;border:1px solid ${danger?'rgba(232,64,64,0.3)':'var(--border2)'};background:${danger?'rgba(232,64,64,0.07)':'var(--glass2)'};cursor:pointer;display:flex;align-items:center;gap:13px;text-align:left;font-family:inherit">
+        <span style="font-size:20px;line-height:1;flex-shrink:0">${icon}</span>
+        <span style="flex:1"><span style="display:block;font-size:13px;font-weight:700;color:${danger?'#E84040':'var(--t1)'}">${title}</span><span style="display:block;font-size:11px;color:var(--t3);margin-top:2px">${sub}</span></span>
+        ${danger?'':'<span style="color:var(--border2);font-size:20px">›</span>'}
+      </button>`;
+    el.innerHTML = tabsHtml + `
+      <div style="padding:6px 16px 10px;font-size:12px;color:var(--t3)">Tools for setting up and managing the audits. Day-to-day audits don't need these.</div>
+      <div style="margin:0 16px;display:flex;flex-direction:column;gap:8px">
+        ${adminRow("S.acVersionsView=true;render()", '🗂', 'PDF Form Versions', 'Update version · date · form # · upload new TC PDF')}
+        ${adminRow("openAddAircraftTypeFlow()", '✈️', 'Add aircraft type', 'New checklist built from a TC-approved PDF')}
+        ${adminRow("openAddAudit()", '📋', 'Add audit', 'A new facility or base audit tile')}
+      </div>
+      <div style="height:80px"></div>`;
+    return;
+  }
+
+  // ── To do tab: every audit as a tile, the month's summary pinned at the bottom ──
+  el.innerHTML = tabsHtml + `
+    ${sectionLabel('✈','Aircraft &amp; Crew Cars')}
+    ${tileGrid(
+      auditRow("openAircraftFolder('metro')", acImg('cars/Metroliner_logo-removebg-preview.png'), 'Metro SW3/SW4', `${metroDone} of ${_metroRegs.length} tails`, metroBadge, '', _metroRegs.length?metroDone/_metroRegs.length:0, _metroDone) +
+      (!_wwRegs.length ? '' : auditRow("openAircraftFolder('westwind')", acImg('cars/Westwind-removebg-preview.png'), 'WestWind WW24', `${wwDone} of ${_wwRegs.length} tails`, wwBadge, '', _wwRegs.length?wwDone/_wwRegs.length:0, _wwDone)) +
+      (!_astraRegs.length ? '' : auditRow("openAircraftFolder('astra')", acImg('cars/Astra-removebg-preview.png'), 'Astra AJ25', _astraRegs.map(r=>'C-'+r).join(', '), astraBadge, astraBorder, _astraRegs.length?astraDoneCount/_astraRegs.length:0, _astraDone)) +
+      auditRow('openCrewCars()', carIconHtml, 'Crew Cars', `${carsDoneCount} of ${_audCars.length} vehicles`, carsBadge, '', _audCars.length?carsDoneCount/_audCars.length:0, _carsDone) +
+      customAcRows
+    )}
+    ${_facOn ? `
     ${sectionLabel('🏢','Facility &amp; Base')}
-    ${crewHouseRow}
-    ${hangarRow}
-    ${msdsRow}
-    ${parkingRow}
-    ${ykfBaseRow}
-    ${facilityRows}
-    ${facilityPlaceholders}
-    `}
+    ${tileGrid(crewHouseRow + hangarRow + msdsRow + parkingRow + ykfBaseRow + facilityRows)}
+    ` : ''}
 
-    ${sectionLabel('🚗','Crew Cars')}
-    ${auditRow('openCrewCars()', carIconHtml, 'Crew Cars', `${CREW_CARS.length} vehicles · tap to manage`, carsBadge)}
-
-    <div style="margin:14px 16px 8px">
-      <button onclick="generateAllAuditPDFs()"
-        style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid ${_allDone?'var(--accent-border)':'var(--border2)'};background:${_allDone?'var(--accent-dim)':'var(--glass2)'};cursor:${_allDone?'pointer':'default'};display:flex;align-items:center;gap:13px;text-align:left;opacity:${_allDone?'1':'0.45'}">
-        <span style="font-size:22px;line-height:1;flex-shrink:0">📦</span>
-        <span style="flex:1">
-          <span style="display:block;font-size:13px;font-weight:700;color:${_allDone?'var(--accent)':'var(--t2)'}">Generate all PDFs</span>
-          <span style="display:block;font-size:11px;color:var(--t3);margin-top:2px">${_allDone?'All audits complete — tap to generate':'Complete all audits to enable'}</span>
-        </span>
-        <span style="color:${_allDone?'var(--accent)':'var(--border2)'};font-size:20px;opacity:0.7">›</span>
-      </button>
-    </div>
-    <div style="margin:0 16px 8px">
-      <button onclick="S.acVersionsView=true;render()"
-        style="width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--border2);background:var(--glass2);cursor:pointer;display:flex;align-items:center;gap:13px;text-align:left">
-        <span style="font-size:20px;line-height:1;flex-shrink:0">🗂</span>
-        <span style="flex:1">
-          <span style="display:block;font-size:13px;font-weight:700;color:var(--t1)">PDF Form Versions</span>
-          <span style="display:block;font-size:11px;color:var(--t3);margin-top:2px">Update version · date · form # · upload new TC PDF</span>
-        </span>
-        <span style="color:var(--border2);font-size:20px">›</span>
-      </button>
-    </div>
-    <div style="margin:0 16px 8px">
-      <button onclick="S.recordsView=true;render();loadAllAuditRecords()"
-        style="width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--border2);background:var(--glass2);cursor:pointer;display:flex;align-items:center;gap:13px;text-align:left">
-        <span style="font-size:20px;line-height:1;flex-shrink:0">🗂</span>
-        <span style="flex:1">
-          <span style="display:block;font-size:13px;font-weight:700;color:var(--t1)">Records</span>
-          <span style="display:block;font-size:11px;color:var(--t3);margin-top:2px">Archived audit PDFs · 2 years history</span>
-        </span>
-        <span style="color:var(--border2);font-size:20px">›</span>
-      </button>
-    </div>
-    <div style="margin:0 16px 8px">
-      <button onclick="resetAllAcAudits()"
-        style="width:100%;padding:12px 16px;border-radius:12px;border:1px solid rgba(232,64,64,0.3);background:rgba(232,64,64,0.07);cursor:pointer;display:flex;align-items:center;gap:13px;text-align:left">
-        <span style="font-size:20px;line-height:1;flex-shrink:0">🗑</span>
-        <span style="flex:1">
-          <span style="display:block;font-size:13px;font-weight:700;color:#E84040">Reset all audits</span>
-          <span style="display:block;font-size:11px;color:var(--t3);margin-top:2px">Clears aircraft, crew cars, and all facility audits on every device</span>
-        </span>
-      </button>
-    </div>
-    <div style="height:80px"></div>`;
+    <div style="position:sticky;bottom:calc(10px - 88px - var(--safe-b));margin:14px 12px calc(10px - 88px - var(--safe-b));z-index:5;padding:10px 10px 10px 12px;border-radius:18px;background:color-mix(in srgb, var(--bg2) 88%, transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid ${_allDone?'rgba(46,204,138,0.45)':'var(--border2)'};box-shadow:0 10px 30px rgba(0,0,0,0.35);display:flex;align-items:center;gap:12px">
+      <div style="width:46px;height:46px;border-radius:50%;flex-shrink:0;background:conic-gradient(${_allDone?'var(--green)':'var(--accent)'} ${_total?Math.round(_doneN/_total*360):0}deg, var(--border2) 0);display:flex;align-items:center;justify-content:center">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${_allDone?'var(--green)':'var(--t1)'};font-variant-numeric:tabular-nums">${_allDone?'✓':Math.round(_total?_doneN/_total*100:0)+'%'}</div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:800;color:var(--t1);font-variant-numeric:tabular-nums">${_doneN} of ${_total} done</div>
+        <div style="font-size:11px;font-weight:600;color:${_dueCol};margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_dueTxt}</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:3px;white-space:nowrap;font-variant-numeric:tabular-nums">✈ ${_acDoneN}/${_acTotal} · 🚗 ${carsDoneCount}/${_audCars.length}${_facOn?` · 🏢 ${_facDoneN}/${_facList.length}`:''}</div>
+      </div>
+      <button onclick="${_allDone?'shareAllRecords()':`toast('📧 Unlocks when all ${_total} audits are done')`}" aria-label="Send PDFs via e-mail" style="flex-shrink:0;height:40px;padding:0 14px;border-radius:12px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;border:1px solid ${_allDone?'var(--accent-border)':'var(--border2)'};background:${_allDone?'linear-gradient(135deg,var(--accent),var(--accent2))':'var(--glass2)'};color:${_allDone?'#fff':'var(--t3)'}">${_allDone?'📧 Send PDFs':'🔒 Send'}</button>
+    </div>`;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -9529,6 +9479,20 @@ const CREW_HOUSE_CHECKLIST = [
 ];
 
 const CH_TOTAL = CREW_HOUSE_CHECKLIST.reduce((a,s)=>a+s.items.length,0);
+function facMissingActions(d) {
+  return Object.values((d && d.items) || {}).filter(i => i && i.score > 0 && i.score <= 5 && !(i.comment||'').trim()).length;
+}
+function facDoneBlock(d, done, total, toggleFn, savingKey) {
+  const missing = facMissingActions(d);
+  if (done === total && !d.done && missing)
+    return `<div id="facLock" style="margin:8px 14px 4px;padding:11px 13px;border-radius:9px;border:1px solid rgba(231,76,60,0.4);background:rgba(231,76,60,0.1);text-align:center;font-size:12px;font-weight:700;color:#E74C3C">🔒 Add a corrective action to ${missing} low score${missing>1?'s':''} (5 or less) to mark as done</div>`;
+  return markDoneBlock(done===total, !!d.done, toggleFn, done, total, _pdfSavingKeys.has(savingKey));
+}
+function facLockRefresh(d, total) {
+  const scored = Object.values(d.items||{}).filter(i=>i&&i.score>0).length;
+  const shouldLock = scored === total && !d.done && facMissingActions(d) > 0;
+  if (!!document.getElementById('facLock') !== shouldLock) render();
+}
 
 function chData() {
   if(!S.crewHouseAudit) S.crewHouseAudit={};
@@ -9644,12 +9608,12 @@ function renderRecordsView(el) {
   });
 
   const facilityOrder = ['crewhouse','hangar','msds','parking','ykfbase'];
-  const facilityNames = {crewhouse:'Crew House', hangar:'Hangar & Office', msds:'MSDS', parking:'Parking Lot MX', ykfbase:'YKF Base'};
+  const facilityNames = {crewhouse:'Crew House', hangar:'Hangar & Office', msds:'MSDS', parking:'Parking Lot MX', ykfbase:'YXL Base'};
   const typeLabels    = {metro:'Metro SW3/SW4', westwind:'Westwind WW24', astra:'Astra AJ25'};
   const carNames      = Object.fromEntries([...CREW_CARS, ...RETIRED_CARS].map(c=>[c.key,c.name]));
 
   const pdfLink = (rec) => rec.pdfUrl
-    ? `<a href="${rec.pdfUrl}" target="_blank" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:7px;background:var(--navy2,#241A0C);border:1px solid var(--accent-border,#4a3010);font-size:10px;font-weight:700;color:var(--accent);text-decoration:none;flex-shrink:0">📄 PDF</a>`
+    ? `<a href="${rec.pdfUrl}" target="_blank" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:7px;background:var(--navy2,#0B1628);border:1px solid var(--accent-border,#1a3050);font-size:10px;font-weight:700;color:var(--accent);text-decoration:none;flex-shrink:0">📄 PDF</a>`
     : `<span style="font-size:10px;font-weight:600;color:var(--t4);flex-shrink:0">${rec.done?'Done · no PDF':'Not done yet'}</span>`;
 
   let html = `<div style="padding:8px 0 40px">`;
@@ -9682,17 +9646,12 @@ function renderRecordsView(el) {
       if (isExp) {
         html += `<div style="border-top:1px solid var(--border2);padding:4px 8px 8px">`;
 
-        // Flagged-items summary (built automatically by "Generate all PDFs")
+        // Flagged-items summary (built automatically by "Send PDFs via e-mail")
         const summary = S.monthSummaries[monthKey];
         if (summary) {
           html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 8px;border-radius:8px;margin-bottom:2px;background:var(--accent-dim)">
               <div style="font-size:12px;font-weight:700;color:var(--accent)">📋 Flagged Items Summary</div>
-              <a href="${summary.pdfUrl}" target="_blank" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:7px;background:var(--navy2,#241A0C);border:1px solid var(--accent-border,#4a3010);font-size:10px;font-weight:700;color:var(--accent);text-decoration:none;flex-shrink:0">📄 PDF</a>
-            </div>`;
-        }
-        if (monthLabel === auditMonth()) {
-          html += `<div style="padding:0 8px 8px">
-              <button onclick="event.stopPropagation();shareAllRecords()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:8px;border:1px solid var(--accent-border,#4a3010);background:var(--accent);color:var(--navy2,#241A0C);font-size:12px;font-weight:700;cursor:pointer">📤 Share all</button>
+              <a href="${summary.pdfUrl}" target="_blank" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:7px;background:var(--navy2,#0B1628);border:1px solid var(--accent-border,#1a3050);font-size:10px;font-weight:700;color:var(--accent);text-decoration:none;flex-shrink:0">📄 PDF</a>
             </div>`;
         }
         html += `<div style="height:0.5px;background:var(--border2);margin:0 8px 2px"></div>`;
@@ -9724,7 +9683,7 @@ function renderRecordsView(el) {
             </div>`;
 
           if (isCarExp) {
-            html += `<div style="background:var(--navy2,#241A0C);border-radius:8px;margin:2px 4px 4px;padding:4px 6px">`;
+            html += `<div style="background:var(--navy2,#0B1628);border-radius:8px;margin:2px 4px 4px;padding:4px 6px">`;
             carDocs.sort((a,b)=>(carNames[a[1].carKey]||'').localeCompare(carNames[b[1].carKey]||'')).forEach(([,rec]) => {
               html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 6px;border-radius:7px">
                 <div style="display:flex;align-items:center;gap:8px">
@@ -9750,7 +9709,7 @@ function renderRecordsView(el) {
             </div>`;
 
           if (isAcExp) {
-            html += `<div style="background:var(--navy2,#241A0C);border-radius:8px;margin:2px 4px 4px;padding:4px 6px">`;
+            html += `<div style="background:var(--navy2,#0B1628);border-radius:8px;margin:2px 4px 4px;padding:4px 6px">`;
             aircraftDocs.sort((a,b)=>a[1].reg.localeCompare(b[1].reg)).forEach(([,rec]) => {
               const ct = (S.customAcTypesList||[]).find(t=>t.id===rec.acType);
               const tLabel = typeLabels[rec.acType] || (ct?ct.name:rec.acType);
@@ -12692,12 +12651,49 @@ function buildFlaggedSummaryHTML() {
   <div class="pdf-back-btn" style="position:fixed;top:12px;left:12px;z-index:9999"><button onclick="window.close()" style="background:#1A3A6A;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3)">← Close</button></div><style>@media print{.pdf-back-btn{display:none!important}}</style>
   </body></html>`;
 }
-
-// Renders a saved audit's HTML into a hidden iframe (so its own CSS/images apply
-// exactly as when printed) and rasterizes it into a real, paginated PDF via
-// html2canvas + jsPDF. Needed because mail apps commonly block raw .html
-// attachments outright (phishing precaution) — a real PDF just opens.
-async function htmlToPdfFile(html, filename) {
+function pdfSafeLayout(doc) {
+  const win = doc.defaultView;
+  doc.querySelectorAll('img').forEach(img => {
+    const cs = win.getComputedStyle(img), fit = cs.objectFit, src = img.currentSrc || img.src;
+    if (!src || !fit || fit === 'fill') return;
+    const w = img.offsetWidth, h = img.offsetHeight;
+    if (!w || !h) return;
+    const box = doc.createElement('div');
+    box.className = img.className;
+    box.setAttribute('style', img.getAttribute('style') || '');
+    const st = box.style;
+    st.boxSizing = 'border-box'; st.width = w+'px'; st.height = h+'px';
+    st.display = cs.display === 'inline' ? 'inline-block' : cs.display;
+    st.margin = cs.margin; st.padding = cs.padding; st.borderRadius = cs.borderRadius; st.verticalAlign = cs.verticalAlign;
+    st.flexShrink = cs.flexShrink; st.flexGrow = cs.flexGrow; st.alignSelf = cs.alignSelf;
+    if (cs.transform && cs.transform !== 'none') st.transform = cs.transform;
+    if (cs.position !== 'static') { st.position = cs.position; st.top = cs.top; st.left = cs.left; st.right = cs.right; st.bottom = cs.bottom; }
+    st.backgroundImage = `url("${src}")`;
+    st.backgroundRepeat = 'no-repeat';
+    st.backgroundPosition = cs.objectPosition || 'center';
+    st.backgroundSize = fit === 'none' ? 'auto' : fit === 'scale-down' ? 'contain' : fit;
+    st.backgroundOrigin = 'content-box'; st.backgroundClip = 'content-box';
+    st.objectFit = ''; st.objectPosition = '';
+    img.replaceWith(box);
+  });
+  doc.querySelectorAll('body *').forEach(el => {
+    const cs = win.getComputedStyle(el);
+    if (!/^vertical|^sideways/.test(cs.writingMode||'')) return;
+    const w = el.offsetWidth, h = el.offsetHeight;
+    if (!w || !h) return;
+    const pl = parseFloat(cs.paddingLeft)||0, pr = parseFloat(cs.paddingRight)||0, pt = parseFloat(cs.paddingTop)||0, pb = parseFloat(cs.paddingBottom)||0;
+    const cw = el.clientWidth - pl - pr, ch = el.clientHeight - pt - pb;
+    // vertical-rl reads top-to-bottom (turn +90°); the side bars add rotate(180deg) to read bottom-to-top (turn -90°)
+    const m = /matrix\(([-\d.e]+)/.exec(cs.transform||''), flipped = m && parseFloat(m[1]) < -0.99;
+    const inner = doc.createElement('span');
+    inner.innerHTML = el.innerHTML;
+    inner.style.cssText = `position:absolute;left:${pl + cw/2 - ch/2}px;top:${pt + ch/2 - cw/2}px;width:${ch}px;height:${cw}px;display:flex;align-items:center;justify-content:center;white-space:nowrap;writing-mode:horizontal-tb;transform:rotate(${flipped?-90:90}deg)`;
+    el.innerHTML = '';
+    el.appendChild(inner);
+    Object.assign(el.style, {writingMode:'horizontal-tb', transform:'none', boxSizing:'border-box', width:w+'px', height:h+'px', position: cs.position==='static' ? 'relative' : cs.position});
+  });
+}
+async function auditHtmlCanvas(html) {
   const stripped = html.replace(/<div class="pdf-back-btn"[\s\S]*?<\/script>/, '');
   const iframe = document.createElement('iframe');
   iframe.style.cssText = 'position:absolute;left:-99999px;top:0;width:850px;height:1100px;border:none';
@@ -12705,7 +12701,15 @@ async function htmlToPdfFile(html, filename) {
   try {
     await new Promise(resolve => { iframe.onload = resolve; iframe.srcdoc = stripped; });
     await new Promise(resolve => setTimeout(resolve, 400)); // let images finish loading
-    const canvas = await html2canvas(iframe.contentDocument.body, {scale:2, useCORS:true, windowWidth:850});
+    try { pdfSafeLayout(iframe.contentDocument); } catch(e) { console.log('pdfSafeLayout failed:', e); }
+    return await html2canvas(iframe.contentDocument.body, {scale:2, useCORS:true, windowWidth:850});
+  } finally {
+    document.body.removeChild(iframe);
+  }
+}
+async function htmlIntoPdf(pdf, html, startNewPage) {
+  {
+    const canvas = await auditHtmlCanvas(html);
     // jsPDF's built-in html()+autoPaging badly over-estimates page count on these
     // documents (7 pages for content that's really 2) — slice the rendered canvas
     // into real letter-page-height chunks ourselves for predictable pagination.
@@ -12713,8 +12717,6 @@ async function htmlToPdfFile(html, filename) {
     const usableWpt = pageWpt - 2*marginPt, usableHpt = pageHpt - 2*marginPt;
     const pxPerPt = canvas.width / usableWpt;
     const pageHpx = Math.floor(usableHpt * pxPerPt);
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({unit:'pt', format:'letter'});
     let y = 0, page = 0;
     while (y < canvas.height) {
       const sliceH = Math.min(pageHpx, canvas.height - y);
@@ -12722,14 +12724,38 @@ async function htmlToPdfFile(html, filename) {
       tmp.width = canvas.width; tmp.height = sliceH;
       tmp.getContext('2d').drawImage(canvas, 0, y, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
       const imgData = tmp.toDataURL('image/jpeg', 0.85);
-      if (page>0) pdf.addPage();
+      if (page>0 || startNewPage) pdf.addPage();
       pdf.addImage(imgData, 'JPEG', marginPt, marginPt, usableWpt, sliceH/pxPerPt);
       y += sliceH; page++;
     }
-    return new File([pdf.output('blob')], filename, {type:'application/pdf'});
-  } finally {
-    document.body.removeChild(iframe);
+    return page;
   }
+}
+
+// Renders a saved audit's HTML into a hidden iframe (so its own CSS/images apply
+// exactly as when printed) and rasterizes it into a real, paginated PDF via
+// html2canvas + jsPDF. Needed because mail apps commonly block raw .html
+// attachments outright (phishing precaution) — a real PDF just opens.
+async function htmlToPdfFile(html, filename) {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({unit:'pt', format:'letter'});
+  await htmlIntoPdf(pdf, html, false);
+  return new File([pdf.output('blob')], filename, {type:'application/pdf'});
+}
+let _auditBundle = null;
+function auditBundleSources(month) {
+  const facilityNames = {crewhouse:'Crew House', hangar:'Hangar', parking:'Parking Lot', ykfbase:'YXL Base', msds:'MSDS'};
+  const order = {ykfbase:0, hangar:1, crewhouse:2, parking:3, msds:4, cars:5, aircraft:6};
+  const out = [];
+  Object.values(S.auditRecords).forEach(rec => {
+    if (rec.monthLabel !== month || !rec.pdfUrl) return;
+    let name;
+    if (rec.type === 'cars') name = (carByKey(rec.carKey)||{}).name || rec.carKey;
+    else if (rec.type === 'aircraft') name = rec.reg;
+    else name = facilityNames[rec.type] || rec.type;
+    out.push({name, url: rec.pdfUrl, o: order[rec.type] ?? 9});
+  });
+  return out.sort((a,b)=>a.o-b.o || String(a.name).localeCompare(String(b.name)));
 }
 
 // "Share all" — bundles every already-saved file for the current month (whatever's
@@ -12738,47 +12764,107 @@ async function htmlToPdfFile(html, filename) {
 // as real email attachments.
 async function shareAllRecords() {
   const month = auditMonth();
-  const files = [];
-  toast('Preparing PDFs…');
-
   const summaryHtml = buildFlaggedSummaryHTML();
-  // Keep Records in sync even if "Generate all PDFs" was never run this month.
+  const sources = auditBundleSources(month);
+  const key = month + '|' + sources.map(s=>s.url).join(',') + '|' + summaryHtml.length;
+  // Keep Records' Flagged Items Summary in sync every time this runs.
   uploadAuditPDF(summaryHtml, `audits/${month}/summary.html`).then(url => {
     if (url && db) db.collection('monthSummaries').doc(month).set({pdfUrl:url, month}, {merge:true});
   });
-  try {
-    files.push(await htmlToPdfFile(summaryHtml, `Flagged Summary - ${month}.pdf`));
-  } catch(e) { console.error('Summary PDF conversion failed:', e); }
+  if (_auditBundle && _auditBundle.key === key) { auditBundlePanel(); return; }   // already built, nothing changed
 
-  const facilityNames = {crewhouse:'Crew House', hangar:'Hangar', parking:'Parking Lot', ykfbase:'YKF Base', msds:'MSDS'};
-  const sources = [];
-  Object.values(S.auditRecords).forEach(rec => {
-    if (rec.monthLabel !== month || !rec.pdfUrl) return;
-    let name;
-    if (rec.type === 'cars') name = (carByKey(rec.carKey)||{}).name || rec.carKey;
-    else if (rec.type === 'aircraft') name = rec.reg;
-    else name = facilityNames[rec.type] || rec.type;
-    sources.push({name, url: rec.pdfUrl});
-  });
+  openModal('Preparing the audit PDF', `<div id="abProg" style="text-align:center;padding:18px 4px 8px">
+      <div class="ptr-spin" style="margin:0 auto 12px;width:28px;height:28px"></div>
+      <div style="font-size:14px;font-weight:700;color:var(--t1)">Building one PDF with every audit…</div>
+      <div id="abStep" style="font-size:12.5px;color:var(--t2);margin-top:6px">Flagged summary</div>
+      <div style="font-size:11.5px;color:var(--t3);margin-top:10px;line-height:1.45">Keep the app open — this takes about a minute.</div></div>`, null);
+  document.getElementById('mSave').style.display = 'none';
+  const step = t => { const el = document.getElementById('abStep'); if (el) el.textContent = t; };
 
-  if (!sources.length) {
-    toast('No completed audits saved yet this month — sharing the summary only');
-  }
-
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({unit:'pt', format:'letter'});
+  const parts = [], failed = [];
+  let pages = 0;
+  try { pages += await htmlIntoPdf(pdf, summaryHtml, false); parts.push({name:'Flagged Summary', html:summaryHtml}); }
+  catch(e) { console.error('Summary PDF conversion failed:', e); failed.push('Flagged Summary'); }
+  let i = 0;
   for (const {name, url} of sources) {
+    i++;
+    step(`${i} of ${sources.length} — ${name}`);
     try {
       const html = await (await fetch(url)).text();
-      files.push(await htmlToPdfFile(html, `${name} - ${month}.pdf`));
-    } catch(e) { console.error('PDF conversion failed for', name, e); }
+      pages += await htmlIntoPdf(pdf, html, pages > 0);
+      parts.push({name, html});
+    } catch(e) { console.error('PDF conversion failed for', name, e); failed.push(name); }
   }
-
+  if (!pages) { closeModal(); toast('Could not build the PDF — check the connection and try again'); return; }
+  const file = new File([pdf.output('blob')], `YXL Audits - ${month}.pdf`, {type:'application/pdf'});
+  _auditBundle = {key, month, file, parts, failed, pages, count: sources.length};
+  // Show the buttons only if this pop-up is still the one on screen
+  if (document.getElementById('abProg') && document.getElementById('overlay').classList.contains('open')) auditBundlePanel();
+  else toast('📎 Audit PDF ready — tap Send PDFs again to share it');
+}
+function auditBundlePanel() {
+  const b = _auditBundle; if (!b) return;
+  const mb = (b.file.size/1048576).toFixed(1);
+  const btn = (fn, bg, fg, label, sub) => `<button onclick="${fn}" style="width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:13px 14px;border-radius:14px;border:1px solid var(--border2);background:${bg};color:${fg};font-family:inherit;cursor:pointer;margin-top:9px">
+      <span style="font-size:22px">${label.split(' ')[0]}</span><span style="flex:1"><b style="display:block;font-size:14.5px">${label.split(' ').slice(1).join(' ')}</b><small style="font-size:11.5px;opacity:.8">${sub}</small></span></button>`;
+  openModal(`${b.month} audits`, `
+    <div style="display:flex;align-items:center;gap:12px;padding:4px 2px 6px">
+      <div style="width:44px;height:54px;border-radius:6px;background:#E84040;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;flex-shrink:0">PDF</div>
+      <div style="min-width:0"><b style="font-size:14px;color:var(--t1);display:block;word-break:break-word">${_hdEsc(b.file.name)}</b>
+        <small style="font-size:12px;color:var(--t2)">Summary + ${b.count} audit${b.count===1?'':'s'} · ${b.pages} pages · ${mb} MB</small></div>
+    </div>
+    ${b.failed.length ? `<div style="font-size:12px;color:var(--amber);margin:4px 0 2px">⚠️ Left out (couldn't load): ${_hdEsc(b.failed.join(', '))}</div>` : ''}
+    ${btn('auditBundleShare()', 'var(--accent)', '#fff', '📧 Share / e-mail', 'Opens your share sheet — Mail, Gmail, Outlook…')}
+    ${btn('auditBundleDownload()', 'var(--glass2)', 'var(--t1)', '⬇️ Download', 'Saves the PDF to this phone')}
+    ${btn('auditBundleOpen()', 'var(--glass2)', 'var(--t1)', '🖨️ Open to print', 'Opens the PDF — print it from there')}
+    <div style="text-align:center;margin-top:12px"><span onclick="auditBundleShareSeparate()" style="font-size:12px;color:var(--t3);text-decoration:underline;cursor:pointer">Need separate files? Share them one PDF per audit</span></div>`, null);
+  document.getElementById('mSave').style.display = 'none';
+}
+async function auditBundleShare() {
+  const b = _auditBundle; if (!b) return;
+  if (navigator.canShare && navigator.canShare({files:[b.file]})) {
+    try { await navigator.share({files:[b.file], title:`${b.month} Audits`, text:`${b.month} audits — flagged summary and every audit, in one PDF.`}); }
+    catch(e) { if (e.name !== 'AbortError') { toast('Sharing failed — downloading the PDF instead'); auditBundleDownload(); } }
+  } else { toast("This browser can't share files — downloading the PDF instead"); auditBundleDownload(); }
+}
+function auditBundleDownload() {
+  const b = _auditBundle; if (!b) return;
+  const url = URL.createObjectURL(b.file);
+  const a = document.createElement('a');
+  a.href = url; a.download = b.file.name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 120000);
+  toast('⬇️ Downloading ' + b.file.name);
+}
+function auditBundleOpen() {
+  const b = _auditBundle; if (!b) return;
+  const url = URL.createObjectURL(b.file);
+  const w = window.open(url, '_blank');
+  if (!w) auditBundleDownload();          // pop-up blocked: download instead
+  setTimeout(()=>URL.revokeObjectURL(url), 600000);
+}
+async function auditBundleShareSeparate() {
+  const b = _auditBundle; if (!b) return;
+  closeModal();
+  toast('Making one PDF per audit…');
+  const files = [];
+  for (const p of b.parts) {
+    try { files.push(await htmlToPdfFile(p.html, `${p.name} - ${b.month}.pdf`)); } catch(e) { console.error('PDF failed for', p.name, e); }
+  }
+  // Building takes a while, so the share is again its own tap
+  openModal('Separate PDFs ready', `<p style="font-size:13px;color:var(--t2);line-height:1.5;margin-bottom:6px">${files.length} PDFs, one per audit.</p>
+    <button onclick="auditBundleShareFiles()" style="width:100%;padding:13px;border-radius:14px;border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer">📧 Share the ${files.length} PDFs</button>`, null);
+  document.getElementById('mSave').style.display = 'none';
+  b.separate = files;
+}
+async function auditBundleShareFiles() {
+  const files = (_auditBundle||{}).separate || [];
   if (navigator.canShare && navigator.canShare({files})) {
-    try { await navigator.share({files, title:`${month} Audits`}); }
-    catch(e) { if (e.name !== 'AbortError') toast('Share cancelled or failed'); }
-  } else {
-    openModal('Share All',
-      `<p style="font-size:13px;color:var(--t2);line-height:1.5">Your browser can't share multiple files directly. Open each file from its card or Records and share/save it individually instead.</p>`, null);
-  }
+    try { await navigator.share({files, title:`${_auditBundle.month} Audits`}); }
+    catch(e) { if (e.name !== 'AbortError') toast('Sharing the separate files failed — use the single PDF instead'); }
+  } else toast("This browser can't share several files — use the single PDF instead");
 }
 
 function generateAllAuditPDFs() {
@@ -13042,13 +13128,12 @@ function _buildTileGridHtml() {
        </div>` : '';
   if(_homeActiveDesign !== 'classic') return doneBtn + homeDesignTilesHtml(_homeActiveDesign);
   const tiles = (_tileOrder||[]).map((t,i)=>`
-    <div class="home-tile${_tileEditMode?' tile-wobble':' tile-anim'}${t.locked?' tile-locked':''}"
+    <div class="home-tile${_tileEditMode?' tile-wobble':' tile-anim'}"
          id="ht-${t.id}" data-tile-id="${t.id}"
-         style="${_tileEditMode?`animation-delay:${i*40}ms`:`animation-delay:${i*55}ms`};touch-action:none;position:relative${t.locked?';opacity:0.4':''}"
-         ${t.locked ? `onclick="toast('🔒 Not available yet')"` : _tileEditMode
+         style="${_tileEditMode?`animation-delay:${i*40}ms`:`animation-delay:${i*55}ms`};touch-action:none;position:relative"
+         ${_tileEditMode
            ? `ontouchstart="tileTouchStart(event,'${t.id}')" ontouchend="tileTouchEnd(event)"`
            : `onclick="goTab('${t.id}')" onpointerdown="tileLPStart('${t.id}')" onpointerup="tileLPCancel()" onpointerleave="tileLPCancel()"`}>
-      ${t.locked?'<div style="position:absolute;top:6px;right:8px;font-size:11px">🔒</div>':''}
       <div style="color:var(--t1);margin-bottom:10px;display:flex;justify-content:center;opacity:0.85">${t.svg}</div>
       <div style="font-size:11px;font-weight:700;color:var(--t1);letter-spacing:0.8px;text-transform:uppercase">${t.label}</div>
     </div>`).join('');

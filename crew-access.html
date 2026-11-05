@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Skycare — Crew Car Check-in</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0B1120;--bg2:#111827;--bg3:#1a2235;--glass:rgba(255,255,255,0.05);--glass2:rgba(255,255,255,0.08);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--t1:#f0f4ff;--t2:#9aa5be;--t3:#5a6478;--accent:#4A90D9;--green:#27AE60;--red:#E74C3C;--gold:#F1C40F;--radius:16px;--radius-sm:10px}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:40px}
+.bar{position:sticky;top:0;z-index:50;background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px}
+.bar-title{font-size:16px;font-weight:800;color:var(--t1);flex:1}
+.back-btn{background:none;border:none;color:var(--accent);font-size:24px;line-height:1;cursor:pointer;padding:0 4px;flex-shrink:0}
+.car-card{margin:10px 14px;background:var(--glass2);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;cursor:pointer;display:flex;align-items:center;gap:14px;padding:14px;transition:opacity 0.15s}
+.car-card:active{opacity:0.7}
+.car-icon{width:56px;height:56px;border-radius:12px;overflow:hidden;flex-shrink:0}
+.car-icon img{width:100%;height:100%;object-fit:contain}
+.car-name{font-size:15px;font-weight:700;color:var(--t1)}
+.car-sub{font-size:12px;color:var(--t3);margin-top:3px}
+.fuel-bar-wrap{display:flex;align-items:center;gap:8px;margin-top:6px}
+.fuel-bar-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.fuel-bar-fill{height:100%;border-radius:3px;transition:width 0.3s}
+.arr{color:var(--border2);font-size:20px;margin-left:auto;flex-shrink:0}
+.detail-hero{position:relative;height:160px;overflow:hidden}
+.detail-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:10px;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.4))}
+.detail-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.1) 60%)}
+.detail-hero-text{position:absolute;bottom:0;left:0;right:0;padding:14px 18px;z-index:2}
+.detail-hero-name{font-size:20px;font-weight:800;color:#fff}
+.detail-hero-sub{font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px}
+.section{margin:14px 14px 0;background:var(--glass2);border:1px solid var(--border2);border-radius:var(--radius);padding:16px}
+.section-label{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px}
+label{display:block;font-size:12px;color:var(--t2);font-weight:600;margin-bottom:5px;margin-top:12px}
+label:first-of-type{margin-top:0}
+input[type=number],input[type=text],textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:11px 13px;color:var(--t1);font-size:15px;font-family:inherit;outline:none}
+input[type=number]:focus,input[type=text]:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:none;min-height:80px;font-size:14px;line-height:1.5}
+.save-btn{display:block;width:100%;margin-top:14px;padding:14px;border-radius:var(--radius-sm);border:none;background:linear-gradient(135deg,var(--accent),#2176AE);color:#fff;font-size:15px;font-weight:800;cursor:pointer}
+.save-btn:active{opacity:0.8}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#27AE60;color:#fff;padding:12px 24px;border-radius:40px;font-size:14px;font-weight:700;z-index:999;opacity:0;transition:opacity 0.3s;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.4);pointer-events:none}
+.toast.show{opacity:1}
+.frozen-row{margin-top:12px;padding:10px 13px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.frozen-label{font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.frozen-val{font-size:15px;font-weight:700;color:var(--t2);margin-top:3px}
+.crew-note-wrap{background:#FFF59D;background-image:linear-gradient(225deg,rgba(0,0,0,0.13) 24px,transparent 24px);border-radius:4px 4px 0 4px;padding:12px 14px;box-shadow:2px 4px 12px rgba(0,0,0,0.3);margin-top:4px}
+.crew-note-label{font-size:10px;font-weight:700;color:#8a6d00;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px}
+.crew-note-wrap textarea{background:transparent;border:none;outline:none;color:#1c1c1c;font-size:13px;min-height:70px;padding:0;width:100%;font-family:inherit;resize:none}
+/* Gauge */
+.gauge-wrap{background:var(--bg3);border-radius:12px;padding:16px 8px 8px;user-select:none;touch-action:none}
+#fuelReadout{text-align:center;font-size:28px;font-weight:800;color:var(--gold);margin-top:4px;letter-spacing:1px}
+.gauge-hint{text-align:center;font-size:11px;color:var(--t3);margin-top:4px}
+/* QR overlay */
+.qr-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px}
+.qr-card{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:24px;text-align:center;width:100%;max-width:320px}
+.qr-card img{border-radius:12px;width:220px;height:220px}
+.qr-car-name{font-size:17px;font-weight:800;color:var(--t1);margin-top:14px}
+.qr-car-sub{font-size:12px;color:var(--t3);margin-top:3px}
+.qr-close{display:block;width:100%;margin-top:18px;padding:13px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--t2);font-size:14px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="bar" id="topBar">
+  <button class="back-btn" onclick="goBack()">‹</button>
+  <img src="cars/Skycare_logo-removebg-preview.png" style="height:22px;filter:brightness(0) invert(1)" alt="Skycare">
+  <span class="bar-title" id="barTitle">Crew Car Update</span>
+  <button onclick="printAllQR()" id="printBtn" style="background:var(--glass2);border:1px solid var(--border2);border-radius:10px;padding:8px 12px;color:var(--t2);font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;letter-spacing:0.3px">🖨 Print QRs</button>
+</div>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script src="baseConfig.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp(BASE_CONFIG.firebaseConfig);   // YXL: settings come from baseConfig.js
+const db = firebase.firestore();
+
+// YXL has no built-in cars: every car is added in the app and joins the list below (appConfig/customCrewCars)
+const CREW_CARS = [...BASE_CONFIG.crewCars];
+
+const FUEL_STOPS = [
+  {label:'E', value:'Empty', pct:0},
+  {label:'¼', value:'1/4',  pct:0.25},
+  {label:'½', value:'1/2',  pct:0.5},
+  {label:'¾', value:'3/4',  pct:0.75},
+  {label:'F', value:'Full', pct:1},
+];
+
+let carData = {};
+let view = 'list';
+let _gaugeValue = null;
+let _initialLoad = true;  // true until first snapshot arrives
+
+// ── Firestore sync ──
+db.collection('crewCarData').doc('all').onSnapshot(snap => {
+  if(snap.exists) Object.assign(carData, snap.data());
+  // Bug fix 1: on first load, always render so QR deep-links populate with real data
+  if(_initialLoad) { _initialLoad = false; render(); return; }
+  if(view === 'list') { render(); return; }
+  const out = isOut(carData[view] || {});
+  if(out !== _shownOut) {
+    const name = document.getElementById('inName')?.value || '';
+    renderDetail(view);
+    const n = document.getElementById('inName'); if(n && name) n.value = name;
+  }
+});
+
+// ── Helpers ──
+function fuelPct(val) { const s=FUEL_STOPS.find(x=>x.value===val); return s?s.pct:null; }
+function fuelColor(pct) {
+  if(pct===null) return 'rgba(255,255,255,0.15)';
+  if(pct<0.25) return '#E74C3C'; if(pct<0.5) return '#F1C40F';
+  if(pct<0.75) return '#82E06A'; return '#27AE60';
+}
+function toast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+function render() { view==='list' ? renderList() : renderDetail(view); }
+
+// ── List ──
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function hhmm(iso) { return iso ? new Date(iso).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) : ''; }
+function isOut(d) { return !!(d.trip && d.trip.out); }
+function renderList() {
+  document.getElementById('barTitle').textContent='Crew Car Check-in';
+  let html=`<div style="padding:10px 14px 4px;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.5">
+    Tap the car you are taking, or the one you are bringing back.</div>`;
+  CREW_CARS.forEach(car=>{
+    const d=carData[car.key]||{};
+    const out=isOut(d);
+    html+=`<div class="car-card" onclick="openDetail('${car.key}')">
+      <div class="car-icon" style="background:linear-gradient(135deg,${car.color},${car.color2})">
+        <img src="${car.img}" alt="${car.name}" onerror="this.style.display='none'">
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="car-name">${car.name}</div>
+        <div class="car-sub">${car.label}</div>
+        <div style="font-size:11px;margin-top:6px;font-weight:700;color:${out?'#F5B041':'#4ADE80'}">${out?`🔑 Out · ${esc(d.trip.by)} · since ${hhmm(d.trip.outAt)}`:'🅿 At base'}</div>
+      </div>
+      <button onclick="event.stopPropagation();openCarQR('${car.key}')"
+        style="background:var(--glass2);border:1px solid var(--border2);border-radius:10px;padding:9px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+          <path d="M14 14h3v3h-3zM17 17h3v3M17 14h3"/>
+        </svg>
+      </button>
+    </div>`;
+  });
+  document.getElementById('app').innerHTML=html;
+}
+
+// ── Detail: take the car (name) or bring it back (name + any damage?) ──
+let _damage = null;   // return form: null until chosen, then true / false
+let _shownOut = null; // whether the open car was out when its form was drawn
+// The page used to remember one name per phone and offer it on every car, so the last name typed showed up
+// on the next car. Nothing is remembered any more; the old saved name is cleared.
+try { localStorage.removeItem('crewAccessName'); } catch(e){}
+function openDetail(key) { view=key; _damage=null; renderDetail(key); }
+
+function renderDetail(key) {
+  const car=CREW_CARS.find(c=>c.key===key);
+  if(!car){view='list';render();return;}
+  const d=carData[key]||{};
+  const out=isOut(d);
+  document.getElementById('barTitle').textContent=car.name;
+  _shownOut = out;
+  const name = out ? (d.trip.by || '') : '';
+  const choice=(val,label,col)=>`<button type="button" onclick="setDamage(${val})" style="flex:1;padding:14px;border-radius:var(--radius-sm);font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;border:2px solid ${_damage===val?col:'var(--border2)'};background:${_damage===val?col+'26':'var(--bg3)'};color:${_damage===val?col:'var(--t2)'}">${label}</button>`;
+  document.getElementById('app').innerHTML=`
+    <div class="detail-hero" style="background:linear-gradient(160deg,${car.color},${car.color2})">
+      <img src="${car.img}" alt="${car.name}" onerror="this.style.display='none'">
+      <div class="detail-hero-overlay"></div>
+      <div class="detail-hero-text"><div class="detail-hero-name">${car.name}</div><div class="detail-hero-sub">${out?`🔑 Out with ${esc(d.trip.by)} since ${hhmm(d.trip.outAt)}`:'🅿 At base'}</div></div>
+    </div>
+    <div class="section">
+      <div class="section-label">${out?'↩️ Bringing the car back':'🔑 Taking the car'}</div>
+      <label>Your name</label>
+      <input type="text" id="inName" placeholder="First and last name" value="${esc(name)}" autocomplete="off">
+    </div>
+    ${out?`<div class="section">
+      <div class="section-label">🚗 Any damage to report?</div>
+      <div style="display:flex;gap:10px">${choice(false,'No','#27AE60')}${choice(true,'Yes','#E74C3C')}</div>
+      ${_damage===true?`<label style="margin-top:14px">What is damaged? Where on the car, and what happened</label>
+      <textarea id="inDamage" placeholder="e.g. Scratch on the rear bumper, driver side."></textarea>`:''}
+    </div>`:''}
+    <div style="padding:0 14px">
+      <button class="save-btn" onclick="${out?`returnCar('${key}')`:`takeCar('${key}')`}">${out?'↩️ Return the car':'🔑 Take the car'}</button>
+    </div>
+    <div style="height:40px"></div>`;
+}
+function setDamage(v) {
+  const name=document.getElementById('inName')?.value||'';
+  const text=document.getElementById('inDamage')?.value||'';
+  _damage=v; renderDetail(view);
+  const n=document.getElementById('inName'); if(n) n.value=name;
+  const t=document.getElementById('inDamage'); if(t){ t.value=text; t.focus(); }
+}
+function thanks(icon, title, line) {
+  document.getElementById('app').innerHTML=`<div style="padding:70px 24px;text-align:center">
+    <div style="font-size:48px;margin-bottom:12px">${icon}</div>
+    <div style="font-size:18px;font-weight:800;color:var(--t1)">${title}</div>
+    <div style="font-size:13px;color:var(--t2);margin-top:8px;line-height:1.5">${line}</div>
+    <button class="save-btn" style="max-width:240px;margin:24px auto 0" onclick="goBack()">Done</button></div>`;
+}
+
+// ── Saves: only this car's trip / lastUse / damage, never the rest of the shared record ──
+async function takeCar(key) {
+  const name=(document.getElementById('inName')?.value||'').trim();
+  if(!name){toast('⚠️ Please enter your name');return;}
+  const car=CREW_CARS.find(c=>c.key===key);
+  try {
+    await db.collection('crewCarData').doc('all').set({[key]: {trip:{out:true, by:name, outAt:new Date().toISOString(), backAt:null, returnedBy:null}}}, {merge:true});
+    thanks('🔑', `Have a good trip, ${esc(name)}!`, `The ${esc(car?car.name:key)} is now marked as out with you. Scan the QR again when you bring it back.`);
+  } catch(e){ toast('❌ Save failed — check connection'); }
+}
+async function returnCar(key) {
+  const name=(document.getElementById('inName')?.value||'').trim();
+  const text=(document.getElementById('inDamage')?.value||'').trim();
+  if(!name){toast('⚠️ Please enter your name');return;}
+  if(_damage===null){toast('⚠️ Is there any damage? Tap No or Yes');return;}
+  if(_damage && !text){toast('⚠️ Please describe the damage');return;}
+  const car=CREW_CARS.find(c=>c.key===key);
+  const at=new Date().toISOString();
+  const patch={trip:{out:false, backAt:at, returnedBy:name}, lastUse:{name, at, damage:!!_damage}};
+  if(_damage) patch.damage={text, by:name, at, open:true};
+  try {
+    await db.collection('crewCarData').doc('all').set({[key]: patch}, {merge:true});
+    if(_damage) {
+      db.collection('mxNotifQueue').add({
+        title:`🚗 Damage reported — ${car?car.name:key}`,
+        body:`${name}: ${text.slice(0,100)}`,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        sent:false
+      }).catch(()=>{});
+    }
+    thanks(_damage?'🚨':'✅', `Thanks, ${esc(name)}!`, _damage?'The car is back at base and the damage report was sent to the team.':`The ${esc(car?car.name:key)} is back at base.`);
+  } catch(e){ toast('❌ Save failed — check connection'); }
+}
+
+// ── QR popup ──
+function openCarQR(key) {
+  const car = CREW_CARS.find(c=>c.key===key);
+  if(!car) return;
+  const url = `${location.origin}${location.pathname}?car=${key}`;
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=0B1120&margin=10`;
+  const ov = document.createElement('div');
+  ov.className = 'qr-overlay';
+  ov.innerHTML = `
+    <div class="qr-card">
+      <img src="${qrSrc}" alt="QR">
+      <div class="qr-car-name">${car.name}</div>
+      <div class="qr-car-sub">Scan to open directly on this vehicle</div>
+      <button class="qr-close" onclick="this.closest('.qr-overlay').remove()">‹ Close</button>
+    </div>`;
+  ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+
+// ── Print all QR codes ──
+function printAllQR() {
+  const baseUrl = `${location.origin}${location.pathname}`;
+  const rows = CREW_CARS.map(car => {
+    const url = `${baseUrl}?car=${car.key}`;
+    const qr  = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=000000&margin=8`;
+    return `<div class="card">
+      <img src="${qr}" width="140" height="140" alt="${car.name}">
+      <div class="car-name">${car.name}</div>
+      <div class="car-sub">${car.label}</div>
+    </div>`;
+  }).join('');
+  const win = window.open('','_blank','width=800,height=600');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Skycare — Crew Car QR Codes</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;padding:20px}
+    h1{font-size:14px;font-weight:700;color:#333;margin-bottom:16px;text-align:center;letter-spacing:0.5px;text-transform:uppercase}
+    .grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+    .card{border:1.5px solid #ddd;border-radius:10px;padding:10px 10px 8px;text-align:center;width:160px;page-break-inside:avoid}
+    .card img{display:block;margin:0 auto 6px;border-radius:4px}
+    .car-name{font-size:11px;font-weight:800;color:#111;line-height:1.2}
+    .car-sub{font-size:9px;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
+    @media print{body{padding:8px}h1{margin-bottom:10px}.grid{gap:8px}.card{width:150px}}
+  </style></head><body>
+  <h1>Skycare YXL — Crew Car QR Codes</h1>
+  <div class="grid">${rows}</div>
+  <script>window.onload=()=>{const imgs=document.querySelectorAll('img');let loaded=0;imgs.forEach(i=>{i.onload=()=>{loaded++;if(loaded===imgs.length)setTimeout(()=>window.print(),300)}});}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+// ── Navigation ──
+function goBack() {
+  if(view!=='list'){
+    view='list';
+    // clear ?car= param from URL without reloading
+    history.replaceState(null,'',location.pathname);
+    render();
+  } else { try{window.close();}catch(e){} history.back(); }
+}
+
+// ── Boot: jump straight to car if ?car=key in URL ──
+const _urlCar = new URLSearchParams(location.search).get('car');
+if(_urlCar && CREW_CARS.find(c=>c.key===_urlCar)) {
+  view = _urlCar;
+}
+render();
+
+// Cars added from the app (Audits → Crew Cars → "+ Add a car") live in appConfig/customCrewCars, each picture in
+// appConfig/crewCarImg_<key>; removed ones are marked retired. They join the list here too, QR deep links included.
+const CAR_IMG_BLANK = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 60"><path d="M8 42c0-6 3-9 9-10l14-12c3-2 6-3 10-3h30c4 0 7 1 10 4l11 11c9 1 18 3 20 7v7c0 2-2 4-4 4H12c-2 0-4-2-4-4z" fill="#8A9AB2"/><circle cx="32" cy="48" r="8" fill="#2A3A52"/><circle cx="92" cy="48" r="8" fill="#2A3A52"/></svg>');
+db.collection('appConfig').doc('customCrewCars').get().then(async snap => {
+  const added = ((snap.exists && snap.data().cars) || []).filter(c => !c.retired && !CREW_CARS.some(x => x.key === c.key));
+  for (const c of added) {
+    let img = CAR_IMG_BLANK;
+    try { const d = await db.collection('appConfig').doc('crewCarImg_' + c.key).get(); if (d.exists && d.data().img) img = d.data().img; } catch (e) {}
+    CREW_CARS.push({key: c.key, name: c.name, color: c.color, color2: c.color2, label: c.label, img});
+  }
+  if (!added.length) return;
+  if (_urlCar && view === 'list' && CREW_CARS.find(c => c.key === _urlCar)) view = _urlCar;
+  render();
+}).catch(e => console.log('Added cars failed to load:', e));
+</script>
+</body>
+</html>
