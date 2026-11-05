@@ -34,9 +34,11 @@ const BASE_CONFIG = {
   // for why this isn't a separate per-base Worker.
   bouncieWorkerUrl: 'https://bouncie-proxy.skycare.workers.dev',
 
-  // Metro audits only for now (no Navajo audits yet). Tails are added in the app.
+  // Metro audits; Navajo tails are listed until their checklist PDF arrives.
   aircraftFleet: {
-    metro: [], westwind: [], astra: [],   // westwind/astra unused at YXL
+    metro:  ['CPX','TIM','IOC','IOB','IOJ','IOA','IOH','KKC','IOE'],
+    navajo: ['AJR','AQR','TJX','CJH','JHX','JRH','QXD','QXX','TJF','BHO'],   // listed on Audits; no checklist yet
+    westwind: [], astra: [],   // unused at YXL
   },
 
   // Absence of a key (or true) means enabled.

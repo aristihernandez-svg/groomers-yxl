@@ -2570,6 +2570,7 @@ const CAR_AUDIT_CHECKS = [
 const AIRCRAFT_METRO    = BASE_CONFIG.aircraftFleet.metro;
 const AIRCRAFT_WESTWIND = BASE_CONFIG.aircraftFleet.westwind;
 const AIRCRAFT_ASTRA    = BASE_CONFIG.aircraftFleet.astra;
+const AIRCRAFT_NAVAJO   = BASE_CONFIG.aircraftFleet.navajo || [];   // YXL: listed only — no Navajo checklist yet
 
 const AIRCRAFT_CHECKLIST = {
   // Sub-lines separated by ;; so that | can appear freely within a line (e.g. W&B pairs)
@@ -2863,30 +2864,8 @@ function showPinGate() {
   if (gate) { gate.style.display = 'flex'; }
 }
 
-// ── Secret: tap ✈ 7 times rapidly to open pilot dashboard ──
-let _planeTaps = 0, _planeTapTimer = null;
-function planeIconTap() {
-  goTab('home');
-  _planeTaps++;
-  clearTimeout(_planeTapTimer);
-  _planeTapTimer = setTimeout(() => { _planeTaps = 0; }, 3000);
-  if (_planeTaps >= 7) {
-    _planeTaps = 0;
-    location.href = 'pilot.html';
-  }
-}
-
-// ── Secret: tap "Study SOP and COM" sticky 3 times to open pilot dashboard ──
-let _sopTaps = 0, _sopTimer = null;
-function sopSecretTap(e) {
-  _sopTaps++;
-  clearTimeout(_sopTimer);
-  _sopTimer = setTimeout(() => { _sopTaps = 0; }, 2000);
-  if (_sopTaps >= 3) {
-    _sopTaps = 0;
-    location.href = 'pilot.html';
-  }
-}
+// No pilot study hub at YXL (yet): the ✈ icon just goes home
+function planeIconTap() { goTab('home'); }
 
 window.addEventListener('load', async () => {
   if (localStorage.getItem('gyxl_app_pin_ok') !== '1') {
@@ -9366,6 +9345,7 @@ function renderAuditsLanding(el) {
     ${sectionLabel('✈','Aircraft &amp; Crew Cars')}
     ${tileGrid(
       auditRow("openAircraftFolder('metro')", acImg('cars/Metroliner_logo-removebg-preview.png'), 'Metro SW3/SW4', `${metroDone} of ${_metroRegs.length} tails`, metroBadge, '', _metroRegs.length?metroDone/_metroRegs.length:0, _metroDone) +
+      (!AIRCRAFT_NAVAJO.length ? '' : auditRow("toast('🛩 Navajo audits start once the Navajo checklist PDF is added')", acImg('cars/Navajo_logo-removebg-preview.png'), 'Navajo PA-31', AIRCRAFT_NAVAJO.join(', '), badge('Checklist soon','#1A2840','#7A90A8'), ';opacity:.7')) +
       (!_wwRegs.length ? '' : auditRow("openAircraftFolder('westwind')", acImg('cars/Westwind-removebg-preview.png'), 'WestWind WW24', `${wwDone} of ${_wwRegs.length} tails`, wwBadge, '', _wwRegs.length?wwDone/_wwRegs.length:0, _wwDone)) +
       (!_astraRegs.length ? '' : auditRow("openAircraftFolder('astra')", acImg('cars/Astra-removebg-preview.png'), 'Astra AJ25', _astraRegs.map(r=>'C-'+r).join(', '), astraBadge, astraBorder, _astraRegs.length?astraDoneCount/_astraRegs.length:0, _astraDone)) +
       auditRow('openCrewCars()', carIconHtml, 'Crew Cars', `${carsDoneCount} of ${_audCars.length} vehicles`, carsBadge, '', _audCars.length?carsDoneCount/_audCars.length:0, _carsDone) +
@@ -13561,7 +13541,7 @@ function renderBored(el) {
     const {bg, fold} = noteColors[i % noteColors.length];
     const rot = (i%2===0 ? -1 : 1) * (0.4 + (i%4)*0.25);
     html += `
-    <div data-id="${b.id}" onclick="${b.task==='Study SOP and COM'?'sopSecretTap(event)':'toggleBoredById(\''+b.id+'\')'}"
+    <div data-id="${b.id}" onclick="${'toggleBoredById(\''+b.id+'\')'}"
       style="
         position:relative;
         background-color:${bg};
