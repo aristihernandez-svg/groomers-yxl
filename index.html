@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#0B1120">
+<meta name="theme-color" content="#000000">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -37,10 +37,10 @@
    BASE TOKENS — Premium Dark Night (default)
 ══════════════════════════════════════════════ */
 :root{
-  --bg:         #0B1120;
-  --bg2:        #0F1830;
-  --bg3:        #141F3A;
-  --bg4:        #1A2848;
+  --bg:         #000000;
+  --bg2:        #0A0A0B;
+  --bg3:        #121214;
+  --bg4:        #1A1A1D;
   --gold:       #4A9EFF;
   --gold2:      #76B8FF;
   --gold-dim:   rgba(74,158,255,0.18);
@@ -195,7 +195,7 @@ body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
     radial-gradient(ellipse 60% 40% at 20% 0%,rgba(200,168,75,0.05) 0%,transparent 70%),
-    radial-gradient(ellipse 50% 50% at 80% 100%,rgba(26,40,72,0.6) 0%,transparent 70%);
+    radial-gradient(ellipse 50% 50% at 80% 100%,rgba(28,28,32,0.6) 0%,transparent 70%);
   transition:opacity 0.4s;
 }
 [data-theme="premium-day"] body::before{
@@ -210,7 +210,7 @@ body::before{
 #splash{
   position:fixed;inset:0;z-index:999;transition:opacity 0.6s;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:radial-gradient(ellipse at 30% 20%,#1A2848 0%,#0B1120 60%,#060C18 100%);
+  background:radial-gradient(ellipse at 30% 20%,#1A1A1D 0%,#000000 60%,#000000 100%);
 }
 #splash.out{opacity:0;pointer-events:none}
 #ldRoot{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 0 90px;overflow:hidden;color:#F0F4FF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
@@ -310,7 +310,7 @@ body::before{
 }
 .hp-nameplate{
   background:linear-gradient(90deg,#4A3508,#C8A84B,#C8A84B,#4A3508);
-  color:#0B1120;font-size:11px;font-weight:800;letter-spacing:2.5px;
+  color:#000000;font-size:11px;font-weight:800;letter-spacing:2.5px;
   text-transform:uppercase;text-align:center;
   padding:5px 28px 4px;border-radius:0 0 4px 4px;
   box-shadow:0 2px 8px rgba(0,0,0,0.5);
@@ -359,7 +359,7 @@ body::before{
 
 /* TOPBAR */
 .bar{
-  background:rgba(11,17,32,0.92);
+  background:rgba(0,0,0,0.92);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:10px;
@@ -407,7 +407,7 @@ body::before{
 .hd-share button{display:flex;align-items:center;gap:8px;padding:10px 22px;border-radius:50px;background:rgba(128,128,128,.16);border:1px solid rgba(128,128,128,.3);color:inherit;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.3px}
 .hd svg{flex-shrink:0}
 /* 1 · Bento */
-.hd-bento{background:#0B1120;font-family:Figtree,sans-serif;color:#F0F4FF}
+.hd-bento{background:#000000;font-family:Figtree,sans-serif;color:#F0F4FF}
 .hd-bento .hd-top{padding:4px 4px 16px}
 .hd-bg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .hd-bx{border-radius:24px;padding:14px;position:relative;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -418,7 +418,7 @@ body::before{
 .hd-bx.today h3{font-size:13px;font-weight:600;opacity:.85}
 .hd-bx.today p{font-size:18px;font-weight:800;line-height:1.15;margin:3px 0 10px}
 .hd-btn{display:inline-block;background:#fff;color:#1c4fd6;font-weight:800;font-size:12px;padding:7px 14px;border-radius:20px}
-.hd-bx.fleet{grid-row:span 2;background:#141F3A;border:1px solid rgba(255,255,255,.08);min-height:190px;display:flex;flex-direction:column;justify-content:space-between}
+.hd-bx.fleet{grid-row:span 2;background:#121214;border:1px solid rgba(255,255,255,.08);min-height:190px;display:flex;flex-direction:column;justify-content:space-between}
 .hd-bx.fleet img{position:absolute;left:-10px;bottom:34px;width:calc(100% + 20px);max-width:none;height:74px;object-fit:contain;object-position:center;transform:rotate(-6deg);pointer-events:none}
 .hd-bx.fleet small,.hd-bx.cal small,.hd-bx.shop small{display:block;font-size:10.5px;color:#8c9bb8;font-weight:700;letter-spacing:1px}
 .hd-bx.fleet b{font-size:19px;font-weight:800;display:block;margin-top:2px}
@@ -904,7 +904,7 @@ body::before{
 
 /* NAV */
 .nav{
-  background:rgba(11,17,32,0.95);
+  background:rgba(0,0,0,0.95);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-top:1px solid var(--border);
   display:flex;overflow-x:auto;scrollbar-width:none;
@@ -1151,7 +1151,7 @@ body::before{
 
 /* PROGRESS */
 .prog-wrap{
-  background:rgba(11,17,32,0.85);backdrop-filter:blur(10px);
+  background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);
   border-bottom:1px solid var(--border);padding:12px 16px;
   position:sticky;top:0;z-index:10;
 }
@@ -1265,7 +1265,7 @@ body::before{
 .reset-day-btn{width:100%;padding:11px;border-radius:var(--radius-sm);background:var(--glass);border:1px solid var(--border);color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 
 /* SHOPPING */
-.shop-filters{background:rgba(11,17,32,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.shop-filters{background:rgba(0,0,0,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
 [data-theme="premium-day"] .shop-filters{background:rgba(232,237,248,0.92)}
 [data-theme="standard-night"] .shop-filters{background:#111111}
 [data-theme="standard-day"] .shop-filters{background:#FFFFFF}
@@ -1308,7 +1308,7 @@ body::before{
 .empty p{font-size:13px;color:var(--t3);text-align:center}
 .empty button{margin-top:8px;padding:8px 20px;border-radius:20px;border:1px solid var(--border2);background:var(--glass);font-size:13px;cursor:pointer;color:var(--t2)}
 
-.reset-bar{padding:12px 14px;background:rgba(11,17,32,0.8);border-top:1px solid var(--border)}
+.reset-bar{padding:12px 14px;background:rgba(0,0,0,0.8);border-top:1px solid var(--border)}
 [data-theme="premium-day"] .reset-bar{background:rgba(232,237,248,0.9)}
 [data-theme="standard-night"] .reset-bar{background:#111111}
 [data-theme="standard-day"] .reset-bar{background:#FFFFFF}
@@ -1844,7 +1844,7 @@ body::before{
 /* Fleet roster pulse */
 @keyframes grnpulse{0%,100%{opacity:1;box-shadow:0 0 5px #2ECC8A}50%{opacity:.6;box-shadow:0 0 2px #2ECC8A}}
 /* Fleet map tooltip */
-.fleet-tip{background:#0d1520!important;border:1px solid rgba(200,168,75,0.35)!important;color:#e2e8f0!important;font-size:11px!important;font-weight:500!important;box-shadow:0 2px 8px rgba(0,0,0,0.6)!important;border-radius:6px!important;padding:4px 8px!important}
+.fleet-tip{background:#0E0E10!important;border:1px solid rgba(200,168,75,0.35)!important;color:#e2e8f0!important;font-size:11px!important;font-weight:500!important;box-shadow:0 2px 8px rgba(0,0,0,0.6)!important;border-radius:6px!important;padding:4px 8px!important}
 .fleet-tip::before{display:none!important}
 </style>
 </head>
@@ -1917,7 +1917,7 @@ body::before{
 </script>
 
 <!-- PIN gate — shown on first visit, never again once unlocked -->
-<div id="pinGate" style="display:none;position:fixed;inset:0;z-index:99999;background:#0B1120;align-items:center;justify-content:center;flex-direction:column;gap:20px">
+<div id="pinGate" style="display:none;position:fixed;inset:0;z-index:99999;background:#000000;align-items:center;justify-content:center;flex-direction:column;gap:20px">
   <img src="cars/Skycare_logo-removebg-preview.png" style="height:48px;filter:brightness(0) invert(1);margin-bottom:8px" alt="Skycare">
   <div style="font-size:18px;font-weight:700;color:#F5EFE6">Enter PIN to continue</div>
   <div style="display:flex;gap:10px;margin:8px 0" id="pinDots">
@@ -2532,7 +2532,7 @@ async function carCutAt(nx, ny) {
   const col = [ar, ag, ab].map(v => (mean + (v - mean) * sat) * dark), col2 = col.map(v => v + (255 - v) * .3);
   _cut.result = {png, color: '#' + col.map(hex).join(''), color2: '#' + col2.map(hex).join('')};
   const v = document.getElementById('ccView'), vg = v.getContext('2d');
-  vg.fillStyle = '#0B1120'; vg.fillRect(0, 0, W, H); vg.globalAlpha = .25; vg.drawImage(src, 0, 0); vg.globalAlpha = 1; vg.drawImage(out, 0, 0);
+  vg.fillStyle = '#000000'; vg.fillRect(0, 0, W, H); vg.globalAlpha = .25; vg.drawImage(src, 0, 0); vg.globalAlpha = 1; vg.drawImage(out, 0, 0);
   if (m) m.textContent = 'Happy with it? If part of the car is missing, tap again on that part of the car.';
   carCutButtons();
 }
@@ -4779,12 +4779,12 @@ async function renderHome(el) {
     <style>
       @keyframes slideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
       .tile-anim{animation:slideIn 0.3s ease both}
-      .hero-wrap{position:relative;width:100%;height:260px;overflow:hidden;background:#060d1a}
+      .hero-wrap{position:relative;width:100%;height:260px;overflow:hidden;background:#000000}
       .hero-img{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 0.6s ease}
       .hero-img.active{opacity:1}
       .hero-img.kb{animation:kenBurns 6s ease-out forwards}
       @keyframes kenBurns{from{transform:scale(1)}to{transform:scale(1.07)}}
-      .hero-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,13,26,0.95) 0%,rgba(6,13,26,0.25) 55%,rgba(6,13,26,0.15) 100%);pointer-events:none}
+      .hero-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.95) 0%,rgba(0,0,0,0.25) 55%,rgba(0,0,0,0.15) 100%);pointer-events:none}
       .hero-overlay{position:absolute;bottom:0;left:0;right:0;padding:18px 20px 16px;text-align:center}
       .home-tile{background:var(--glass2);border:1px solid var(--border2);border-radius:var(--radius);padding:22px 8px 18px;cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent;transition:opacity 0.15s,transform 0.15s}
       .home-tile:active{opacity:0.7;transform:scale(0.97)}
@@ -5504,8 +5504,8 @@ function hhLayoutYxl() {
 // ── the 🎨 picker ──
 function homeMiniHtml(id) {
   const m = {
-    classic:`<div class="hp-mini" style="background:#0B1120"><u style="left:0;right:0;top:0;height:18px;border-radius:0;background:linear-gradient(#1a2c52,#0B1120)"></u><u style="left:24px;top:6px;width:16px;height:7px;background:#cfd8e8"></u>${[0,1,2].map(i=>`<u style="left:${5+i*20}px;top:24px;width:16px;height:15px;background:rgba(255,255,255,.12)"></u>`).join('')}</div>`,
-    bento:`<div class="hp-mini" style="background:#0B1120"><u style="left:4px;right:4px;top:4px;height:13px;background:#3a7bff;border-radius:5px"></u><u style="left:4px;top:20px;width:26px;height:20px;background:#141F3A;border:1px solid #2a3a60"></u><u style="left:33px;top:20px;width:27px;height:9px;background:#5b46ff"></u><u style="left:33px;top:31px;width:27px;height:9px;background:#e0567a"></u></div>`,
+    classic:`<div class="hp-mini" style="background:#000000"><u style="left:0;right:0;top:0;height:18px;border-radius:0;background:linear-gradient(#1a2c52,#000000)"></u><u style="left:24px;top:6px;width:16px;height:7px;background:#cfd8e8"></u>${[0,1,2].map(i=>`<u style="left:${5+i*20}px;top:24px;width:16px;height:15px;background:rgba(255,255,255,.12)"></u>`).join('')}</div>`,
+    bento:`<div class="hp-mini" style="background:#000000"><u style="left:4px;right:4px;top:4px;height:13px;background:#3a7bff;border-radius:5px"></u><u style="left:4px;top:20px;width:26px;height:20px;background:#121214;border:1px solid #2a3a60"></u><u style="left:33px;top:20px;width:27px;height:9px;background:#5b46ff"></u><u style="left:33px;top:31px;width:27px;height:9px;background:#e0567a"></u></div>`,
     brutal:`<div class="hp-mini" style="background:#FFF0B8;border:2px solid #111"><u style="left:5px;top:5px;width:30px;height:9px;background:#FF5CA8;border:2px solid #111;border-radius:2px"></u><u style="left:5px;top:18px;right:5px;height:8px;background:#B6FF3B;border:2px solid #111;border-radius:3px"></u><u style="left:5px;top:30px;width:16px;height:9px;background:#7CB4FF;border:2px solid #111;border-radius:2px"></u><u style="left:25px;top:30px;width:16px;height:9px;background:#FF9A3C;border:2px solid #111;border-radius:2px"></u></div>`,
     neon:`<div class="hp-mini" style="background:linear-gradient(#0a0518,#2b0a4a)"><u style="left:19px;top:5px;width:26px;height:18px;border-radius:50%;background:linear-gradient(#ffe45c,#ff4fa8)"></u><u style="left:4px;right:4px;top:27px;height:2px;background:#ff4fa8;box-shadow:0 0 5px #ff4fa8"></u>${[0,1,2].map(i=>`<u style="left:${5+i*19}px;top:32px;width:15px;height:9px;border:1px solid ${['#ff4fa8','#29e0ff','#ffe45c'][i]};border-radius:3px;box-shadow:0 0 4px ${['#ff4fa8','#29e0ff','#ffe45c'][i]}"></u>`).join('')}</div>`,
     comic:`<div class="hp-mini" style="background:#F8EDD0;border:2px solid #111"><u style="left:4px;right:4px;top:4px;height:9px;background:#FFD43B;border:1.5px solid #111;border-radius:0"></u><u style="left:4px;right:4px;top:16px;height:12px;background:#1D3E8F;border:1.5px solid #111;border-radius:0"></u>${[0,1,2].map(i=>`<u style="left:${5+i*19}px;top:31px;width:15px;height:9px;background:#fff;border:1.5px solid #111;border-radius:50%"></u>`).join('')}</div>`,
@@ -7558,7 +7558,7 @@ function carKeySvg(car, out, w = 78) {
   return `<svg width="${w}" height="${w * 1.5}" viewBox="0 0 120 180" style="flex-shrink:0;overflow:visible">
     <defs><linearGradient id="rg${u}" x1="0" x2="1"><stop offset="0" stop-color="#7D838C"/><stop offset=".5" stop-color="#F2F4F7"/><stop offset="1" stop-color="#8E959F"/></linearGradient></defs>
     <path d="M51 17 Q34 18 20 29" stroke="url(#rg${u})" stroke-width="2.2" fill="none"/>
-    <rect x="6" y="27" width="28" height="44" rx="6" fill="${col}"/><circle cx="20" cy="33" r="2.6" fill="#0B1120"/>
+    <rect x="6" y="27" width="28" height="44" rx="6" fill="${col}"/><circle cx="20" cy="33" r="2.6" fill="#000000"/>
     <text x="20" y="56" text-anchor="middle" font-size="${out ? 9 : 7.4}" font-weight="900" fill="${ink}" letter-spacing=".3">${out ? 'OUT' : 'BASE'}</text>
     ${(FOB_KIND[car] || FOB_KIND.generic)(u)}
     <circle cx="60" cy="13" r="10" fill="none" stroke="url(#rg${u})" stroke-width="3.4"/></svg>`;
@@ -9170,7 +9170,7 @@ function renderAuditsLanding(el) {
   const auditRow = (onclick, iconHtml, name, sub, badgeHtml, extra='', pct=null, done=false) =>
     `<div onclick="${onclick}" style="background:var(--glass2);border:1px solid var(--border2)${extra};border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;cursor:pointer;min-width:0">
        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px">
-         <div style="width:44px;height:44px;border-radius:10px;background:var(--navy2,#0B1628);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">${iconHtml}</div>
+         <div style="width:44px;height:44px;border-radius:10px;background:var(--navy2,#0E0E10);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">${iconHtml}</div>
          ${badgeHtml}
        </div>
        <div style="font-size:13px;font-weight:700;color:var(--t1);line-height:1.25">${name}</div>
@@ -9593,7 +9593,7 @@ function renderRecordsView(el) {
   const carNames      = Object.fromEntries([...CREW_CARS, ...RETIRED_CARS].map(c=>[c.key,c.name]));
 
   const pdfLink = (rec) => rec.pdfUrl
-    ? `<a href="${rec.pdfUrl}" target="_blank" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:7px;background:var(--navy2,#0B1628);border:1px solid var(--accent-border,#1a3050);font-size:10px;font-weight:700;color:var(--accent);text-decoration:none;flex-shrink:0">📄 PDF</a>`
+    ? `<a href="${rec.pdfUrl}" target="_blank" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:7px;background:var(--navy2,#0E0E10);border:1px solid var(--accent-border,#1a3050);font-size:10px;font-weight:700;color:var(--accent);text-decoration:none;flex-shrink:0">📄 PDF</a>`
     : `<span style="font-size:10px;font-weight:600;color:var(--t4);flex-shrink:0">${rec.done?'Done · no PDF':'Not done yet'}</span>`;
 
   let html = `<div style="padding:8px 0 40px">`;
@@ -9631,7 +9631,7 @@ function renderRecordsView(el) {
         if (summary) {
           html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 8px;border-radius:8px;margin-bottom:2px;background:var(--accent-dim)">
               <div style="font-size:12px;font-weight:700;color:var(--accent)">📋 Flagged Items Summary</div>
-              <a href="${summary.pdfUrl}" target="_blank" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:7px;background:var(--navy2,#0B1628);border:1px solid var(--accent-border,#1a3050);font-size:10px;font-weight:700;color:var(--accent);text-decoration:none;flex-shrink:0">📄 PDF</a>
+              <a href="${summary.pdfUrl}" target="_blank" onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:7px;background:var(--navy2,#0E0E10);border:1px solid var(--accent-border,#1a3050);font-size:10px;font-weight:700;color:var(--accent);text-decoration:none;flex-shrink:0">📄 PDF</a>
             </div>`;
         }
         html += `<div style="height:0.5px;background:var(--border2);margin:0 8px 2px"></div>`;
@@ -9663,7 +9663,7 @@ function renderRecordsView(el) {
             </div>`;
 
           if (isCarExp) {
-            html += `<div style="background:var(--navy2,#0B1628);border-radius:8px;margin:2px 4px 4px;padding:4px 6px">`;
+            html += `<div style="background:var(--navy2,#0E0E10);border-radius:8px;margin:2px 4px 4px;padding:4px 6px">`;
             carDocs.sort((a,b)=>(carNames[a[1].carKey]||'').localeCompare(carNames[b[1].carKey]||'')).forEach(([,rec]) => {
               html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 6px;border-radius:7px">
                 <div style="display:flex;align-items:center;gap:8px">
@@ -9689,7 +9689,7 @@ function renderRecordsView(el) {
             </div>`;
 
           if (isAcExp) {
-            html += `<div style="background:var(--navy2,#0B1628);border-radius:8px;margin:2px 4px 4px;padding:4px 6px">`;
+            html += `<div style="background:var(--navy2,#0E0E10);border-radius:8px;margin:2px 4px 4px;padding:4px 6px">`;
             aircraftDocs.sort((a,b)=>a[1].reg.localeCompare(b[1].reg)).forEach(([,rec]) => {
               const ct = (S.customAcTypesList||[]).find(t=>t.id===rec.acType);
               const tLabel = typeLabels[rec.acType] || (ct?ct.name:rec.acType);
@@ -15855,7 +15855,7 @@ function drawQR(canvasId, url) {
   };
   img.onerror = () => {
     // Fallback: draw text
-    ctx.fillStyle = '#0B1120';
+    ctx.fillStyle = '#000000';
     ctx.fillRect(0,0,size,size);
     ctx.fillStyle = '#C8A84B';
     ctx.font = 'bold 12px Arial';
@@ -16392,7 +16392,7 @@ function openQrWindow(url, title, desc) {
   w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>${title}</title>
-    <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0B1120;color:#fff;font-family:-apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:28px;text-align:center}
+    <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000000;color:#fff;font-family:-apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:28px;text-align:center}
     .back{position:fixed;top:14px;left:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:10px;padding:8px 14px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none}
     h2{font-size:18px;font-weight:800;margin-bottom:6px;color:#fff}
     p{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:22px}

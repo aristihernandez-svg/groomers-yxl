@@ -10,7 +10,7 @@ const BASE_CONFIG = {
   baseName: 'Skycare YXL',
   baseAddress: '17 Airport Rd, Sioux Lookout, ON P8T 1A3',
   companyName: 'Skycare Aviation Services',
-  themeColor: '#1A3A5C',
+  themeColor: '#000000',   // black background (Nov 2026; was navy)
   pinCorrect: '1201',
   adminPin: '0000',    // guards audit/procedure/car admin actions
 
