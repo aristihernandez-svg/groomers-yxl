@@ -4778,11 +4778,12 @@ async function renderHome(el) {
     {id:'fleet',      svg:ICONS.fleet,      label:'Fleet'},
     {id:'contacts',   svg:ICONS.contacts,   label:'Contacts'},
     {id:'procedures', svg:ICONS.procedures, label:'Procs'},
-    {id:'audits',     svg:ICONS.audits,     label:'Audits', locked:true},
+    {id:'audits',     svg:ICONS.audits,     label:'Audits'},
     {id:'cars',       svg:ICONS.cars,       label:'Crew Cars'},
   ].filter(item => item.id !== 'fleet' || BASE_CONFIG.features?.fleet !== false);
 
   // Home design chosen with the 🎨 button. Anything going wrong falls back to Classic.
+  if(_homeFleetTimer) { clearInterval(_homeFleetTimer); _homeFleetTimer = null; }
   let _designHtml = null;
   const _wantDesign = homeDesign();
   if(_wantDesign !== 'classic') {
@@ -4791,17 +4792,18 @@ async function renderHome(el) {
   }
   _homeActiveDesign = _designHtml ? _wantDesign : 'classic';
   el.classList.toggle('hh-bg', _homeActiveDesign === 'haunt');
+  el.classList.toggle('xm-bg', _homeActiveDesign === 'xmas');
 
   el.innerHTML = _designHtml ? _designHtml : `
     <style>
       @keyframes slideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
       .tile-anim{animation:slideIn 0.3s ease both}
-      .hero-wrap{position:relative;width:100%;height:260px;overflow:hidden;background:#0D0A07}
+      .hero-wrap{position:relative;width:100%;height:260px;overflow:hidden;background:#060d1a}
       .hero-img{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 0.6s ease}
       .hero-img.active{opacity:1}
       .hero-img.kb{animation:kenBurns 6s ease-out forwards}
       @keyframes kenBurns{from{transform:scale(1)}to{transform:scale(1.07)}}
-      .hero-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,10,7,0.95) 0%,rgba(13,10,7,0.25) 55%,rgba(13,10,7,0.15) 100%);pointer-events:none}
+      .hero-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,13,26,0.95) 0%,rgba(6,13,26,0.25) 55%,rgba(6,13,26,0.15) 100%);pointer-events:none}
       .hero-overlay{position:absolute;bottom:0;left:0;right:0;padding:18px 20px 16px;text-align:center}
       .home-tile{background:var(--glass2);border:1px solid var(--border2);border-radius:var(--radius);padding:22px 8px 18px;cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent;transition:opacity 0.15s,transform 0.15s}
       .home-tile:active{opacity:0.7;transform:scale(0.97)}
@@ -4843,7 +4845,7 @@ async function renderHome(el) {
   if(!_tileEditMode) _tileOrder = getOrderedHomeTiles(HOME_TILES);
   _refreshTileGrid();
 
-  // Cinematic slideshow (Classic, Aurora and Sky have the aircraft images; the other designs don't)
+  // Cinematic slideshow (only Classic has the aircraft images)
   let _hIdx = 0;
   const _hImgs = HERO_IMGS.map((_,i) => document.getElementById('hImg'+i));
   if(_hImgs.every(Boolean)) {
@@ -4857,32 +4859,52 @@ async function renderHome(el) {
     }, 2000);
   }
 
-  // Design picker
+  // Design picker + live fleet info for the non-Classic layouts
   try { homeAfterRender(); } catch(e) { console.log('homeAfterRender error:', e); }
 
-  // Audit reminder popup — fires on 8th, 9th, 10th if audits are pending. Off while YXL's
-  // audits are locked (AUDITS_ENABLED): YXL has no audits of its own, so it listed every one as missing.
+  // Audit reminder popup — fires on 8th, 9th, 10th if audits are pending
   const _popDay = new Date().getDate();
   const _popKey = 'gyxl_auditPopup_' + localDateISO();
-  if(AUDITS_ENABLED && [8,9,10].includes(_popDay) && !localStorage.getItem(_popKey)) {
-    const _mRegs = [...AIRCRAFT_METRO,...(S.acCustomAircraft.metro||[])].filter(r=>!isAcDisabled(r)&&!isAcHidden(r));
-    const _wRegs = [...AIRCRAFT_WESTWIND,...(S.acCustomAircraft.westwind||[])].filter(r=>!isAcDisabled(r)&&!isAcHidden(r));
-    const _aRegs = [...AIRCRAFT_ASTRA].filter(r=>!isAcDisabled(r)&&!isAcHidden(r));
-    const _pend  = [];
-    CREW_CARS.filter(c=>!isCarDisabled(c.key)).forEach(c=>{if(!carAuditData(c.key).done)_pend.push('Crew Car · '+c.name);});
-    _mRegs.forEach(r=>{if(!acIsDone(r,'metro'))_pend.push('Metro · '+r);});
-    _wRegs.forEach(r=>{if(!acIsDone(r,'westwind'))_pend.push('Westwind · '+r);});
-    _aRegs.forEach(r=>{if(!acIsDone(r,'astra'))_pend.push('Astra · '+r);});
-    (S.customAcTypesList||[]).forEach(ct=>{
-      ct.regs.filter(r=>!isAcDisabled(r)&&!isAcHidden(r)).forEach(r=>{if(!acIsDone(r,ct.id))_pend.push(ct.name+' · '+r);});
-    });
-    if(!chData().done)  _pend.push('Crew House');
-    if(!hoData().done)  _pend.push('Hangar & Office');
-    if(!msData().done)  _pend.push('MSDS');
-    if(!plData().done)  _pend.push('Parking Lot MX');
-    if(!ykfData().done) _pend.push('YKF Base');
-    if(_pend.length) setTimeout(()=>showAuditReminderPopup(_pend,_popKey), 800);
-  }
+  if([8,9,10].includes(_popDay) && !localStorage.getItem(_popKey)) auditReminderCheck(_popKey);
+}
+let _auditReminderBusy = false;
+async function auditReminderCheck(popKey) {
+  if(_auditReminderBusy || !db) return;
+  _auditReminderBusy = true;
+  try {
+    const pend = await auditPendingFresh();
+    if(pend === null) return;
+    if(!pend.length) { try { localStorage.setItem(popKey, '1'); } catch(e) {} return; }
+    if(S.tab !== 'home' || localStorage.getItem(popKey) || document.getElementById('overlay').classList.contains('open')) return;
+    showAuditReminderPopup(pend, popKey);
+  } finally { _auditReminderBusy = false; }
+}
+async function auditPendingFresh() {
+  const read = ref => ref.get().then(d => d.exists ? (d.data() || {}) : {});
+  try {
+    // Which aircraft and cars count this month (skipped for maintenance, hidden, added) — also read fresh,
+    // so an aircraft switched off on another phone isn't listed as missing here
+    const month = auditMonth(), acMonth = acAuditMonthKey();
+    const [acOff, acHid, carOff, acAdded] = await Promise.all([
+      read(db.collection('acState').doc('disabled')), read(db.collection('acState').doc('hidden')),
+      read(db.collection('carsState').doc('disabled')), read(db.collection('appConfig').doc('acCustomAircraft'))]);
+    const offAc = new Set(((acOff.data || {})[acMonth]) || []), hidAc = new Set(acHid.regs || []);
+    const offCar = new Set(((carOff.data || {})[month]) || []);
+    const added = acAdded.metro || acAdded.westwind ? acAdded : (S.acCustomAircraft || {});
+    const items = [];   // [label, read]
+    const ac = (regs, label) => [...new Set(regs)].filter(r => !offAc.has(r) && !hidAc.has(r))
+      .forEach(r => items.push([label + ' · ' + r, read(db.collection('auditAircraft').doc(acAuditDocKey(r)))]));
+    CREW_CARS.filter(c => !offCar.has(c.key)).forEach(c => items.push(['Crew Car · ' + c.name, read(db.collection('auditCars').doc(auditDocKey(c.key)))]));
+    ac([...AIRCRAFT_METRO, ...(added.metro || [])], 'Metro');
+    ac([...AIRCRAFT_WESTWIND, ...(added.westwind || [])], 'Westwind');
+    ac([...AIRCRAFT_ASTRA], 'Astra');
+    (S.customAcTypesList || []).forEach(ct => ac(ct.regs, ct.name));
+    if(BASE_CONFIG.features?.facilityAudits !== false)
+      [['crewhouse','Crew House'], ['hangar','Hangar & Office'], ['msds','MSDS'], ['parking','Parking Lot MX'], ['ykfbase','YXL Base']]
+        .forEach(([t, label]) => items.push([label, read(db.collection('facilityAudits').doc(facilityDocKey(t)))]));
+    const docs = await Promise.all(items.map(i => i[1]));
+    return items.filter((_, i) => !docs[i].done).map(i => i[0]);
+  } catch(e) { console.log('Audit reminder: could not read the audits —', e); return null; }
 }
 
 // ── HOME DESIGNS ───────────────────────────────────────────────────
@@ -4892,12 +4914,14 @@ async function renderHome(el) {
 const HOME_DESIGNS = [
   {id:'classic', label:'Classic'},
   {id:'bento',   label:'Bento'},
-  {id:'aurora',  label:'Aurora Glass'},
   {id:'brutal',  label:'Neo-Brutal'},
   {id:'neon',    label:'Neon Night Ops'},
-  {id:'sky',     label:'Sky + Sheet'},
-  {id:'airline', label:'Airline App'},
   {id:'cork',    label:'Corkboard'},
+  {id:'comic',   label:'Comic Book'},
+  {id:'lineup',  label:'Starting Lineup'},
+  {id:'chart',   label:'Sectional Chart', when:()=>false},   // off at YXL: its chart picture (cars/ykf-chart.jpg) is the Kitchener area
+  {id:'passport',label:'Crew Passport'},
+  {id:'xmas',    label:'Christmas Village', when:d=>d.getMonth()===11 || (d.getMonth()===0 && d.getDate()<=6)},   // Dec 1 – Jan 6 only
 ];
 const HOME_PLANE_IMGS = [
   'cars/Westwind-removebg-preview.png',
@@ -4908,39 +4932,44 @@ const HOME_PLANE_IMGS = [
 ICONS.cargo = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg>`;
 // The windows a big card can show (Audits is locked, so it's left out)
 const HD_WINDOWS = [
-  {id:'mastertask',label:'Master Task'},{id:'shopping',label:'Shopping'},{id:'cargo',label:'Cargo'},
-  {id:'contacts',label:'Contacts'},{id:'procedures',label:'Procs'},{id:'cars',label:'Crew Cars'},
+  {id:'mastertask',label:'Master Task'},{id:'calendar',label:'Calendar'},{id:'shopping',label:'Shopping'},
+  {id:'fleet',label:'Fleet'},{id:'contacts',label:'Contacts'},{id:'procedures',label:'Procs'},
+  {id:'audits',label:'Audits'},{id:'cars',label:'Crew Cars'},{id:'cargo',label:'Cargo'},
 ];
 // Big cards per design: default window, shape, and the CSS class of the card
 const HD_SLOTS = {
-  bento:  [{id:'s1',def:'mastertask',size:'wide',    cls:'hd-bx today'},
-           {id:'s2',def:'cargo',     size:'tall',    cls:'hd-bx fleet'},
-           {id:'s3',def:'shopping',  size:'compact', cls:'hd-bx cal'},
-           {id:'s4',def:'cars',      size:'compact', cls:'hd-bx shop'}],
-  aurora: [{id:'a1',def:'cargo',     size:'hero',    cls:'hd-glass hd-ahero'},
-           {id:'a2',def:'mastertask',size:'card',    cls:'hd-glass'},
-           {id:'a3',def:'shopping',  size:'card',    cls:'hd-glass'}],
-  brutal: [{id:'b1',def:'mastertask',size:'bar',     cls:'hd-bcard prog'},
-           {id:'b2',def:'cargo',     size:'plane',   cls:'hd-bcard fl'}],
-  neon:   [{id:'n1',def:'mastertask',size:'bar',     cls:'hd-nbar'},
-           {id:'n2',def:'cargo',     size:'bar',     cls:'hd-nbar cy'}],
-  airline:[{id:'p1',def:'cargo',     size:'photo',   cls:'ap-card ap-photo'},
-           {id:'p2',def:'mastertask',size:'bar',     cls:'ap-card ap-prog'}],
-  cork:   [{id:'k1',def:'cargo',     size:'polaroid',cls:'ck-polaroid'},
-           {id:'k2',def:'mastertask',size:'bar',     cls:'ck-prog'}],
+  bento:  [{id:'s1',def:'mastertask',   size:'wide',    cls:'hd-bx today'},
+           {id:'s2',def:'fleet',   size:'tall',    cls:'hd-bx fleet'},
+           {id:'s3',def:'calendar',size:'compact', cls:'hd-bx cal'},
+           {id:'s4',def:'shopping',size:'compact', cls:'hd-bx shop'}],
+  brutal: [{id:'b1',def:'mastertask',   size:'bar',     cls:'hd-bcard prog'},
+           {id:'b2',def:'fleet',   size:'plane',   cls:'hd-bcard fl'}],
+  neon:   [{id:'n1',def:'mastertask',   size:'bar',     cls:'hd-nbar'},
+           {id:'n2',def:'fleet',   size:'bar',     cls:'hd-nbar cy'}],
+  cork:   [{id:'k1',def:'fleet',   size:'polaroid',cls:'ck-polaroid'},
+           {id:'k2',def:'mastertask',   size:'bar',     cls:'ck-prog'}],
 };
 let _homeActiveDesign = 'classic';
+let _homeFleetTimer = null;
+function hdAvailable(d) { return !d.when || d.when(new Date()); }
 
-function homeDesign() { return HOME_DESIGNS.some(d=>d.id===S.homeDesign) ? S.homeDesign : 'classic'; }
+function homeDesign() { return HOME_DESIGNS.some(d=>d.id===S.homeDesign && hdAvailable(d)) ? S.homeDesign : 'classic'; }
 function _hdEsc(s) { return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function homeGreeting() { const h=new Date().getHours(); return h<12?'Good morning':h<18?'Good afternoon':'Good evening'; }
-function hdWindows() { return HD_WINDOWS; }
+function hdFleetOn() { return BASE_CONFIG.features?.fleet !== false; }
+function hdWindows() { return HD_WINDOWS.filter(w=>w.id!=='fleet' || hdFleetOn()); }
 
 // Master Task progress: how many tasks are up to date (done within their own frequency)
 function homeStats() {
+  // "done" = Master Task tasks that are up to date (YKF counted today's checklist here)
   const mts = S.masterTasks || [];
   const cur = mts.filter(t=>{ const s=mtStatus(t); return s===MT_RING_STYLE.ok || s===MT_RING_STYLE.neutral; }).length;
-  return { cur, total: mts.length, pct: mts.length ? Math.round(cur/mts.length*100) : 0 };
+  return { done: cur, cur, total: mts.length, pct: mts.length ? Math.round(cur/mts.length*100) : 0,
+           evs: calEventsOn(localDateISO()) };
+}
+function homeEventsLine(st) {
+  if(!st.evs.length) return 'Nothing scheduled';
+  return _hdEsc(st.evs[0].title) + (st.evs.length>1 ? ` +${st.evs.length-1} more` : '');
 }
 // Cargo summary: overdue first, then what ships today, then everything pending
 function homeCargoStats() {
@@ -5008,80 +5037,110 @@ function hdSetSlotWin(design, slotId, win) {
 }
 
 // One summary per window, used by whichever card shows it
-function hdModel(w) {
+function hdModel(w, st) {
   const label = (HD_WINDOWS.find(x=>x.id===w)||{}).label || w;
-  const m = {id:w, label, svg:ICONS[w]||'', big:label, sub:'Tap to open', main:'Tap to open', pct:null};
-  if(w==='mastertask') {
-    const st = homeStats();
-    m.pct = st.pct; m.big = `${st.pct}%`;
-    m.sub = st.total ? `${st.cur} of ${st.total} up to date` : 'No tasks yet';
-    m.main = st.total ? `${st.cur} of ${st.total} tasks up to date` : 'No tasks yet';
-  } else if(w==='cargo') {
+  const m = {id:w, label, svg:ICONS[w]||'', big:label, sub:'Tap to open', main:'Tap to open', pct:null, fleet:null};
+  if(w==='mastertask') { m.pct=st.pct; m.big=`${st.pct}%`; m.sub=st.total?`${st.done} of ${st.total} up to date`:'No tasks yet'; m.main=st.total?`${st.done} of ${st.total} tasks up to date`:'No tasks yet'; }
+  else if(w==='cargo') {
     const c = homeCargoStats();
     m.big = c.od ? `${c.od} overdue` : c.td ? `${c.td} today` : c.pend ? `${c.pend} pending` : 'All clear';
     m.sub = c.pend ? [c.od&&c.td?`${c.td} today`:null, c.later?`${c.later} later`:null, c.sb?`${c.sb} standby`:null].filter(Boolean).join(' · ') || `${c.pend} in total` : 'Nothing to ship';
     m.main = c.pend ? `${c.pend} piece${c.pend===1?'':'s'} pending${c.od?` · ${c.od} overdue`:''}${c.td?` · ${c.td} today`:''}` : 'No cargo pending';
-  } else if(w==='shopping') {
-    const n = (S.shopping||[]).filter(i=>i.checked).length;
-    m.big = n ? `${n} to buy` : 'All stocked'; m.sub = n ? 'on the list' : 'nothing needed';
-    m.main = n ? `${n} item${n===1?'':'s'} to buy` : 'Nothing to buy';
-  } else if(w==='contacts') {
-    const c = (S.contacts||[]).length;
-    m.big = c ? `${c} people` : 'Contacts'; m.sub = 'Directory'; m.main = c ? `${c} contacts` : 'Directory';
-  } else if(w==='procedures') { m.sub = 'How-tos'; m.main = 'Step-by-step procedures'; }
-  else if(w==='cars') {
-    const k = (CREW_CARS||[]).length, car = CREW_CARS[0], b = car && (S.bouncieData||{})[car.key];
-    m.big = k===1 ? car.name : k ? `${k} vehicles` : 'Crew Cars';
-    m.sub = k===1 && b ? (b.isMoving ? 'Moving' : 'Parked') : 'Crew car';
-    m.main = k===1 ? `${car.name}${b?' · '+(b.isMoving?'moving':'parked'):''}` : 'Crew cars';
   }
+  else if(w==='calendar') { m.big=st.evs.length?`${st.evs.length} today`:'Clear'; m.sub=homeEventsLine(st); m.main=st.evs.length?homeEventsLine(st):'Nothing scheduled today'; }
+  else if(w==='shopping') { const n=(S.shopping||[]).filter(i=>i.checked).length; m.big=n?`${n} to buy`:'All stocked'; m.sub=n?'on the list':'nothing needed'; m.main=n?`${n} item${n===1?'':'s'} to buy`:'Nothing to buy'; }
+  else if(w==='contacts') { const c=(S.contacts||[]).length; m.big=c?`${c} people`:'Contacts'; m.sub='Directory'; m.main=c?`${c} contacts`:'Directory'; }
+  else if(w==='procedures') { m.sub='How-tos'; m.main='Step-by-step procedures'; }
+  else if(w==='audits') { m.sub='Monthly checks'; m.main='Monthly audits'; }
+  else if(w==='cars') { const k=(CREW_CARS||[]).length; m.big=k?`${k} vehicles`:'Crew Cars'; m.sub='Crew cars'; m.main=k?`${k} crew vehicles`:'Crew cars'; }
+  else if(w==='fleet') { const f=homeFleetInfo(); m.fleet=f; m.big=f.reg; m.sub=f.line||f.sub; m.main=[f.reg,f.line].filter(Boolean).join(' · '); }
   return m;
+}
+function homeFleetInfo() {
+  const hf = S.homeFleet;
+  const plane = {Metroliner:HOME_PLANE_IMGS[1], Westwind:HOME_PLANE_IMGS[0], Navajo:HOME_PLANE_IMGS[2], Astra:HOME_PLANE_IMGS[3]};
+  if(!hf) return {reg:'Checking…', line:'', sub:'', tone:'idle', img:HOME_PLANE_IMGS[0], inbound:false};
+  if(_fleetPaused) return {reg:'Overnight', line:'Tracking resumes 6 AM', sub:'', tone:'idle', img:HOME_PLANE_IMGS[0], inbound:false};
+  if(!_fleetFeedAt || Date.now()-_fleetFeedAt > 15*60000)
+    return {reg:'No live feed', line:'', sub:'Open the Fleet tab', tone:'idle', img:HOME_PLANE_IMGS[0], inbound:false};
+  if(hf.inbound) {
+    const p = hf.inbound;
+    const type = (FLEET_AIRCRAFT.find(a=>a.tail===p.tail)||{}).type;
+    const m = p.eta;
+    return {reg:p.reg, line:`Inbound · ${m>=60?Math.floor(m/60)+'h '+(m%60)+'m':m+' min'}`, sub:`${p.distNm} nm out`, tone:'go', img:plane[type]||HOME_PLANE_IMGS[0], inbound:true};
+  }
+  if(hf.airborne) return {reg:'Airborne', line:`${hf.airborne} in the air`, sub:'None inbound yet', tone:'idle', img:HOME_PLANE_IMGS[0], inbound:false};
+  return {reg:'No arrivals', line:'Nothing airborne', sub:hf.ground?`${hf.ground} on the ground`:'Live ADS-B', tone:'idle', img:HOME_PLANE_IMGS[0], inbound:false};
+}
+function homeFleetPaint() {
+  if(S.tab!=='home') return;
+  document.querySelectorAll('[data-hfslot]').forEach(n=>{
+    const key = n.dataset.hfslot;
+    if(HD_LIVE[key]) { n.innerHTML = HD_LIVE[key](); return; }
+    const [design, slotId] = key.split(':');
+    const slot = (HD_SLOTS[design]||[]).find(s=>s.id===slotId);
+    if(!slot) return;
+    n.innerHTML = hdCardInner(design, slot, 'fleet');
+  });
+}
+async function homeFleetRefresh() {
+  if(!hdFleetOn()) return;
+  try {
+    const pos = await fetchFleetPositions();
+    const air = pos.filter(p=>!p.onGround);
+    const inbound = air.filter(p=>p.distNm!=null && p.distNm<=250 && !p.leaving && fleetHeadingToward(p.lat,p.lon,p.trackRaw,CYXL_LAT,CYXL_LON))
+      .map(p=>({...p, eta:etaMinutes(p.distNm,p.speedKts)})).filter(p=>p.eta!==null)
+      .sort((a,b)=>a.distNm-b.distNm)[0] || null;
+    S.homeFleet = {inbound, airborne:air.length, ground:pos.length-air.length, all:pos};
+    pos.forEach(p=>{
+      if(p.onGround || p.lat==null) { delete _hdTrail[p.tail]; return; }
+      const t = _hdTrail[p.tail] || (_hdTrail[p.tail] = []), last = t[t.length-1];
+      if(!last || last.lat!==p.lat || last.lon!==p.lon) t.push({lat:p.lat, lon:p.lon});
+      if(t.length>4) t.shift();
+    });
+  } catch(e) { return; }
+  homeFleetPaint();
 }
 
 // ── big cards ──
 function hdSlotCard(design, slot) {
   const w = hdSlotWin(design, slot.id);
   const key = `${design}:${slot.id}`;
-  return `<div class="${slot.cls}${slot.size==='hero' && w==='cargo' ? ' hct-on' : ''}" data-hs="${key}"
+  return `<div class="${slot.cls}" data-hs="${key}" ${w==='fleet'?`data-hfslot="${key}"`:''}
     onclick="hdSlotClick('${design}','${slot.id}')" onpointerdown="hdSlotDown(event,'${design}','${slot.id}')"
     onpointermove="hdSlotMove(event)" onpointerup="hdSlotUp()" onpointercancel="hdSlotUp()" onpointerleave="hdSlotUp()"
     oncontextmenu="return false">${hdCardInner(design, slot, w)}</div>`;
 }
 function hdCardInner(design, slot, w) {
-  const m = hdModel(w);
-  const U = m.label.toUpperCase();
+  const m = hdModel(w, homeStats());
+  const f = m.fleet, U = m.label.toUpperCase();
   const ico = `<span class="hd-mi">${m.svg}</span>`;
   switch(design+':'+slot.size) {
     case 'bento:wide': {
-      const vis = m.pct!=null ? `<div class="hd-ring" style="--p:${m.pct}"><b>${m.pct}%</b></div>` : `<div class="hd-vis">${m.svg}</div>`;
+      const vis = w==='mastertask' ? `<div class="hd-ring" style="--p:${m.pct}"><b>${m.pct}%</b></div>`
+                : w==='fleet' ? `<div class="hd-vis"><img src="${f.img}" alt=""></div>`
+                : `<div class="hd-vis">${m.svg}</div>`;
       return `${vis}<div><h3>${_hdEsc(m.label)}</h3><p>${_hdEsc(m.main)}</p><span class="hd-btn">Open ${_hdEsc(m.label)}</span></div>`;
     }
     case 'bento:tall': {
-      const mid = m.pct!=null ? `<div class="hd-pb"><i style="width:${m.pct}%"></i></div>` : w==='cargo' ? hdCargoListHtml(3) : `<div class="hd-bigico">${m.svg}</div>`;
-      return `<div><small>${U}</small><b>${_hdEsc(m.big)}</b></div>${mid}<em>${_hdEsc(m.sub)}</em>`;
+      const mid = w==='fleet' ? `<img src="${f.img}" alt="">`
+                : w==='mastertask' ? `<div class="hd-pb"><i style="width:${m.pct}%"></i></div>`
+                : `<div class="hd-bigico">${m.svg}</div>`;
+      return `<div><small>${U}</small><b>${_hdEsc(m.big)}</b></div>${mid}<em class="${f?f.tone:''}">${_hdEsc(m.sub)}</em>`;
     }
     case 'bento:compact':
       return `<small>${ico} ${U}</small><p>${_hdEsc(m.big)}<br>${_hdEsc(m.sub)}</p>`;
-    case 'aurora:hero':   // the aircraft slideshow always stays; the caption says what this card shows
-      return `${homePlaneImgsHtml('18px 30px 34px')}<div class="cap">${hdHeroCap(w, m)}</div>`;
-    case 'aurora:card':
-      return `<small>${U}</small><p><b style="font-size:24px">${_hdEsc(m.big)}</b><br>${_hdEsc(m.sub)}</p>`;
     case 'brutal:bar':
-      return m.pct!=null ? `<b>${_hdEsc(m.main)}</b><div class="hd-pbar"><i style="width:${m.pct}%"></i></div>`
+      return w==='mastertask' ? `<b>${_hdEsc(m.main)}</b><div class="hd-pbar"><i style="width:${m.pct}%"></i></div>`
                          : `<b>${_hdEsc(m.label)} · ${_hdEsc(m.big)}</b><div class="hd-bsub">${_hdEsc(m.sub)}</div>`;
     case 'brutal:plane':
-      return `<div class="pl ico">${m.svg}</div><div style="flex:1;min-width:0"><b>${_hdEsc(m.label)}</b><small>${_hdEsc(m.big)} · ${_hdEsc(m.sub)}</small>${w==='cargo' ? hdCargoListHtml(3) : ''}</div>`;
+      if(w==='fleet') return `<div class="pl" style="background-image:url('${f.img}')"></div><div><b>${f.inbound?_hdEsc(f.reg)+' is coming in':_hdEsc(f.reg)}</b><small>${_hdEsc([f.line,f.sub].filter(Boolean).join(' · '))}</small></div>`;
+      return `<div class="pl ico">${m.svg}</div><div><b>${_hdEsc(m.label)}</b><small>${_hdEsc(m.big)} · ${_hdEsc(m.sub)}</small></div>`;
     case 'neon:bar':
-      return m.pct!=null ? `<b>${U}</b> · ${_hdEsc(m.main)}<div class="p"><i style="width:${m.pct}%"></i></div>`
-                         : `<b>${U}</b> · ${_hdEsc(m.main)}${w==='cargo' ? hdCargoListHtml(3) : ''}`;
-    case 'airline:photo':
-      return `${w==='cargo' ? '' : `<div class="ap-img">${m.svg}</div>`}<div class="ap-row"><b>${_hdEsc(m.label)} · ${_hdEsc(m.big)}</b><span class="ap-pill">${_hdEsc(m.sub)}</span></div>${w==='cargo' ? hdCargoListHtml(3) : ''}`;
-    case 'airline:bar':
-      return m.pct!=null
-        ? `<div class="ap-row"><b>${_hdEsc(m.label)}</b><span>${m.pct}%</span></div><div class="ap-bar"><i style="width:${m.pct}%"></i></div><div class="ap-sub">${_hdEsc(m.sub)}</div>`
-        : `<div class="ap-row"><b>${_hdEsc(m.label)}</b><span>${_hdEsc(m.big)}</span></div><div class="ap-sub">${_hdEsc(m.sub)}</div>`;
+      return w==='mastertask' ? `<b>MASTER TASK</b> · ${_hdEsc(m.main)}<div class="p"><i style="width:${m.pct}%"></i></div>`
+                         : `<b>${U}</b> · ${_hdEsc(m.main)}`;
     case 'cork:polaroid':
-      return `<div class="ck-pin"></div>${w==='cargo' ? hdCargoListHtml(3) : `<div class="ck-img">${m.svg}</div>`}<figcaption>${_hdEsc(m.label)} — ${_hdEsc(m.big)}</figcaption>`;
+      return `<div class="ck-pin"></div><div class="ck-img">${w==='fleet'&&f?`<img src="${f.img}" alt="">`:m.svg}</div><figcaption>${_hdEsc(m.label)} — ${_hdEsc(m.big)}</figcaption>`;
     case 'cork:bar':
       return m.pct!=null
         ? `<b>${_hdEsc(m.label)}: ${m.pct}%</b><div class="ck-bar"><i style="width:${m.pct}%"></i></div><div>${_hdEsc(m.sub)}</div>`
@@ -5137,9 +5196,10 @@ function hdOpenSlotMenu(design, slotId) {
   _hsCtx = {design, slotId}; _hsOpenAt = Date.now();
   const cur = hdSlotWin(design, slotId);
   const slot = HD_SLOTS[design].find(s=>s.id===slotId);
+  const st = homeStats();
   document.getElementById('hsMenu').innerHTML = `<div class="hs-grab"></div>
     <h4>Show in this card</h4><p>Pick a window. If another card already shows it, the two swap.</p>
-    <div class="hs-grid">${hdWindows().map(w=>`<div class="hs-w ${w.id===cur?'on':''}" onclick="hdPickWindow('${w.id}')">${ICONS[w.id]||''}<b>${w.label}</b><small>${_hdEsc(hdModel(w.id).sub)}</small></div>`).join('')}</div>
+    <div class="hs-grid">${hdWindows().map(w=>`<div class="hs-w ${w.id===cur?'on':''}" onclick="hdPickWindow('${w.id}')">${ICONS[w.id]||''}<b>${w.label}</b><small>${_hdEsc(hdModel(w.id,st).sub)}</small></div>`).join('')}</div>
     <div class="hs-reset" onclick="hdPickWindow('${slot.def}')">Reset this card to ${_hdEsc((HD_WINDOWS.find(x=>x.id===slot.def)||{}).label||slot.def)}</div>`;
   document.getElementById('hsMenu').classList.add('show');
   document.getElementById('hsVeil').classList.add('show');
@@ -5161,8 +5221,9 @@ function hdPickWindow(win) {
 // ── layouts ──
 function homeDesignHtml(d, dateStr) {
   const st = homeStats();
+  const fleetOn = hdFleetOn();
   const dt = _hdEsc(dateStr);
-  const mt = hdModel('mastertask');
+  const prog = st.total ? `${st.done} of ${st.total} tasks done` : 'No tasks yet';
   const cards = design => HD_SLOTS[design].map(s=>hdSlotCard(design, s));
   if(d==='bento') return `<div class="hd hd-bento">
     <div class="hd-top"><small>${dt}</small><h2>${homeGreeting()},<br>YXL crew</h2></div>
@@ -5170,17 +5231,11 @@ function homeDesignHtml(d, dateStr) {
     <div class="hd-bg">${cards('bento').join('')}</div>
     <div id="homeTileWrap"></div>
     ${homeFooterHtml()}</div>`;
-  if(d==='aurora') { const c = cards('aurora'); return `<div class="hd hd-aurora"><i class="hd-blob b1"></i><i class="hd-blob b2"></i><i class="hd-blob b3"></i>
-    <div class="hd-top"><small>${dt}</small><h2>Skycare YXL</h2></div>
-    ${homeNotesHtml()}
-    ${c[0]}
-    <div class="hd-arow">${c[1]}${c[2]}</div>
-    <div id="homeTileWrap"></div>
-    ${homeFooterHtml()}</div>`; }
   if(d==='brutal') {
     const bits = [], cg = homeCargoStats();
     if(cg.od) bits.push(`📦 ${cg.od} CARGO OVERDUE`);
     if(cg.td) bits.push(`📦 ${cg.td} CARGO SHIPPING TODAY`);
+    st.evs.forEach(e=>bits.push((e.type==='charter'?'✈ CHARTER TODAY: ':'📆 TODAY: ')+String(e.title||'').toUpperCase()));
     if((S.handoffNotes||[]).length) bits.push('📌 HANDOFF FROM '+String(S.handoffNotes[0].day||'LAST SHIFT').toUpperCase());
     if(!bits.length) bits.push('✈ SKYCARE YXL', 'HAVE A GREAT SHIFT');
     const mq = _hdEsc(bits.join(' • ') + ' • ');
@@ -5203,21 +5258,6 @@ function homeDesignHtml(d, dateStr) {
     ${c[0]}${c[1]}
     <div id="homeTileWrap"></div>
     ${homeFooterHtml()}</div>`; }
-  if(d==='sky') return `<div class="hd hd-sky">
-    <div class="hd-skyarea"><div class="dt">${dt}</div>${homePlaneImgsHtml('44px 6px 60px')}<div class="hd-chip" onclick="openCargoFromHome()">${hdSkyChip()}</div></div>
-    <div class="hd-sheet"><div class="hd-grab"></div>
-      <h3 onclick="goTab('mastertask')">Master Task</h3><div class="pb"><i style="width:${st.pct}%"></i></div><div class="ps">${_hdEsc(mt.main)}</div>
-      ${homeNotesHtml()}
-      <div id="homeTileWrap"></div>
-      ${homeFooterHtml()}
-    </div></div>`;
-  if(d==='airline') { const c = cards('airline'); return `<div class="hd hd-airline">
-    <div class="hd-top"><small>${dt}</small><h2>${homeGreeting()}</h2></div>
-    ${c[0]}
-    ${c[1]}
-    ${homeNotesHtml()}
-    <div id="homeTileWrap"></div>
-    ${homeFooterHtml()}</div>`; }
   if(d==='cork') { const c = cards('cork'); return `<div class="hd hd-cork">
     <div class="hd-top"><small>${dt}</small><h2>${homeGreeting()}</h2></div>
     ${c[0]}
@@ -5225,7 +5265,8 @@ function homeDesignHtml(d, dateStr) {
     ${c[1]}
     <div id="homeTileWrap"></div>
     ${homeFooterHtml()}</div>`; }
-  if(d==='haunt') return hhLayoutYxl();
+  const h4 = hdLayout4(d, st, fleetOn);
+  if(h4) return h4;
   throw new Error('unknown home design '+d);
 }
 
@@ -5240,32 +5281,23 @@ function _hdTileAttrs(t, i, extraStyle) {
 function homeDesignTilesHtml(d) {
   const cls = _tileEditMode ? 'tile-wobble' : 'tile-anim';
   let list = _tileOrder || [];
-  const lock = t => t.locked ? '<span style="position:absolute;top:5px;right:7px;font-size:10px">🔒</span>' : '';
-  if(d==='haunt') {   // carved pumpkins; Cargo is an iron-bound chest showing what ships today
-    const today = hdCargoToday().list.length;
-    return `<div class="hh-tg">${list.map((t,i)=>{ const cg = t.id==='cargo';
-      return `<div class="hh-t ${cls}" ${_hdTileAttrs(t,i)}>${lock(t)}<div class="pk${cg?' chest':''}">${cg?HH_CHEST:HH_PUMPKIN}<span class="ic">${t.svg}</span>${cg&&today?`<span class="hh-badge">${today}</span>`:''}</div><b>${t.label}</b></div>`; }).join('')}</div>`;
-  }
+  const t4 = hdTiles4(d, list, cls);
+  if(t4) return t4;
   const pal = {
-    aurora:['#6fa8ff','#5ff0d0','#c79bff','#ffd27a','#ff8fb6'],
     brutal:['#FF5CA8','#B6FF3B','#7CB4FF','#FF9A3C','#ffffff','#C7A6FF'],
     neon:  ['#ff4fa8','#29e0ff','#ffe45c','#a52dff','#3dff8b'],
-    sky:   ['#7db8ff','#ffb86b','#ff8fb6','#7dffc4','#c79bff'],
-    airline:['#0B3B8C'], cork:['#3a2a18'], // fixed colours — these two designs don't tint per tile
+    cork:['#3a2a18'], // fixed colour — Corkboard doesn't tint per tile
   };
   if(d==='bento') {
     const shown = hdSlotWins('bento');                    // windows already in a big card aren't repeated as small tiles
-    const colors = ['#5b46ff','#e0567a','#1aa58a','#d98a1c','#8a5cf6','#2d8fe0'];
+    const colors = ['#1aa58a','#d98a1c','#8a5cf6','#2d8fe0','#3aa15a','#c2461f','#5b46ff','#e0567a','#3a7bff'];
     list = list.filter(t=>!shown.includes(t.id));
-    if(!list.length) return '';
-    const cols = Math.min(list.length, 5);
-    return `<div class="hd-bsm" style="grid-template-columns:repeat(${cols},1fr)">${list.map((t,i)=>`<div class="hd-bs ${cls}" ${_hdTileAttrs(t,i,`--c:${colors[i%colors.length]}`)}>${lock(t)}${t.svg}${t.label==='Crew Cars'?'Cars':t.label}</div>`).join('')}</div>`;
+    return `<div class="hd-bsm">${list.map((t,i)=>`<div class="hd-bs ${cls}" ${_hdTileAttrs(t,i,`--c:${colors[HD_WINDOWS.findIndex(w=>w.id===t.id)%colors.length]}`)}>${t.svg}${t.label==='Crew Cars'?'Cars':t.label}</div>`).join('')}</div>`;
   }
-  const c = pal[d] || pal.aurora;
-  const grid = {aurora:'hd-atg', brutal:'hd-btg', neon:'hd-ntg', sky:'hd-stg', airline:'ap-tg', cork:'ck-tg'}[d];
-  const item = {aurora:'hd-at hd-glass', brutal:'hd-bt', neon:'hd-nt', sky:'hd-st', airline:'ap-t', cork:'ck-t'}[d];
-  const cvar = d==='aurora' ? '--g' : '--c';
-  return `<div class="${grid}">${list.map((t,i)=>`<div class="${item} ${cls}" ${_hdTileAttrs(t,i,`${cvar}:${c[i%c.length]}`)}>${lock(t)}${t.svg}${t.label}</div>`).join('')}</div>`;
+  const c = pal[d] || pal.brutal;
+  const grid = {brutal:'hd-btg', neon:'hd-ntg', cork:'ck-tg'}[d];
+  const item = {brutal:'hd-bt', neon:'hd-nt', cork:'ck-t'}[d];
+  return `<div class="${grid}">${list.map((t,i)=>`<div class="${item} ${cls}" ${_hdTileAttrs(t,i,`--c:${c[i%c.length]}`)}>${t.svg}${t.label}</div>`).join('')}</div>`;
 }
 
 // ── Haunted Hangar (gate): Emerson's cemetery gate behind the page, the fleet on an iron sign, crypt-plaque notes ──
@@ -5286,6 +5318,11 @@ function hhGateModel(p, info, counts) {
   if(info==='Checking…') return {reg:'Checking…', sub:'Reading the live fleet', eta:null, chips:[]};
   return {reg:'All quiet', sub:'No arrivals at the gate', eta:null, chips};
 }
+function hdHauntGate() {
+  const f = homeFleetInfo(), p = hdFeatured(), hf = S.homeFleet || {};
+  const fp = p ? {...p, type: hdType(p.tail), dir: p.lat!=null ? hdCompass(hdBearing(p.lat,p.lon)) : ''} : null;
+  return hhGateSign(hhGateModel(fp, f.reg, {air: hf.airborne||0, ground: hf.ground||0}));
+}
 function hhCrypt(inner) { return `<div class="hh-crypt"><div class="pl">${inner}</div></div>`; }
 const HH_PUMPKIN = '<svg viewBox="0 0 44 42" aria-hidden="true"><path d="M21 4 C21 1 24 0 26 1 L25 6 Z" fill="#3E5B24"/><ellipse cx="13" cy="25" rx="11" ry="15" fill="#7A3A12"/><ellipse cx="31" cy="25" rx="11" ry="15" fill="#7A3A12"/><ellipse cx="22" cy="25" rx="11" ry="16" fill="#8C4516"/></svg>';
 // A witch's cauldron bubbling green (YKF Shopping) and an iron-bound chest leaking light (YXL Cargo)
@@ -5296,6 +5333,138 @@ function hhPlaceFx() {
   const c = document.getElementById('content'), fx = document.querySelector('.hh-fx'); if(!c || !fx) return;
   const r = c.getBoundingClientRect();
   fx.style.top = Math.round(r.top) + 'px'; fx.style.height = Math.round(r.height) + 'px'; fx.style.visibility = 'visible';
+}
+function hdXmasSnow() {
+  let h = '';
+  for(let i=0; i<46; i++) {
+    const r = k => { const x = Math.sin(i*127.1 + k*311.7)*43758.5453; return x - Math.floor(x); };
+    const big = r(1) > .8, size = big ? 5 + r(2)*3 : 2 + r(2)*3;
+    h += `<i style="--x:${(r(3)*100).toFixed(1)}%;--s:${size.toFixed(1)}px;--o:${(big ? .55 : .6 + r(4)*.35).toFixed(2)};--b:${big ? 1.5 : 0}px;--d:${(9 + r(5)*10).toFixed(1)}s;--dl:-${(r(6)*18).toFixed(1)}s"></i>`;
+  }
+  return h;
+}
+function hdXmasPlace() {
+  const c = document.getElementById('content'), sn = document.querySelector('.xm-snow'); if(!c || !sn) return;
+  const r = c.getBoundingClientRect();
+  sn.style.top = Math.round(r.top) + 'px'; sn.style.height = Math.round(r.height) + 'px'; sn.style.visibility = 'visible';
+}
+function hdXmasTracker() {
+  const f = homeFleetInfo(), p = hdFeatured(), hf = S.homeFleet || {};
+  const off = f.reg === 'Overnight' || f.reg === 'No live feed';
+  let eta, unit, who, sub, route = '';
+  if(p && p.inbound) {
+    eta = p.eta >= 60 ? `${Math.floor(p.eta/60)}h${String(p.eta%60).padStart(2,'0')}` : String(p.eta); unit = p.eta >= 60 ? 'ETA' : 'MIN TO YXL';
+    who = p.reg; sub = `${hdType(p.tail)}${p.altFt ? ' · ' + p.altFt.toLocaleString() + ' ft' : ''}`;
+    const k = Math.max(.06, Math.min(.94, 1 - (p.distNm || 0) / 150));
+    route = `<div class="rt"><span class="sl" style="left:${(k*100).toFixed(1)}%">🛷</span></div><div class="rl"><span>${p.distNm} nm out</span><span>YXL</span></div>`;
+  } else if(p) { eta = '—'; unit = 'AIRBORNE'; who = p.reg; sub = `${p.distNm} nm${p.lat!=null ? ' ' + hdCompass(hdBearing(p.lat,p.lon)) : ''} of YXL · nothing inbound yet`; }
+  else if(f.reg === 'Overnight') { eta = '6 AM'; unit = 'TRACKING RESUMES'; who = 'Sleighs in the hangar'; sub = 'Live tracking runs 6 AM – 8 PM'; }
+  else if(f.reg === 'Checking…') { eta = '…'; unit = 'CHECKING'; who = 'Checking the sky'; sub = 'Reading the live fleet'; }
+  else if(f.reg === 'No live feed') { eta = '—'; unit = 'NO FEED'; who = 'No live feed'; sub = 'Open the Fleet tab'; }
+  else { eta = '0'; unit = 'INBOUND'; who = 'All quiet over YXL'; sub = [f.line, f.sub].filter(Boolean).join(' · '); }
+  const chips = [hf.airborne ? `✈ ${hf.airborne} in the air` : '', hf.ground ? `${hf.ground} on the ground` : ''].filter(Boolean);
+  return `<div class="hdr"><span>Skycare sleigh tracker</span><span class="live ${off ? 'off' : ''}"><i></i>${off ? 'OFF' : 'LIVE'}</span></div>
+    <div class="bd"><div class="eta"><b>${_hdEsc(eta)}</b><small>${unit}</small></div><div class="who"><b>${_hdEsc(who)}</b><span>${_hdEsc(sub)}</span></div></div>
+    ${route}${chips.length ? `<div class="ft">${chips.map(c => `<span>${c}</span>`).join('')}</div>` : '<div style="height:10px"></div>'}`;
+}
+const HD_LIVE = {comic:hdComicHero, lineup:hdLineupFleet, chart:hdChartMap, passport:hdRadar, passcap:hdRadarCap, haunt:hdHauntGate, xmas:hdXmasTracker};
+function hdLayout4(d, st, fleetOn) {
+  const t = hdDateBits(), notes = S.handoffNotes||[], evs = hdEvents();
+  if(d==='comic') {
+    const n = Math.min(st.total, 30), filled = st.total ? Math.round(st.done/st.total*n) : 0;
+    const seg = st.total ? Array.from({length:n},(_,i)=>`<i class="${i<filled?'f':''}"></i>`).join('') : '<em>No tasks yet</em>';
+    const day = notes.length && notes[0].day ? `${_hdEsc(notes[0].day)}'s` : 'the next';
+    return `<div class="hd hd-comic">
+    <div class="cm-mast"><h3>SKYCARE<small>The groomers of YXL!</small></h3><div class="iss">No.<b>${t.d.getMonth()+1}${String(t.day).padStart(2,'0')}</b>${t.dow3} · ${t.mon} ${t.day}</div></div>
+    ${fleetOn?`<div class="cm-hero" data-hfslot="comic" onclick="goTab('fleet')">${hdComicHero()}</div>`:''}
+    ${notes.map(n=>`<div class="cm-panel"><div class="cm-narr">To be continued next shift…</div>${n.text?`<p>${hdNoteText(n.text)}</p>`:''}${hdAudio(n)}<button class="cm-ok" onclick="markHandoffComplete('${n.id}')">Complete!</button></div>`).join('')}
+    ${evs.map(e=>`<div class="cm-bub" ${hdEvClick(e)}>${_hdEsc(e.title)}${e.sub?` — ${_hdEsc(e.sub)}`:''}${/[!?.…]$/.test(e.sub||e.title)?'':'!'}${e.rep?`<small>🔁 ${_hdEsc(e.rep)}</small>`:''}</div>`).join('')}
+    <div class="cm-pow" onclick="goTab('mastertask')"><span>Task<br>power</span><div class="cm-bar">${seg}</div><b>${st.done}/${st.total}</b></div>
+    <div id="homeTileWrap"></div>
+    <div class="cm-end">Meanwhile, on ${day} shift…</div>
+    ${homeFooterHtml()}</div>`;
+  }
+  if(d==='lineup') {
+    const coach = notes.map(n=>`<small>Coach's board · from ${_hdEsc(n.day||'last shift')}</small>${n.text?`<p>${hdNoteText(n.text)}</p>`:''}${hdAudio(n)}<button class="ok" onclick="markHandoffComplete('${n.id}')">✓ Complete</button>`).join('<div style="height:10px"></div>')
+      + evs.map(e=>`<div class="note" ${hdEvClick(e)}><b>Game note:</b> ${_hdEsc(e.title)}${e.sub?` — ${_hdEsc(e.sub)}`:''}${e.rep?` · 🔁 ${_hdEsc(e.rep)}`:''}</div>`).join('');
+    return `<div class="hd hd-lineup"><i class="sl-beam l"></i><i class="sl-beam r"></i>
+    <div class="sl-h"><small>${t.dow.toUpperCase()}'S</small><h3>Starting <span>lineup</span></h3><div class="ln"></div><em>SKYCARE YXL · ${t.mon} ${t.day}</em></div>
+    ${fleetOn?`<div data-hfslot="lineup" onclick="goTab('fleet')">${hdLineupFleet()}</div>`:''}
+    <div class="sl-team" onclick="goTab('mastertask')"><b>${st.done}/${st.total}</b><div class="grow"><small>Master Task up to date · ${st.pct}%</small><div class="sl-bar"><i style="width:${st.pct}%"></i></div></div></div>
+    ${coach?`<div class="sl-coach">${coach}</div>`:''}
+    <div id="homeTileWrap"></div>
+    ${homeFooterHtml()}</div>`;
+  }
+  if(d==='chart') {
+    const mm = String(t.d.getMonth()+1).padStart(2,'0');
+    let seq = 0;
+    const notams = notes.map(n=>`<div class="sc-notam"><b>!YXL ${mm}/${String(++seq).padStart(3,'0')} HANDOFF FROM ${_hdEsc((n.day||'last shift').toUpperCase())}</b><br>${hdNoteText(n.text)}${hdAudio(n)}<br><button class="ok" onclick="markHandoffComplete('${n.id}')">✓ Complete</button></div>`).join('')
+      + evs.map(e=>`<div class="sc-notam" ${hdEvClick(e)}><b>!YXL ${mm}/${String(++seq).padStart(3,'0')} ${_hdEsc(e.title)}</b>${e.sub?` ${_hdEsc(e.sub)}`:''}${e.rep?` · ${_hdEsc(e.rep)}`:''}</div>`).join('');
+    return `<div class="hd hd-chart">
+    <div class="sc-map" ${fleetOn?`data-hfslot="chart" onclick="goTab('fleet')"`:''}>${fleetOn?hdChartMap():`<img class="sc-img" src="${HD_CHART.src}" alt="" style="width:${HD_CHART.show}px;left:calc(50% - ${(HD_CHART.ax*HD_CHART.show/HD_CHART.w).toFixed(1)}px);top:${(HD_CHART.h/2-HD_CHART.ay*HD_CHART.show/HD_CHART.w).toFixed(1)}px">`}</div>
+    <div class="sc-body">${notams}
+      <div class="sc-prog" onclick="goTab('mastertask')">MASTER TASK<div class="alt"><i style="width:${st.pct}%"></i></div>${st.done} / ${st.total}</div>
+      <div id="homeTileWrap"></div>
+      ${homeFooterHtml()}</div></div>`;
+  }
+  if(d==='passport') {
+    const yymmdd = String(t.yr).slice(2)+String(t.d.getMonth()+1).padStart(2,'0')+String(t.day).padStart(2,'0');
+    const p = hdFeatured();
+    const mrz = `P&lt;YXL&lt;SKYCARE&lt;&lt;GROOMERS&lt;CREW&lt;&lt;&lt;&lt;&lt;&lt;&lt;<br>${yymmdd}&lt;&lt;${st.done}&lt;${st.total}&lt;&lt;${p&&p.inbound?_hdEsc(p.reg.replace('-',''))+'&lt;ETA'+p.eta:'NOARR'}&lt;&lt;&lt;&lt;&lt;&lt;`;
+    return `<div class="hd hd-pass">
+    <div class="pp-cov"><div class="pp-crest"><img src="cars/Skycare_logo-removebg-preview.png" alt=""></div><h3>Crew passport</h3><b>SKYCARE · YXL</b><small>${t.dow} · ${String(t.day).padStart(2,'0')} ${t.mon} ${t.yr}</small></div>
+    <div class="pp-pg"><span class="pn">PAGE ${String(t.day).padStart(2,'0')}</span><span class="hdr">Visas · entries</span>
+      <div class="pp-row"><div class="pp-date" onclick="goTab('mastertask')">${hdDateStampSvg(st)}</div>${fleetOn?`<div class="pp-radar" data-hfslot="passport" onclick="goTab('fleet')">${hdRadar()}</div>`:''}</div>
+      ${fleetOn?`<div class="pp-cap" data-hfslot="passcap">${hdRadarCap()}</div>`:''}
+      ${notes.map(n=>`<div class="pp-note"><small>From ${_hdEsc(n.day||'last shift')}</small>${hdNoteText(n.text)}${hdAudio(n)}<br><button class="ok" onclick="markHandoffComplete('${n.id}')">✓ COMPLETE</button></div>`).join('')}
+      ${evs.map(e=>`<div class="pp-note ev" ${hdEvClick(e)}><small>Today${e.rep?' · '+_hdEsc(e.rep):''}</small>${_hdEsc(e.title)}${e.sub?` — ${_hdEsc(e.sub)}`:''}</div>`).join('')}
+    </div>
+    <div class="pp-pg"><span class="pn">PAGE ${String(t.day+1).padStart(2,'0')}</span><span class="hdr">Your windows</span>
+      <div id="homeTileWrap"></div>
+      <div class="pp-mrz">${mrz}</div></div>
+    ${homeFooterHtml()}</div>`;
+  }
+  if(d==='haunt') {
+    // Date line: the nights to Halloween in October, "Happy Halloween" on the 31st
+    const nights = Math.round((new Date(t.yr, 9, 31) - new Date(t.yr, t.d.getMonth(), t.day)) / 864e5);
+    const isHw = nights === 0, soon = nights > 0 && nights <= 30;
+    return `<div class="hd hd-haunt">${HH_FX}
+    <div class="hh-title"><small class="hh-cz">${isHw?'Happy Halloween · ':''}${t.dow3} · ${t.mon} ${t.day}${soon?` · ${nights} night${nights===1?'':'s'} to Halloween`:''}</small><h2>Skycare</h2></div>
+    ${fleetOn?`<div class="hh-gate" data-hfslot="haunt" onclick="goTab('fleet')">${hdHauntGate()}</div>`:''}
+    <div class="hh-scene"></div>
+    ${notes.map(n=>hhCrypt(`<small class="k">Handoff from ${_hdEsc(n.day||'last shift')}</small>${n.text?`<p>${hdNoteText(n.text)}</p>`:''}${hdAudio(n)}<button class="hh-ok" onclick="markHandoffComplete('${n.id}')">✓ Complete</button>`)).join('')}
+    ${evs.map(e=>`<div class="hh-line" ${hdEvClick(e)}><small class="k hh-cz">Today${e.rep?' · '+_hdEsc(e.rep):''}</small><b>${_hdEsc(e.title)}</b>${e.sub?`<span>${_hdEsc(e.sub)}</span>`:''}</div>`).join('')}
+    <div class="hh-prog" onclick="goTab('mastertask')"><div class="row"><span class="hh-cz">Master Task</span><b>${st.done} / ${st.total}</b></div><div class="hh-bar"><i style="width:${st.pct}%"></i></div></div>
+    <div id="homeTileWrap"></div>
+    ${homeFooterHtml()}</div>`;
+  }
+  if(d==='xmas') {
+    // Date line: the sleeps to Christmas in December, "Merry Christmas" on the 25th
+    const sleeps = Math.round((new Date(t.yr, 11, 25) - new Date(t.yr, t.d.getMonth(), t.day)) / 864e5);
+    const isXm = sleeps === 0, soon = sleeps > 0 && sleeps <= 24;
+    const lit = st.total ? Math.round(st.done/st.total*10) : 0;   // ten bulbs = today's task progress
+    const door = inner => `<div class="xm-adv"><div class="day">${t.day}</div><div class="tx">${inner}</div></div>`;
+    return `<div class="hd hd-xmas"><div class="xm-snow" aria-hidden="true">${hdXmasSnow()}</div>
+    <div class="xm-title"><small class="xm-cz">${isXm?'Merry Christmas · ':''}${t.dow3} · ${t.mon} ${t.day}${soon?` · ${sleeps} sleep${sleeps===1?'':'s'} to Christmas`:''}</small><h2>Skycare</h2></div>
+    ${fleetOn?`<div class="xm-trk" data-hfslot="xmas" onclick="goTab('fleet')">${hdXmasTracker()}</div>`:''}
+    <div class="xm-scene"></div>
+    ${notes.map(n=>door(`<small class="k xm-cz">Handoff from ${_hdEsc(n.day||'last shift')}</small>${n.text?`<p>${hdNoteText(n.text)}</p>`:''}${hdAudio(n)}<button class="xm-ok" onclick="markHandoffComplete('${n.id}')">✓ Complete</button>`)).join('')}
+    ${evs.map(e=>`<div ${hdEvClick(e)}>${door(`<small class="k xm-cz">Today${e.rep?' · '+_hdEsc(e.rep):''}</small><b>${_hdEsc(e.title)}</b>${e.sub?`<span>${_hdEsc(e.sub)}</span>`:''}`)}</div>`).join('')}
+    <div class="xm-prog" onclick="goTab('mastertask')"><div class="row"><span class="xm-cz">Master Task</span><b>${st.done} / ${st.total}</b></div><div class="xm-lights">${Array.from({length:10},(_,i)=>`<i class="${i<lit?'on':''}"></i>`).join('')}</div></div>
+    <div id="homeTileWrap"></div>
+    ${homeFooterHtml()}</div>`;
+  }
+  return null;
+}
+function hdTiles4(d, list, cls) {
+  if(d==='xmas') return `<div class="xm-tg">${list.map((t,i)=>`<div class="xm-t ${cls}" ${_hdTileAttrs(t,i)}><i class="bulb"></i><div class="tree"><span class="orn">${t.svg}</span></div><b>${t.label}</b></div>`).join('')}</div>`;
+  if(d==='haunt') return `<div class="hh-tg">${list.map((t,i)=>{ const shop = t.id==='shopping', n = shop ? (S.shopping||[]).filter(x=>x.checked).length : 0;
+    return `<div class="hh-t ${cls}" ${_hdTileAttrs(t,i)}><div class="pk${shop?' cauldron':''}">${shop?HH_CAULDRON:HH_PUMPKIN}<span class="ic">${t.svg}</span>${n?`<span class="hh-badge">${n}</span>`:''}</div><b>${t.label}</b></div>`; }).join('')}</div>`;
+  if(d==='comic') return `<div class="cm-tg">${list.map((t,i)=>`<div class="cm-t ${cls}" ${_hdTileAttrs(t,i)}>${t.svg}<b>${t.label}</b></div>`).join('')}</div>`;
+  if(d==='lineup') return `<div class="sl-tg">${list.map((t,i)=>`<div class="sl-r ${cls}" ${_hdTileAttrs(t,i)}><span class="no">${String(i+1).padStart(2,'0')}</span>${t.svg}<b>${t.label}</b></div>`).join('')}</div>`;
+  if(d==='chart') return `<div class="sc-tg">${list.map((t,i)=>`<div class="sc-w ${cls}" ${_hdTileAttrs(t,i)}><span class="hex">${t.svg}</span><b>${t.label}</b><small>${_hdEsc(hdTileStat(t.id))}</small></div>`).join('')}</div>`;
+  if(d==='passport') return `<div class="pp-tg">${list.map((t,i)=>{ const s = hdTileStat(t.id); return `<div class="pp-s ${cls}" ${_hdTileAttrs(t,i)}><div class="st">${t.svg}<span>${t.label}</span>${s?`<small>${_hdEsc(s)}</small>`:''}</div></div>`; }).join('')}</div>`;
+  return null;
 }
 // YXL reads the live fleet the same way the Fleet tab does (fetchFleetPositions, measured from CYXL)
 let _hhFleet = null, _hhFleetTimer = null;
@@ -5354,21 +5523,23 @@ function hhLayoutYxl() {
 // ── the 🎨 picker ──
 function homeMiniHtml(id) {
   const m = {
-    classic:`<div class="hp-mini" style="background:#171310"><u style="left:0;right:0;top:0;height:18px;border-radius:0;background:linear-gradient(#3a2d20,#171310)"></u><u style="left:24px;top:6px;width:16px;height:7px;background:#cfd8e8"></u>${[0,1,2].map(i=>`<u style="left:${5+i*20}px;top:24px;width:16px;height:15px;background:rgba(255,255,255,.12)"></u>`).join('')}</div>`,
+    classic:`<div class="hp-mini" style="background:#0B1120"><u style="left:0;right:0;top:0;height:18px;border-radius:0;background:linear-gradient(#1a2c52,#0B1120)"></u><u style="left:24px;top:6px;width:16px;height:7px;background:#cfd8e8"></u>${[0,1,2].map(i=>`<u style="left:${5+i*20}px;top:24px;width:16px;height:15px;background:rgba(255,255,255,.12)"></u>`).join('')}</div>`,
     bento:`<div class="hp-mini" style="background:#0B1120"><u style="left:4px;right:4px;top:4px;height:13px;background:#3a7bff;border-radius:5px"></u><u style="left:4px;top:20px;width:26px;height:20px;background:#141F3A;border:1px solid #2a3a60"></u><u style="left:33px;top:20px;width:27px;height:9px;background:#5b46ff"></u><u style="left:33px;top:31px;width:27px;height:9px;background:#e0567a"></u></div>`,
-    aurora:`<div class="hp-mini" style="background:radial-gradient(circle at 20% 20%,#2f6bff,transparent 55%),radial-gradient(circle at 85% 80%,#8a3bff,transparent 55%),#070914"><u style="left:5px;right:5px;top:6px;height:15px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:6px"></u>${[0,1,2].map(i=>`<u style="left:${5+i*19}px;top:26px;width:15px;height:13px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);border-radius:5px"></u>`).join('')}</div>`,
     brutal:`<div class="hp-mini" style="background:#FFF0B8;border:2px solid #111"><u style="left:5px;top:5px;width:30px;height:9px;background:#FF5CA8;border:2px solid #111;border-radius:2px"></u><u style="left:5px;top:18px;right:5px;height:8px;background:#B6FF3B;border:2px solid #111;border-radius:3px"></u><u style="left:5px;top:30px;width:16px;height:9px;background:#7CB4FF;border:2px solid #111;border-radius:2px"></u><u style="left:25px;top:30px;width:16px;height:9px;background:#FF9A3C;border:2px solid #111;border-radius:2px"></u></div>`,
     neon:`<div class="hp-mini" style="background:linear-gradient(#0a0518,#2b0a4a)"><u style="left:19px;top:5px;width:26px;height:18px;border-radius:50%;background:linear-gradient(#ffe45c,#ff4fa8)"></u><u style="left:4px;right:4px;top:27px;height:2px;background:#ff4fa8;box-shadow:0 0 5px #ff4fa8"></u>${[0,1,2].map(i=>`<u style="left:${5+i*19}px;top:32px;width:15px;height:9px;border:1px solid ${['#ff4fa8','#29e0ff','#ffe45c'][i]};border-radius:3px;box-shadow:0 0 4px ${['#ff4fa8','#29e0ff','#ffe45c'][i]}"></u>`).join('')}</div>`,
-    sky:`<div class="hp-mini" style="background:linear-gradient(#0d2a5a,#3c5fa8 30%,#f0a06a 60%)"><u style="left:14px;top:8px;width:36px;height:7px;background:#e8eef8;border-radius:4px"></u><u style="left:0;right:0;top:22px;bottom:0;background:#0f1729;border-radius:10px 10px 0 0"></u>${[0,1,2].map(i=>`<u style="left:${6+i*19}px;top:30px;width:15px;height:11px;background:#182241;border-radius:4px"></u>`).join('')}</div>`,
-    airline:`<div class="hp-mini" style="background:#fff"><u style="left:0;right:0;top:0;height:20px;background:#0B3B8C"></u><u style="left:6px;top:14px;right:6px;height:16px;background:#fff;border:1px solid #dce6f5;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,.15)"></u><u style="left:6px;top:33px;right:6px;height:8px;background:#F4F7FC;border-radius:3px"></u></div>`,
-    haunt:`<div class="hp-mini" style="background:linear-gradient(rgba(6,4,10,.1),rgba(6,4,10,.55)),url('cars/halloween-gate-bg.jpg') center 20%/cover"><u style="left:14px;top:5px;width:36px;height:7px;border-radius:2px;background:#FFCF8A;box-shadow:0 0 5px #FF8A1F"></u>${[0,1,2].map(i=>`<u style="left:${6+i*19}px;top:27px;width:15px;height:12px;border-radius:50%;background:#8C4516;box-shadow:0 0 6px rgba(255,140,30,.8)"></u>`).join('')}</div>`,
+    comic:`<div class="hp-mini" style="background:#F8EDD0;border:2px solid #111"><u style="left:4px;right:4px;top:4px;height:9px;background:#FFD43B;border:1.5px solid #111;border-radius:0"></u><u style="left:4px;right:4px;top:16px;height:12px;background:#1D3E8F;border:1.5px solid #111;border-radius:0"></u>${[0,1,2].map(i=>`<u style="left:${5+i*19}px;top:31px;width:15px;height:9px;background:#fff;border:1.5px solid #111;border-radius:50%"></u>`).join('')}</div>`,
+    lineup:`<div class="hp-mini" style="background:#0B1430"><u style="left:14px;right:14px;top:4px;height:5px;background:#fff;border-radius:1px"></u><u style="left:5px;right:5px;top:12px;height:18px;background:linear-gradient(125deg,#E8304A 0 40%,#16224A 40%);border-radius:3px"></u>${[0,1,2].map(i=>`<u style="left:${5+i*19}px;top:33px;width:15px;height:8px;background:#0F1A3C;border:1px solid #2a3a6a"></u>`).join('')}</div>`,
+    chart:`<div class="hp-mini" style="background:#fff;border:1px solid #ccc"><u style="left:18px;top:3px;width:26px;height:26px;border:2px dashed #2E9E3E;border-radius:50%;background:none"></u><u style="left:28px;top:13px;width:6px;height:6px;border:1.5px solid #111;border-radius:50%;background:#fff"></u><u style="left:4px;right:4px;top:33px;height:7px;background:#111;border-radius:2px"></u></div>`,
+    passport:`<div class="hp-mini" style="background:#1B2A4A"><u style="left:27px;top:3px;width:10px;height:10px;border:1.5px solid #D8B45A;border-radius:50%;background:none"></u><u style="left:4px;right:4px;top:16px;bottom:3px;background:#F3EEDF;border-radius:2px"></u><u style="left:9px;top:20px;width:17px;height:17px;border:2px solid #B3261E;border-radius:50%;background:none"></u><u style="left:31px;top:19px;width:20px;height:20px;border:2px solid #1E4E9E;border-radius:50%;background:none"></u></div>`,
+    haunt:`<div class="hp-mini" style="background:linear-gradient(rgba(6,4,10,.1),rgba(6,4,10,.55)),url('Emerson/halloween-gate-bg.jpg') center 20%/cover"><u style="left:14px;top:5px;width:36px;height:7px;border-radius:2px;background:#FFCF8A;box-shadow:0 0 5px #FF8A1F"></u>${[0,1,2].map(i=>`<u style="left:${6+i*19}px;top:27px;width:15px;height:12px;border-radius:50%;background:#8C4516;box-shadow:0 0 6px rgba(255,140,30,.8)"></u>`).join('')}</div>`,
+    xmas:`<div class="hp-mini" style="background:linear-gradient(rgba(6,10,24,.1),rgba(6,10,24,.55)),url('Emerson/christmas-village-bg.jpg') 30% 40%/cover"><u style="left:14px;top:5px;width:36px;height:7px;border-radius:2px;background:#FFF6E5;box-shadow:0 0 5px #F2C14E"></u>${[0,1,2].map(i=>`<u style="left:${6+i*19}px;top:22px;width:14px;height:18px;border-radius:0;background:url('cars/xmas-tree.svg') center/contain no-repeat"></u>`).join('')}</div>`,
     cork:`<div class="hp-mini" style="background:#8a6a45"><u style="left:6px;top:4px;width:24px;height:20px;background:#fdfaf2;box-shadow:0 2px 3px rgba(0,0,0,.4)"></u><u style="left:34px;top:6px;width:24px;height:16px;background:#FFF4C2;box-shadow:0 2px 3px rgba(0,0,0,.4)"></u><u style="left:6px;top:28px;right:6px;height:10px;background:#fdfaf2;box-shadow:0 2px 3px rgba(0,0,0,.4)"></u></div>`,
   };
   return m[id] || '';
 }
 function renderHomePicker() {
   const cur = homeDesign();
-  document.getElementById('hpFan').innerHTML = HOME_DESIGNS.map(d=>
+  document.getElementById('hpFan').innerHTML = HOME_DESIGNS.filter(hdAvailable).map(d=>
     `<div class="hp-pc ${cur===d.id?'on':''}" onclick="setHomeDesign('${d.id}')">${homeMiniHtml(d.id)}<small>${d.label}</small></div>`).join('');
   const open = !!S.homePickerOpen;
   document.getElementById('hpFan').classList.toggle('show', open);
@@ -5378,7 +5549,7 @@ function renderHomePicker() {
 function toggleHomePicker() { S.homePickerOpen = !S.homePickerOpen; renderHomePicker(); }
 function closeHomePicker() { S.homePickerOpen = false; renderHomePicker(); }
 function setHomeDesign(d) {
-  if(!HOME_DESIGNS.some(x=>x.id===d)) return;
+  if(!HOME_DESIGNS.some(x=>x.id===d && hdAvailable(x))) return;
   S.homeDesign = d;
   S.homePickerOpen = false;
   try { localStorage.setItem('gyxl_home_design', d); } catch(e) {}
@@ -5395,12 +5566,164 @@ function setHomeDesign(d) {
 function homeAfterRender() {
   document.getElementById('hpDial').style.display = '';
   renderHomePicker();
-  if(_hhFleetTimer) { clearInterval(_hhFleetTimer); _hhFleetTimer = null; }
-  if(_homeActiveDesign === 'haunt') {
-    requestAnimationFrame(hhPlaceFx);
-    hhYxlFleetRefresh();
-    _hhFleetTimer = setInterval(() => { if(S.tab === 'home' && _homeActiveDesign === 'haunt') hhYxlFleetRefresh(); else { clearInterval(_hhFleetTimer); _hhFleetTimer = null; } }, 60000);
+  if(_homeActiveDesign === 'haunt') requestAnimationFrame(hhPlaceFx);
+  if(_homeActiveDesign === 'xmas') requestAnimationFrame(hdXmasPlace);
+  if(_homeActiveDesign !== 'classic' && hdFleetOn()) {
+    homeFleetRefresh();
+    _homeFleetTimer = setInterval(()=>{ if(S.tab==='home') homeFleetRefresh(); else { clearInterval(_homeFleetTimer); _homeFleetTimer=null; } }, 60000);
   }
+}
+const HD_CALLSIGN = {IOC:632,IOE:706,IOJ:594,IOA:680,IOB:614,IOH:432,TIM:274,CPX:11,KKC:370,XAW:280,XDP:303,DAX:58,AJR:410,AQR:411,TJX:412,CJH:413,JHX:414,JRH:415,QXD:416,QXX:417,TJF:418,BHO:419};
+const _hdTrail = {};
+function hdType(tail) { return (FLEET_AIRCRAFT.find(a=>a.tail===tail)||{}).type || 'Metroliner'; }
+function hdImgFor(tail) { return ({Metroliner:HOME_PLANE_IMGS[1], Westwind:HOME_PLANE_IMGS[0], Navajo:HOME_PLANE_IMGS[2], Astra:HOME_PLANE_IMGS[3]})[hdType(tail)] || HOME_PLANE_IMGS[1]; }
+function hdBearing(lat, lon) {   // from CYXL to the point, degrees true
+  const r = Math.PI/180;
+  const y = Math.sin((lon-CYXL_LON)*r)*Math.cos(lat*r);
+  const x = Math.cos(CYXL_LAT*r)*Math.sin(lat*r) - Math.sin(CYXL_LAT*r)*Math.cos(lat*r)*Math.cos((lon-CYXL_LON)*r);
+  return (Math.atan2(y,x)/r + 360) % 360;
+}
+function hdCompass(b) { return ['N','NE','E','SE','S','SW','W','NW'][Math.round(b/45)%8]; }
+function hdEta(m) { return m==null ? '' : m>=60 ? Math.floor(m/60)+'h '+(m%60)+'m' : m+' min'; }
+function hdFeatured() {
+  const hf = S.homeFleet; if(!hf) return null;
+  if(hf.inbound) return {...hf.inbound, inbound:true};
+  const air = (hf.all||[]).filter(p=>!p.onGround && p.distNm!=null).sort((a,b)=>a.distNm-b.distNm)[0];
+  return air ? {...air, inbound:false} : null;
+}
+function hdNoteText(t) { return _hdEsc(t||'').replace(/\n/g,'<br>'); }
+function hdAudio(n) { return n.audio ? `<audio controls src="${n.audio}"></audio>` : ''; }
+function hdEvents() {
+  return calEventsOn(localDateISO()).map(ev=>{
+    const charter = ev.type==='charter';
+    const open = charter ? (ev.items||[]).filter(x=>!x.done) : [];
+    const sub = charter
+      ? (open.length ? `${open.length} item${open.length===1?'':'s'} still open — ${open.slice(0,2).map(x=>x.text).join(', ')}` : (ev.items||[]).length ? 'All items done' : 'No requested items yet')
+      : (ev.notes||'');
+    return {id:ev.id, title:ev.title||'', sub, charter, rep:calRepeats(ev)?calRepeatLabel(ev):''};
+  });
+}
+function hdEvClick(e) { return e.charter ? `onclick="openCalendarToCharter('${e.id}')"` : ''; }
+function hdTileStat(id) {
+  const st = homeStats();
+  if(id==='mastertask') return st.total ? (st.total-st.done ? `${st.total-st.done} due` : 'all current') : '';
+  if(id==='cargo') { const c=homeCargoStats(); return c.od ? `${c.od} overdue` : c.td ? `${c.td} today` : ''; }
+  if(id==='calendar') return st.evs.length ? `${st.evs.length} today` : 'clear';
+  if(id==='shopping') { const n=(S.shopping||[]).filter(i=>i.checked).length; return n ? `${n} to buy` : 'stocked'; }
+  if(id==='fleet') { const hf=S.homeFleet; return !hf ? '' : hf.inbound ? '1 inbound' : hf.airborne ? `${hf.airborne} in the air` : ''; }
+  if(id==='audits') return new Date().getDate()<=10 ? 'due 10th' : '';
+  return '';
+}
+function hdDateBits() {
+  const d = new Date();
+  return {d, dow:DAY_NAMES[d.getDay()], dow3:DAY_NAMES[d.getDay()].slice(0,3).toUpperCase(),
+          mon:d.toLocaleDateString('en-CA',{month:'short'}).replace('.','').toUpperCase(), day:d.getDate(), yr:d.getFullYear()};
+}
+function hdComicHero() {
+  const f = homeFleetInfo(), p = hdFeatured();
+  let cap, boom;
+  if(p && p.inbound) { cap = `Suddenly… ${p.reg}! ${p.distNm} nm out${p.altFt?` · ${p.altFt.toLocaleString()} ft`:''} · ETA ${hdEta(p.eta)}!`; boom = 'INBOUND!'; }
+  else if(p) { cap = `Up, up and away… ${p.reg}, ${p.distNm} nm from YXL.`; boom = 'AIRBORNE!'; }
+  else if(f.reg==='Overnight') { cap = 'Night falls over YXL… tracking resumes at 6 AM.'; boom = 'ZZZ…'; }
+  else if(f.reg==='Checking…') { cap = 'Scanning the skies…'; boom = 'STAND BY!'; }
+  else if(f.reg==='No live feed') { cap = 'The radar has gone quiet…'; boom = 'NO SIGNAL!'; }
+  else { cap = 'All quiet over YXL…'; boom = 'ALL CLEAR!'; }
+  return `<div class="cm-cap">${_hdEsc(cap)}</div><img src="${p?hdImgFor(p.tail):HOME_PLANE_IMGS[1]}" alt=""><div class="cm-boom"><span>${boom}</span></div>`;
+}
+function hdLineupFleet() {
+  const f = homeFleetInfo(), p = hdFeatured();
+  const cs = t => HD_CALLSIGN[t];
+  const alt = a => a ? (a>=10000 ? (a/1000).toFixed(1)+'K' : a.toLocaleString()) : '—';
+  const star = p
+    ? `<div class="sl-star"><span class="num">${cs(p.tail)||_hdEsc(p.tail)}</span>
+        <span class="tag ${p.inbound?'in':''}"><i>●</i> ${p.inbound?'INBOUND':p.leaving?'OUTBOUND':'AIRBORNE'}</span>
+        <img src="${hdImgFor(p.tail)}" alt="">
+        <div class="sl-name"><b>${_hdEsc(p.reg)}</b><small>${hdType(p.tail).toUpperCase()}${cs(p.tail)?' · PHX'+cs(p.tail):''}</small></div>
+        <div class="sl-stats"><div><b>${p.distNm??'—'}</b><small>NM</small></div><div><b>${alt(p.altFt)}</b><small>FT</small></div>
+          <div><b>${p.inbound&&p.eta!=null?(p.eta>=60?Math.floor(p.eta/60)+'h':p.eta+"'"):'—'}</b><small>ETA</small></div></div></div>`
+    : `<div class="sl-star empty"><span class="num">YXL</span><span class="tag">${_hdEsc(f.reg.toUpperCase())}</span>
+        <img src="${HOME_PLANE_IMGS[1]}" alt="">
+        <div class="sl-name"><b>${_hdEsc(f.reg)}</b><small>${_hdEsc([f.line,f.sub].filter(Boolean).join(' · ').toUpperCase())}</small></div></div>`;
+  const bench = ((S.homeFleet||{}).all||[]).filter(q=>!p || q.tail!==p.tail)
+    .sort((a,b)=>(a.onGround-b.onGround) || ((a.distNm??999)-(b.distNm??999))).slice(0,3);
+  return star + (bench.length ? `<div class="sl-bench">${bench.map(q=>`<div><em class="${q.onGround?'g':''}">${q.onGround?'GND':'AIR'}</em>
+      <img src="${hdImgFor(q.tail)}" alt=""><b>${_hdEsc(q.tail)}${cs(q.tail)?' #'+cs(q.tail):''}</b>
+      <small>${hdType(q.tail).toUpperCase()} · ${q.onGround&&(q.distNm??99)<=5?'CYXL':(q.distNm??'?')+' NM'}</small></div>`).join('')}</div>` : '');
+}
+const HD_CHART = {src:'cars/ykf-chart.jpg', w:1899, ax:1063, ay:515, pxPerNm:70, show:480, h:250};
+function hdChartMap() {
+  const C = HD_CHART, s = C.show/C.w, f = homeFleetInfo(), p = hdFeatured();
+  const state = f.reg==='Overnight' ? 'OVERNIGHT' : f.reg==='No live feed' ? 'NO FEED' : 'LIVE';
+  let over = '';
+  if(p && p.lat!=null) {
+    const halfW = Math.min(window.innerWidth||390, 640)/2 - 30, halfH = C.h/2 - 28;
+    const b = hdBearing(p.lat, p.lon), r = b*Math.PI/180, px = (p.distNm||0)*C.pxPerNm*s;
+    let x = Math.sin(r)*px, y = -Math.cos(r)*px;
+    const k = Math.max(Math.abs(x)/halfW, Math.abs(y)/halfH, 1);   // beyond the chart: pin it to the edge
+    x /= k; y /= k;
+    const len = Math.hypot(x,y), ang = Math.atan2(-y,-x)*180/Math.PI;
+    const rot = (p.trackRaw ?? (b+180)%360) - 45;                 // the plane icon points north-east
+    const lblX = x<0 ? `left:calc(50% + ${Math.round(x+20)}px)` : `right:calc(50% - ${Math.round(x-20)}px)`;
+    const lblY = Math.max(4, Math.min(C.h-46, Math.round(C.h/2 + y + (y<0 ? 16 : -46))));
+    over = `<i class="sc-crs" style="left:calc(50% + ${x}px);top:${C.h/2+y}px;width:${len}px;transform:rotate(${ang}deg)"></i>
+      <div class="sc-pl ${p.leaving?'out':''}" style="left:calc(50% + ${x-15}px);top:${C.h/2+y-15}px;transform:rotate(${rot}deg)">${ICONS.fleet}</div>
+      <div class="sc-lbl" style="${lblX};top:${lblY}px">${_hdEsc(p.reg)}${p.altFt?` ${p.altFt.toLocaleString()} ft`:''}<small>${p.distNm} NM ${hdCompass(b)}${p.inbound&&p.eta!=null?' · ETA '+hdEta(p.eta).toUpperCase():''}</small></div>
+      ${k>1?'<span class="sc-edge">Beyond the chart · shown at the edge, pointing in</span>':''}`;
+  } else {
+    over = `<div class="sc-state">${_hdEsc(f.reg)}${f.line?`<small>${_hdEsc(f.line)}</small>`:''}</div>`;
+  }
+  return `<img class="sc-img" src="${C.src}" alt="" style="width:${C.show}px;left:calc(50% - ${(C.ax*s).toFixed(1)}px);top:${(C.h/2-C.ay*s).toFixed(1)}px">
+    <span class="sc-chip ${state==='LIVE'?'':'off'}">CYXL · ${state}</span><i class="sc-pulse"></i>${over}`;
+}
+function hdDateStampSvg(st) {
+  const t = hdDateBits();
+  return `<svg viewBox="0 0 120 120" aria-label="${t.dow} ${t.mon} ${t.day}">
+    <defs><path id="hdpT" d="M 14.5,60 A 45.5,45.5 0 0,1 105.5,60"/><path id="hdpB" d="M 10,60 A 50,50 0 0,0 110,60"/></defs>
+    <circle cx="60" cy="60" r="58" fill="none" stroke="currentColor" stroke-width="2.5"/>
+    <circle cx="60" cy="60" r="53.5" fill="none" stroke="currentColor" stroke-width="1"/>
+    <circle cx="60" cy="60" r="36" fill="none" stroke="currentColor" stroke-width="1"/>
+    <text font-size="9" letter-spacing="1.2"><textPath href="#hdpT" startOffset="50%" text-anchor="middle">SKYCARE YXL · CREW ENTRY</textPath></text>
+    <text font-size="8" letter-spacing="1"><textPath href="#hdpB" startOffset="50%" text-anchor="middle">${st.total?`★ ${st.done} OF ${st.total} TASKS ★`:'★ NO TASKS YET ★'}</textPath></text>
+    <text x="60" y="49" font-size="8" text-anchor="middle" letter-spacing="1.5">${t.dow3}</text>
+    <text x="60" y="68" font-size="${String(t.day).length>1?19:21}" text-anchor="middle">${t.mon}. ${t.day}</text>
+    <text x="60" y="80" font-size="8.5" text-anchor="middle" letter-spacing="2">${t.yr}</text>
+  </svg>`;
+}
+function hdRadar() {
+  const f = homeFleetInfo(), lead = hdFeatured(), k = 174/150, c = 87, R = 54*k;
+  const at = (lat, lon, nm) => { const r = hdBearing(lat,lon)*Math.PI/180, d = R*Math.min(nm,60)/60; return [c+Math.sin(r)*d, c-Math.cos(r)*d]; };
+  const planes = ((S.homeFleet||{}).all||[]).filter(p=>!p.onGround && p.lat!=null && p.distNm!=null && p.distNm<=60);
+  let marks = '', lbl = '';
+  planes.forEach(p=>{
+    (_hdTrail[p.tail]||[]).slice(0,-1).forEach(t=>{
+      const nm = haversineNm(t.lat,t.lon,CYXL_LAT,CYXL_LON); if(nm>60) return;
+      const [tx,ty] = at(t.lat,t.lon,nm); marks += `<i class="trail" style="left:${(tx-1.5).toFixed(1)}px;top:${(ty-1.5).toFixed(1)}px"></i>`;
+    });
+    const [x,y] = at(p.lat,p.lon,p.distNm);
+    marks += `<span class="blip ${p.leaving?'out':''}" style="left:${(x-8).toFixed(1)}px;top:${(y-8).toFixed(1)}px"><span style="transform:rotate(${(p.trackRaw??0)-45}deg)">${ICONS.fleet}</span></span>`;
+    if(lead && lead.tail===p.tail) {
+      const side = x<c ? `left:${Math.max(2,Math.round(x-14))}px` : `right:${Math.max(2,Math.round(174-x-14))}px`;
+      lbl = `<span class="lbl" style="${side};top:${Math.round(y<c ? y+12 : y-34)}px">${_hdEsc(p.reg)}<br>${p.distNm} NM${lead.inbound&&lead.eta!=null?' · ETA '+lead.eta:''}</span>`;
+    }
+  });
+  const none = planes.length ? '' : `<span class="none">${f.reg==='Overnight'?'TRACKING RESUMES<br>6 AM':f.reg==='No live feed'?'NO LIVE FEED':f.reg==='Checking…'?'SCANNING…':'NO ARRIVALS'}</span>`;
+  return `<svg class="frame" viewBox="0 0 150 150">
+      <defs><path id="hdrT" d="M 12,75 A 63,63 0 0,1 138,75"/><path id="hdrB" d="M 8,75 A 67,67 0 0,0 142,75"/></defs>
+      <circle cx="75" cy="75" r="73" fill="none" stroke="currentColor" stroke-width="2.4"/>
+      <circle cx="75" cy="75" r="69" fill="none" stroke="currentColor" stroke-width=".8"/>
+      <text font-size="8.5" letter-spacing="1.3"><textPath href="#hdrT" startOffset="50%" text-anchor="middle">ARRIVALS · CYXL · LIVE</textPath></text>
+      <text font-size="7" letter-spacing="1"><textPath href="#hdrB" startOffset="50%" text-anchor="middle">RINGS 30 · 60 NM</textPath></text>
+      <circle cx="75" cy="75" r="54" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="3 2"/>
+      <circle cx="75" cy="75" r="27" fill="none" stroke="currentColor" stroke-width=".8" stroke-dasharray="2 2"/>
+      <path d="M75 21V129M21 75H129" stroke="currentColor" stroke-width=".5" opacity=".5"/>
+      <text x="77" y="27" font-size="6">60</text><text x="77" y="54" font-size="6">30</text>
+    </svg><i class="sweep"></i><i class="apt"></i>${marks}${lbl}${none}<span class="live ${f.reg==='Overnight'?'off':''}">${f.reg==='Overnight'?'OFF':'LIVE'}</span>`;
+}
+function hdRadarCap() {
+  const f = homeFleetInfo(), p = hdFeatured();
+  if(p && p.inbound) return `Radar · <b>${_hdEsc(p.reg)} inbound</b> · ${p.distNm} nm · ETA ${hdEta(p.eta)}`;
+  if(p) return `Radar · <b>${_hdEsc(p.reg)}</b> · ${p.distNm} nm${p.lat!=null?" "+hdCompass(hdBearing(p.lat,p.lon)):""}`;
+  return `Radar · ${_hdEsc([f.reg,f.line].filter(Boolean).join(' · '))}`;
 }
 
 // ── TODAY ──────────────────────────────────────────────────────────
